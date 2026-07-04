@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oneIP.io · launch your coin</title>
+<style>
+  :root{--bg:#080510;--panel:#150E26;--panel2:#1B1232;--line:rgba(168,85,247,0.14);
+    --gold:#EC4899;--gold-dim:#A855F7;--txt:#F4EFFC;--muted:#A99FC0;--up:#6FE0A8;--down:#FB7185;--blue:#22D3EE;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(900px 420px at 80% -10%,rgba(236,72,153,0.06),transparent 60%),var(--bg);
+    color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 60px}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .serif{font-family:Fraunces,Georgia,serif}
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(8,10,15,0.86);backdrop-filter:blur(10px);z-index:5}
+  .brand{display:flex;align-items:center;gap:6px}.brand b{font-weight:600;font-size:22px;color:var(--gold);letter-spacing:.5px}.brand span{color:var(--muted);font-size:22px}
+  nav{display:flex;gap:24px}nav a{color:var(--muted);text-decoration:none;font-size:14px}nav a.active,nav a:hover{color:var(--gold)}
+  .wrap{max-width:1100px;margin:18px auto 0;padding:0 28px;display:grid;grid-template-columns:1.3fr 1fr;gap:22px}
+  .backlink{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;transition:color .15s}
+  .backlink:hover{color:var(--gold)}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .card h2{font-size:15px;font-weight:500;padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(236,72,153,0.12)}
+  .body{padding:18px 20px}
+  label{display:block;font-size:12px;color:var(--muted);margin:14px 0 6px;letter-spacing:.3px}
+  input{width:100%;background:#0b0f18;border:1px solid var(--line);border-radius:10px;color:var(--txt);
+    padding:11px 13px;font-size:14px;font-family:inherit}
+  input:focus{outline:none;border-color:var(--gold-dim)}
+  .btn{border:1px solid var(--gold-dim);color:var(--gold);background:transparent;padding:11px 18px;border-radius:10px;
+    font-size:13px;cursor:pointer;letter-spacing:.4px;font-family:inherit}
+  .btn:hover{background:rgba(236,72,153,0.08)}.btn.primary{background:linear-gradient(135deg,#EC4899,#A855F7);color:#fff;border:none;font-weight:600}
+  .note{font-size:12px;color:var(--muted);margin-top:10px}
+  .floor-tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#7ee29a;background:rgba(63,185,80,0.14);padding:5px 10px;border-radius:8px;margin-top:12px}
+  .soc{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(255,255,255,0.04)}
+  .soc .ti{font-size:18px;color:var(--gold-dim);width:22px;text-align:center}
+  .soc input{flex:1}.soc .bound{color:var(--up);font-size:12px}
+  .status{margin:8px 20px 18px;padding:14px;border-radius:12px;background:#0b0f18;border:1px solid var(--line)}
+  .prog{height:7px;background:#1a2030;border-radius:99px;overflow:hidden;margin:10px 0}
+  .prog>i{display:block;height:100%;background:linear-gradient(90deg,#EC4899,#A855F7);width:0;transition:width .3s}
+  .verified{color:#7ee29a;font-weight:500}.pending{color:var(--gold)}
+  .bitem{display:flex;align-items:center;gap:11px;padding:13px 18px;border-top:1px solid rgba(255,255,255,0.04)}
+  .bav{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:600;color:#fff;font-size:13px;background:linear-gradient(135deg,#EC4899,#A855F7)}
+  .vbadge{font-size:10px;font-weight:700;color:#7ee29a;background:rgba(63,185,80,0.16);padding:2px 7px;border-radius:5px}
+  .empty{padding:26px 18px;color:var(--muted);font-size:13px;text-align:center}
+  @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+  @media(max-width:700px){nav{display:none}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.2.0/tabler-icons.min.css">
+</head>
+<body>
+  <div id="appHeader"></div>
+
+  <div style="max-width:1100px;margin:18px auto 0;padding:0 28px">
+    <a href="/" onclick="event.preventDefault();history.length>1?history.back():location.href='/'" class="backlink">← <span data-i18n="back">Back</span></a>
+  </div>
+
+  <div class="wrap">
+    <section class="card">
+      <h2><span class="dot"></span> <span data-i18n="launch_title">Launch your coin</span></h2>
+      <div class="body" id="createBox">
+        <label data-i18n="f_name">Coin name</label><input id="f-name" placeholder="Pepe King" />
+        <label data-i18n="f_symbol">Symbol</label><input id="f-sym" placeholder="PEPEK" />
+        <label>Logo image URL <span style="color:var(--muted);font-size:11px">(shown in every wallet)</span></label><input id="f-logo" placeholder="https://… PNG/JPG" />
+        <label>Website</label><input id="f-website" placeholder="https://…" />
+        <label>Twitter / X</label><input id="f-tw" placeholder="@handle or link" />
+        <label>Telegram</label><input id="f-tg" placeholder="t.me/…" />
+        <label>Description</label><input id="f-desc" placeholder="one line about your coin" />
+        <label data-i18n="f_wallet">Your wallet (auto-filled from Phantom)</label><input id="f-creator" data-i18n-ph="ph_wallet" placeholder="connect Phantom →" readonly />
+        <div class="floor-tag"><i class="ti ti-shield-check"></i> <span data-i18n="floor_tag">every launch is protected by a 20% floor — holders can't be zeroed</span></div>
+        <div class="mech" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">
+          <span class="chip" title="Each buy: 80% to the liquidity pool, 20% locked in an on-chain floor vault with no withdraw path.">buy → 80% LP / 20% floor</span>
+          <span class="chip" title="Each sell pays a 2% tax straight into the floor vault — so dumping raises the floor for everyone who stays.">sell → 2% tax to floor</span>
+          <span class="chip" title="Burn your tokens anytime for a pro-rata share of the floor vault. The market never has to halt.">redeem anytime</span>
+          <span class="chip" title="Mint authority is the program; there is no freeze authority and no presale. Not a honeypot.">no freeze · no premint</span>
+          <span class="chip" title="Free to create your pool off-chain. A one-time 0.1 SOL launch fee (+ small rent) is paid only now, when you mint it on-chain via your wallet.">0.1◎ launch fee</span>
+        </div>
+        <style>.mech .chip{font-size:11px;color:var(--gold,#EC4899);border:1px solid var(--line,rgba(168,85,247,0.2));background:rgba(236,72,153,0.06);padding:4px 9px;border-radius:999px;cursor:help;font-family:"JetBrains Mono",ui-monospace,monospace}</style>
+        <div style="margin-top:16px"><button class="btn primary" id="createBtn" data-i18n="btn_create">Create coin</button></div>
+        <div class="note">⛓️ Mints on <b>Solana devnet</b> via Phantom — you'll pay a <b>0.1 SOL launch fee</b> + a little rent (~0.11◎ total), signed in your wallet. <a href="https://faucet.solana.com" target="_blank" style="color:var(--blue)">get devnet SOL ↗</a></div>
+        <div class="note" data-i18n="note_nosocial">No social binding yet → tradable, but not pushed on the board.</div>
+      </div>
+
+      <div id="socBox" style="display:none">
+        <div class="body" style="border-top:1px solid var(--line)">
+          <div style="font-size:13px;color:var(--muted)" data-i18n="socials_prompt">Connect 3+ real socials (≥1K followers each) to get verified + boosted. OAuth proves you own them.</div>
+          <div id="socList"></div>
+        </div>
+        <div class="status" id="statusBox"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="dot"></span> <span data-i18n="board_title">Verified board</span> <span style="margin-left:auto;font-size:12px;color:var(--muted)" data-i18n="board_boosted">boosted launches</span></h2>
+      <div id="board"><div class="empty" data-i18n="board_empty">No verified launches yet. Create one and bind 3 socials.</div></div>
+    </section>
+  </div>
+
+<script src="i18n.js"></script>
+<script src="wallet.js"></script>
+<script src="header.js"></script>
+<script type="module" src="chain.js"></script>
+<script>
+const PLATFORMS=[['twitter','brand-x'],['telegram','brand-telegram'],['discord','brand-discord'],['tiktok','brand-tiktok'],['youtube','brand-youtube'],['instagram','brand-instagram']];
+const fmtK=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(0)+'K':String(n);
+let state={mint:null};
+const api=(p,o)=>fetch(p,o).then(r=>r.json());
+const post=(p,b)=>api(p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+
+let lastLaunch=null;
+// The shared header (header.js) owns the wallet button + language switcher. Here we only keep the
+// launch form's creator field in sync with the connected wallet.
+function fillCreator(addr){ const cf=document.getElementById('f-creator'); if(cf) cf.value = addr || ''; }
+if(window.KolWallet){ KolWallet.onChange(fillCreator); fillCreator(KolWallet.address); }
+window.addEventListener('i18n',()=>{ if(lastLaunch){renderSocials(lastLaunch);renderStatus(lastLaunch);} refreshBoard(); });
+
+document.getElementById('createBtn').onclick=async()=>{
+  let creator=KolWallet.address;
+  if(!creator){ try{ creator=await KolWallet.connect(); }catch(e){ alert('Connect your Phantom wallet first'); return; } }
+  const name=f_name.value.trim(),symbol=f_sym.value.trim();
+  if(!name||!symbol){alert('name + symbol required');return;}
+  if(!window.OneChain){alert('On-chain module still loading — try again in a second.');return;}
+  const fv=id=>{const e=document.getElementById(id);return e?e.value.trim():'';};
+  const meta={logo:fv('f-logo'),website:fv('f-website'),twitter:fv('f-tw'),telegram:fv('f-tg'),description:fv('f-desc')};
+  const btn=document.getElementById('createBtn'); const orig=btn.textContent; btn.disabled=true;
+  let chain, metadataUri, image=meta.logo;
+  try{
+    // 1) generate the mint up front so we can pin its metadata BEFORE minting
+    const mintKp=OneChain.newMint(); const mintAddr=mintKp.publicKey.toBase58();
+    // 2) pin logo + standard JSON to IPFS → permanent ipfs:// uri (dev mode falls back to the metadata endpoint)
+    btn.textContent='Pinning to IPFS…';
+    const pin=await post('/api/coin/pin',{mint:mintAddr,name,symbol,creator,...meta});
+    metadataUri = pin.uri || (location.origin+'/api/coin/metadata?mint='+mintAddr);
+    if(pin.image) image=pin.image;
+    // 3) REAL on-chain mint via Phantom (devnet), writing the ipfs:// uri into Metaplex metadata
+    btn.textContent='Minting on Solana…';
+    chain=await OneChain.createToken({name,symbol,uri:metadataUri,mint:mintKp});
+  }
+  catch(e){ btn.disabled=false; btn.textContent=orig; alert('Launch failed: '+(e.message||e)); return; }
+  // 4) register the real mint + its permanent metadata uri off-chain. If launched from a oneIP.ai
+  //    account (?account=handle), this migrates the auto-pool + flushes escrowed pre-launch 20%.
+  const account=new URLSearchParams(location.search).get('account')||'';
+  const l=await post('/api/launch',{name,symbol,creator,account,mint:chain.mint,mintTx:chain.sig,metadataUri,logo:image,website:meta.website,twitter:meta.twitter,telegram:meta.telegram,description:meta.description});
+  state.mint=l.mint;
+  document.getElementById('createBox').innerHTML=`<div style="font-size:14px">Minted <b style="color:var(--gold)">${l.symbol}</b> on Solana · <span class="mono" style="color:var(--muted)">${l.mint.slice(0,10)}…${l.mint.slice(-4)}</span></div>
+    <div style="margin-top:8px;font-size:12px"><a class="mono" style="color:var(--blue)" href="${chain.explorer}" target="_blank">view tx ↗</a> &nbsp;·&nbsp; <a class="mono" style="color:var(--blue)" href="https://explorer.solana.com/address/${l.mint}?cluster=devnet" target="_blank">view mint ↗</a></div>
+    <div style="margin-top:8px;font-size:12px;color:var(--muted)">${metadataUri.startsWith('ipfs://')
+      ? '<i class="ti ti-check" style="color:#7ee29a"></i> metadata pinned to IPFS — <span class="mono">'+metadataUri.slice(0,22)+'…</span> · every wallet shows your logo'
+      : 'metadata served live · set PINATA_JWT to pin to IPFS for permanent all-wallet logo display'}</div>
+    <div class="floor-tag" style="margin-top:14px"><i class="ti ti-shield-check"></i> 20% floor locked on-chain</div>
+    ${account
+      ? ((l.migrated&&l.migrated.flushed>0) ? `<div style="margin-top:10px;font-size:12px;color:#7ee29a"><i class="ti ti-arrow-down"></i> 已把托管的 ${l.migrated.flushed} 笔销售价值灌进真实地板 · your held sales value flushed into the live floor</div>`:'')
+      : `<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--muted)">
+           <div style="margin-bottom:8px">给这枚币灌真实现金流 —— 在 oneIP.ai 开你的店 / 发原创,每笔成交 20% 自动进它的地板。<br>Give this coin real cash flow — open your oneIP.ai store; 20% of every sale feeds its floor.</div>
+           <a class="btn" href="/studio" target="_blank" rel="noopener" style="font-size:12px">去 oneIP.ai 开店 · Set up your store →</a>
+         </div>`}`;
+  document.getElementById('socBox').style.display='block';
+  lastLaunch=l; renderSocials(l); renderStatus(l); refreshBoard();
+};
+
+function renderSocials(l){
+  document.getElementById('socList').innerHTML=PLATFORMS.map(([p,ic])=>{
+    const s=l.socials&&l.socials[p];
+    const right=s
+      ? `<span class="bound"><i class="ti ti-check"></i> @${s.handle} · ${fmtK(s.followers)}`+(s.qualifies?'':' <span style="color:var(--down)">'+KolI18n.t('too_small')+'</span>')+`</span>`
+      : `<button class="btn" onclick="connectSocial('${p}')"><i class="ti ti-${ic}"></i> ${KolI18n.t('soc_connect')}</button>`;
+    return `<div class="soc"><i class="ti ti-${ic}"></i><span style="flex:1;font-size:13px;text-transform:capitalize">${p}</span>${right}</div>`;
+  }).join('');
+}
+async function connectSocial(p){
+  const l=await post('/api/launch/bind',{mint:state.mint,platform:p});
+  if(l.error){alert(l.error);return;}
+  lastLaunch=l; renderSocials(l); renderStatus(l); refreshBoard();
+}
+function renderStatus(l){
+  const q=Object.values(l.socials||{}).filter(s=>s.qualifies).length, pct=Math.min(100,q/3*100);
+  let html=`<div class="prog"><i style="width:${pct}%"></i></div>`;
+  if(l.verified){
+    html+=`<div class="verified"><i class="ti ti-rosette-discount-check"></i> ${KolI18n.t('st_verified',{n:l.attestation.socialCount,reach:fmtK(l.attestation.totalReach)})}</div>
+      <div class="note">attestation <span class="mono">${l.attestation.sig.slice(0,20)}…</span> · ${KolI18n.t('st_boosted_note')}</div>`;
+  }else{
+    html+=`<div class="pending">${KolI18n.t('st_pending',{q:q,m:3-q})}</div>`;
+  }
+  document.getElementById('statusBox').innerHTML=html;
+}
+async function refreshBoard(){
+  const b=await api('/api/board');
+  const el=document.getElementById('board');
+  if(!b.length){el.innerHTML='<div class="empty">'+KolI18n.t('board_empty')+'</div>';return;}
+  el.innerHTML=b.map(l=>`<div class="bitem" onclick="location.href='/coin?mint=${l.mint}'" style="cursor:pointer"><div class="bav">${l.symbol.slice(0,2).toUpperCase()}</div>
+    <div style="flex:1"><div style="font-size:14px">${l.name} <span style="color:var(--muted)">${l.symbol}</span></div>
+    <div style="font-size:11px;color:var(--muted)">${l.attestation.socialCount} platforms · ${fmtK(l.attestation.totalReach)} reach · 20% floor</div></div>
+    <span class="vbadge"><i class="ti ti-check"></i> verified</span></div>`).join('');
+}
+refreshBoard();
+</script>
+</body>
+</html>

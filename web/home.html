@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oneIP.io · 网红IP发币 · 连接粉丝 · 价值共创</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080510; --bg-2:#0F0A1C; --panel:#150E26; --panel-2:#1B1232;
+    --line:rgba(255,255,255,.08); --line-grad:rgba(168,85,247,.28);
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --pink:#F472B6; --coral:#FB7185; --cyan:#22D3EE;
+    --text:#F4EFFC; --muted:#A99FC0; --muted-2:#766C8E;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --r:18px; --wrap:1200px;
+    --ff:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif;
+    --ff-disp:"Space Grotesk","Plus Jakarta Sans","Noto Sans SC",sans-serif;
+  }
+  html[data-lang="zh"]{ --ff:"Noto Sans SC","Plus Jakarta Sans",system-ui,sans-serif; --ff-disp:"Noto Sans SC","Space Grotesk",sans-serif; }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ff);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(680px 420px at 84% -6%, rgba(236,72,153,.18), transparent 62%),
+      radial-gradient(620px 460px at 12% 0%, rgba(139,92,246,.18), transparent 60%),
+      radial-gradient(700px 500px at 50% 108%, rgba(34,211,238,.10), transparent 60%);}
+  .wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 26px;position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:8px}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---- logo ---- */
+  .logo{display:flex;align-items:center;gap:6px;cursor:pointer}
+  .logo .mark{width:34px;height:34px;flex:none}
+  .logo .word{font-family:var(--ff-disp);font-weight:700;font-size:21px;letter-spacing:-.3px}
+  .logo .word .io{color:var(--muted)}
+
+  /* ---- nav ---- */
+  .nav{position:sticky;top:0;z-index:50;transition:.3s}
+  .nav.scrolled{background:rgba(8,5,16,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .nav__in{display:flex;align-items:center;justify-content:space-between;height:70px;gap:18px}
+  .nav__links{display:flex;gap:28px;font-size:15px;color:var(--muted);font-weight:600}
+  .nav__links a{transition:.2s} .nav__links a:hover,.nav__links a.is-active{color:var(--text)}
+  .nav__right{display:flex;align-items:center;gap:12px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(255,255,255,.03)}
+  .lang button{font-family:var(--ff);font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 12px;border-radius:999px;transition:.2s}
+  .lang button[aria-pressed="true"]{background:var(--grad-btn);color:#fff}
+  .btn{font-family:var(--ff);font-size:14.5px;font-weight:700;display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:11px 20px;border-radius:999px;border:1px solid transparent;transition:transform .18s,box-shadow .25s,background .2s}
+  .btn--grad{background:var(--grad-btn);color:#fff;box-shadow:0 8px 26px -8px rgba(236,72,153,.6),0 1px 0 rgba(255,255,255,.25) inset}
+  .btn--grad:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(236,72,153,.75)}
+  .btn--ghost{border-color:var(--line-grad);color:var(--text);background:rgba(168,85,247,.06)}
+  .btn--ghost:hover{border-color:var(--magenta);background:rgba(236,72,153,.10);transform:translateY(-2px)}
+
+  /* ---- hero ---- */
+  .hero{padding:clamp(40px,6vw,84px) 0 clamp(48px,7vw,96px)}
+  .hero__grid{display:grid;grid-template-columns:1.08fr .92fr;gap:46px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.6px;color:#fff;
+    border:1px solid var(--line-grad);border-radius:999px;padding:7px 14px;background:rgba(168,85,247,.10);margin-bottom:22px}
+  .eyebrow .d{width:7px;height:7px;border-radius:50%;background:var(--grad-btn);box-shadow:0 0 0 4px rgba(236,72,153,.18)}
+  h1{font-family:var(--ff-disp);font-weight:800;font-size:clamp(36px,5.2vw,60px);line-height:1.06;letter-spacing:-.02em;margin:0 0 18px;max-width:14ch}
+  html[data-lang="zh"] h1{line-height:1.2;letter-spacing:0;font-weight:900;max-width:15ch}
+  .taglines{margin:0 0 30px}
+  .taglines .zhline{font-size:19px;font-weight:700;color:var(--text)}
+  .taglines .enline{font-size:15px;color:var(--muted);margin-top:4px;letter-spacing:.2px}
+  .cta{display:flex;gap:13px;flex-wrap:wrap;margin-bottom:26px}
+  .pills{display:flex;gap:10px;flex-wrap:wrap}
+  .pillf{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:14px;padding:10px 14px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent)}
+  .pillf .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--grad-btn);color:#fff;font-size:14px}
+  .pillf b{font-size:13.5px;font-weight:700}
+
+  /* hero mascot */
+  .mascot-wrap{position:relative;display:grid;place-items:center;min-height:340px}
+  .mascot-wrap::before{content:"";position:absolute;width:78%;aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(circle at 50% 40%,rgba(236,72,153,.35),rgba(139,92,246,.22) 45%,transparent 70%);filter:blur(8px)}
+  .mascot{position:relative;max-width:100%;width:430px;filter:drop-shadow(0 30px 60px rgba(168,85,247,.35));animation:float 5.5s ease-in-out infinite}
+  .mascot-fallback{position:relative;width:240px;height:240px;animation:float 5.5s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+
+  /* ---- sections ---- */
+  .section{padding:clamp(50px,7vw,96px) 0}
+  .s-head{text-align:center;margin-bottom:40px}
+  .s-eyebrow{font-family:var(--ff-disp);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--magenta);margin-bottom:10px}
+  .s-title{font-family:var(--ff-disp);font-size:clamp(24px,3.2vw,36px);font-weight:800;letter-spacing:-.01em}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .feat{border:1px solid var(--line);border-radius:var(--r);padding:24px;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent);transition:.22s;position:relative;overflow:hidden}
+  .feat::after{content:"";position:absolute;inset:0;border-radius:var(--r);padding:1px;background:var(--grad);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:.22s}
+  .feat:hover{transform:translateY(-4px)} .feat:hover::after{opacity:.7}
+  .feat .ic{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;margin-bottom:16px;font-size:22px;
+    background:radial-gradient(120% 120% at 30% 20%,rgba(236,72,153,.28),rgba(139,92,246,.12));border:1px solid var(--line-grad)}
+  .feat h3{font-family:var(--ff-disp);font-size:18px;font-weight:700;margin:0 0 8px}
+  .feat p{font-size:14px;color:var(--muted);margin:0;line-height:1.6}
+
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .step{border:1px solid var(--line);border-radius:var(--r);padding:26px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);position:relative}
+  .step .n{font-family:var(--ff-disp);font-size:30px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:12px}
+  .step h4{font-family:var(--ff-disp);font-size:16px;margin:0 0 6px} .step p{font-size:14px;color:var(--muted);margin:0}
+
+  /* cta band */
+  .ctaband{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--line-grad);text-align:center;
+    padding:clamp(40px,6vw,68px) 28px;background:
+      radial-gradient(600px 220px at 50% 120%,rgba(236,72,153,.22),transparent 70%),
+      linear-gradient(180deg,var(--panel-2),var(--bg-2))}
+  .ctaband h2{font-family:var(--ff-disp);font-size:clamp(24px,3.4vw,38px);font-weight:800;margin:0 0 12px}
+  .ctaband p{color:var(--muted);max-width:48ch;margin:0 auto 26px}
+  .ctaband .cta{justify-content:center;margin-bottom:0}
+
+  .foot{border-top:1px solid var(--line);padding:26px 0;margin-top:8px}
+  .foot__in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .foot__txt{font-size:13px;color:var(--muted-2)}
+  .foot__links{display:flex;gap:20px;font-size:14px;color:var(--muted);font-weight:600}
+  .foot__links a:hover{color:var(--magenta)}
+
+  @media (max-width:960px){
+    .hero__grid{grid-template-columns:1fr;gap:26px}.nav__links{display:none}
+    .grid3{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}
+    .mascot-wrap{min-height:260px;order:-1}.mascot{width:280px}
+  }
+  @media (max-width:560px){.wrap{padding:0 18px}.grid3{grid-template-columns:1fr}.cta .btn{flex:1;justify-content:center}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  /* 创业者发币流程 modal */
+  .flow-ov{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(6,4,12,.78);backdrop-filter:blur(6px)}
+  .flow-card{width:100%;max-width:680px;max-height:88vh;overflow:auto;border-radius:22px;border:1px solid var(--line-grad);
+    background:linear-gradient(180deg,var(--panel-2),var(--bg-2))}
+  .flow-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--panel-2)}
+  .flow-title{font-family:var(--ff-disp);font-size:22px;font-weight:800}
+  .flow-x{border:1px solid var(--line);background:transparent;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px}
+  .flow-x:hover{color:var(--text);border-color:var(--magenta)}
+  .flow-body{padding:22px 24px}
+  .fsec{margin-bottom:24px}
+  .fsec h4{font-family:var(--ff-disp);font-size:15px;font-weight:700;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .fsec h4 .n{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font-size:12px;background:var(--grad-btn);color:#fff}
+  .fbar{display:flex;height:30px;border-radius:8px;overflow:hidden;border:1px solid var(--line);font-size:11px;font-weight:700;color:#fff}
+  .fbar>div{display:grid;place-items:center;min-width:0;overflow:hidden;white-space:nowrap}
+  .frow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);font-size:14px}
+  .frow:first-child{border-top:0}
+  .frow .l{color:var(--muted)} .frow .v{font-weight:700;text-align:right}
+  .fnote{font-size:12.5px;color:var(--muted-2);margin-top:8px;line-height:1.5}
+  .fpill{display:inline-block;font-size:12px;font-weight:700;color:var(--magenta);background:rgba(236,72,153,.1);border:1px solid var(--line-grad);border-radius:8px;padding:3px 9px;margin:3px 4px 0 0}
+</style>
+</head>
+<body>
+
+<!-- reusable logo mark (gradient chat-bubble smiley + sparkle) -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <linearGradient id="oneGrad" x1="0" y1="1" x2="1" y2="0">
+    <stop offset="0" stop-color="#22D3EE"/><stop offset=".38" stop-color="#8B5CF6"/>
+    <stop offset=".7" stop-color="#EC4899"/><stop offset="1" stop-color="#FB7185"/>
+  </linearGradient>
+</defs></svg>
+
+<div id="appHeader"></div>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <span class="eyebrow"><span class="d"></span><span data-hi18n="hero.badge">IP-Fi · Solana · 创作者经济</span></span>
+        <h1 data-hi18n-html="hero.title">Turn your influence into a coin that <span class="grad-text">can't go to zero</span></h1>
+        <div class="taglines">
+          <div class="zhline" data-hi18n="hero.zh">网红IP发币 · 连接粉丝 · 价值共创</div>
+          <div class="enline" data-hi18n="hero.en">Create Value · Connect Fans · Earn Together</div>
+        </div>
+        <div class="cta">
+          <button class="btn btn--grad" onclick="location.href='/launch'" data-hi18n="hero.cta1">发行你的币</button>
+          <a class="btn btn--ghost" id="goAi" href="/ai" data-hi18n="hero.ai">🛍️ oneIP.ai · 带你逛世界</a>
+          <a class="btn btn--ghost" href="/terminal" data-hi18n="hero.cta2">进入终端</a>
+          <button class="btn btn--ghost" onclick="openFlow()" data-hi18n="hero.flow">📋 创业者发币流程</button>
+        </div>
+        <div class="pills">
+          <div class="pillf"><span class="ic">🪙</span><b data-hi18n="pill.launch">发币</b></div>
+          <div class="pillf"><span class="ic">💬</span><b data-hi18n="pill.social">社交</b></div>
+          <div class="pillf"><span class="ic">✨</span><b data-hi18n="pill.create">共创</b></div>
+          <div class="pillf"><span class="ic">🎁</span><b data-hi18n="pill.reward">激励</b></div>
+        </div>
+      </div>
+      <div class="mascot-wrap">
+        <img class="mascot" src="/assets/onee.png" alt="Onee" onerror="this.style.display='none'">
+        
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="why">
+    <div class="wrap">
+      <div class="s-head"><div class="s-eyebrow" data-hi18n="why.eyebrow">Why oneIP.io</div><div class="s-title" data-hi18n="why.title">为创作者而生</div></div>
+      <div class="grid3">
+        <article class="feat"><div class="ic">🛡️</div><h3 data-hi18n="why.c1.t">20% 链上底池</h3><p data-hi18n="why.c1.b">每笔买入的 20% 锁进无法提取的金库 —— 真的不会归零。</p></article>
+        <article class="feat"><div class="ic">⚡</div><h3 data-hi18n="why.c2.t">一键发币</h3><p data-hi18n="why.c2.b">名称、Logo、社交,一分钟搞定。公平设计:无预售、无暗铸。</p></article>
+        <article class="feat"><div class="ic">🪙</div><h3 data-hi18n="why.c3.t">所有钱包都认</h3><p data-hi18n="why.c3.b">Logo、官网、社交显示在 Phantom、Solflare、Backpack、Jupiter。</p></article>
+        <article class="feat"><div class="ic">💬</div><h3 data-hi18n="why.c4.t">粉丝情绪价值已上链</h3><p data-hi18n="why.c4.b">发布动态、积累关注与订阅 —— 粉丝的每一次互动,都沉淀成链上价值。</p></article>
+        <article class="feat"><div class="ic">📡</div><h3 data-hi18n="why.c5.t">一键多平台发布</h3><p data-hi18n="why.c5.b">发一次 → Twitter、TikTok、YouTube、Instagram 等 10+ 平台。</p></article>
+        <article class="feat"><div class="ic">🤖</div><h3 data-hi18n="why.c6.t">AI 分身助理</h3><p data-hi18n="why.c6.b">AI 用你的口吻回复粉丝、替你起草内容,全天候助理。</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="steps" style="background:linear-gradient(180deg,transparent,rgba(168,85,247,.04),transparent)">
+    <div class="wrap">
+      <div class="s-head"><div class="s-eyebrow" data-hi18n="steps.eyebrow">Verified = Boosted</div><div class="s-title" data-hi18n="steps.title">认证即加权</div></div>
+      <div class="steps">
+        <div class="step"><div class="n">01</div><h4 data-hi18n="steps.s1t">绑定</h4><p data-hi18n="steps.s1">绑定 3 个以上真实社交(各 ≥1K 粉丝)。OAuth 验证归属。</p></div>
+        <div class="step"><div class="n">02</div><h4 data-hi18n="steps.s2t">认证</h4><p data-hi18n="steps.s2">平台签发链上认证证明 —— 公开且公平。</p></div>
+        <div class="step"><div class="n">03</div><h4 data-hi18n="steps.s3t">加权</h4><p data-hi18n="steps.s3">你的币在榜单获得加权。不足 3 个?仍可交易,只是不加权。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="cta">
+    <div class="wrap">
+      <div class="ctaband">
+        <h2 data-hi18n-html="cta.title">把影响力,变成<span class="grad-text">永不归零</span>的币</h2>
+        <p data-hi18n="cta.sub">一键发行你的创作者币。每枚币都在链上锁定 20% 底池。</p>
+        <div class="cta">
+          <button class="btn btn--grad" onclick="location.href='/launch'" data-hi18n="cta.b1">发行你的币</button>
+          <a class="btn btn--ghost" href="/feed" data-hi18n="cta.b2">创作者</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- 创业者发币流程 -->
+  <div class="flow-ov" id="flowModal" onclick="if(event.target===this)closeFlow()">
+    <div class="flow-card">
+      <div class="flow-head">
+        <span class="flow-title grad-text" id="flowTitle">创业者发币流程</span>
+        <button class="flow-x" onclick="closeFlow()" aria-label="close">✕</button>
+      </div>
+      <div class="flow-body" id="flowBody"></div>
+    </div>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <span class="foot__txt" data-hi18n="footer.text">© oneIP.io · 网红IP发币社交平台 · 非投资建议</span>
+    <nav class="foot__links">
+      <a href="/terminal" data-hi18n="nav.terminal">Terminal</a>
+      <a href="/launch" data-hi18n="nav.launch">Launch</a>
+      <a href="/feed" data-hi18n="nav.creators">Creators</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="i18n.js"></script>
+<script src="wallet.js"></script>
+<script src="header.js"></script>
+<script>
+  const I18N={
+    en:{
+      "nav.home":"Home","nav.terminal":"Terminal","nav.launch":"Launch","nav.creators":"Creators","nav.shop":"Shop","nav.connect":"Connect Wallet",
+      "hero.ai":"🛍️ oneIP.ai · Shop the world",
+      "hero.badge":"IP-Fi · Solana · Creator economy",
+      "hero.title":"Turn your influence into a coin that <span class=\"grad-text\">can't go to zero</span>",
+      "hero.zh":"Launch your IP coin · Connect fans · Create value together",
+      "hero.en":"Create Value · Connect Fans · Earn Together",
+      "hero.cta1":"Launch your coin","hero.cta2":"Explore the terminal","hero.flow":"📋 How a launch works",
+      "pill.launch":"Launch","pill.social":"Social","pill.create":"Co-create","pill.reward":"Rewards",
+      "why.eyebrow":"Why oneIP.io","why.title":"Built for creators",
+      "why.c1.t":"20% on-chain floor","why.c1.b":"20% of every buy locks in a no-withdraw vault — it can't go to zero.",
+      "why.c2.t":"One-click launch","why.c2.b":"Name, logo, socials in a minute. Fair by design: no presale, no hidden mint.",
+      "why.c3.t":"Credible in every wallet","why.c3.b":"Logo, site & socials show in Phantom, Solflare, Backpack, Jupiter.",
+      "why.c4.t":"Fan emotional value, on-chain","why.c4.b":"Posts, follows, subscriptions — every fan interaction settles into on-chain value.",
+      "why.c5.t":"One-click multi-platform","why.c5.b":"Post once → Twitter, TikTok, YouTube, Instagram & 10+ at once.",
+      "why.c6.t":"Your AI assistant","why.c6.b":"AI replies to fans in your voice and drafts your posts, 24/7.",
+      "steps.eyebrow":"Verified = Boosted","steps.title":"Verified means boosted",
+      "steps.s1t":"Bind","steps.s1":"Bind 3+ real socials (≥1K followers each). OAuth proves ownership.",
+      "steps.s2t":"Attest","steps.s2":"The platform signs an on-chain attestation — fair and public.",
+      "steps.s3t":"Boost","steps.s3":"Your coin gets boosted on the boards. Under 3? Still tradable, just not boosted.",
+      "cta.title":"Turn influence into a coin that <span class=\"grad-text\">can't go to zero</span>",
+      "cta.sub":"Launch your creator coin in one click. Every coin locks a 20% floor on-chain.",
+      "cta.b1":"Launch your coin","cta.b2":"Creators",
+      "footer.text":"© oneIP.io · creator IP launch & social platform · not financial advice"
+    },
+    zh:{
+      "nav.home":"首页","nav.terminal":"终端","nav.launch":"发行","nav.creators":"创作者","nav.shop":"逛世界","nav.connect":"连接钱包",
+      "hero.ai":"🛍️ oneIP.ai · 带你逛世界",
+      "hero.badge":"IP-Fi · Solana · 创作者经济",
+      "hero.title":"把影响力，铸成一枚<span class=\"grad-text\">永不归零</span>的币",
+      "hero.zh":"网红IP发币 · 连接粉丝 · 价值共创",
+      "hero.en":"Create Value · Connect Fans · Earn Together",
+      "hero.cta1":"发行你的币","hero.cta2":"进入终端","hero.flow":"📋 创业者发币流程",
+      "pill.launch":"发币","pill.social":"社交","pill.create":"共创","pill.reward":"激励",
+      "why.eyebrow":"为什么选 oneIP.io","why.title":"为创作者而生",
+      "why.c1.t":"20% 链上底池","why.c1.b":"每笔买入的 20% 锁进无法提取的金库 —— 真的不会归零。",
+      "why.c2.t":"一键发币","why.c2.b":"名称、Logo、社交,一分钟搞定。公平设计:无预售、无暗铸。",
+      "why.c3.t":"所有钱包都认","why.c3.b":"Logo、官网、社交显示在 Phantom、Solflare、Backpack、Jupiter。",
+      "why.c4.t":"粉丝情绪价值已上链","why.c4.b":"发布动态、积累关注与订阅 —— 粉丝的每一次互动,都沉淀成链上价值。",
+      "why.c5.t":"一键多平台发布","why.c5.b":"发一次 → Twitter、TikTok、YouTube、Instagram 等 10+ 平台。",
+      "why.c6.t":"AI 分身助理","why.c6.b":"AI 用你的口吻回复粉丝、替你起草内容,全天候助理。",
+      "steps.eyebrow":"认证 = 加权","steps.title":"认证即加权",
+      "steps.s1t":"绑定","steps.s1":"绑定 3 个以上真实社交(各 ≥1K 粉丝)。OAuth 验证归属。",
+      "steps.s2t":"认证","steps.s2":"平台签发链上认证证明 —— 公开且公平。",
+      "steps.s3t":"加权","steps.s3":"你的币在榜单获得加权。不足 3 个?仍可交易,只是不加权。",
+      "cta.title":"把影响力,变成<span class=\"grad-text\">永不归零</span>的币",
+      "cta.sub":"一键发行你的创作者币。每枚币都在链上锁定 20% 底池。",
+      "cta.b1":"发行你的币","cta.b2":"创作者",
+      "footer.text":"© oneIP.io · 网红IP发币社交平台 · 非投资建议"
+    }
+  };
+  // The shared header (header.js) owns the logo / nav / 7-language switcher / Connect Wallet, and
+  // is the source of truth for the language (KolI18n + localStorage). This page just renders its
+  // OWN body copy (data-hi18n, en/zh) when the header switches language, via window.onLangChange.
+  let curLang=(localStorage.getItem('kol_lang')==='zh')?'zh':'en';
+  function setLang(l){
+    curLang=(l==='zh')?'zh':'en'; const d=I18N[curLang];
+    document.documentElement.setAttribute('lang',curLang==='zh'?'zh-CN':'en');
+    document.documentElement.setAttribute('data-lang',curLang);
+    document.querySelectorAll('[data-hi18n]').forEach(e=>{const k=e.getAttribute('data-hi18n');if(d[k]!=null)e.textContent=d[k]});
+    document.querySelectorAll('[data-hi18n-html]').forEach(e=>{const k=e.getAttribute('data-hi18n-html');if(d[k]!=null)e.innerHTML=d[k]});
+  }
+  window.onLangChange=setLang; // header dropdown → this page's body
+  setLang(curLang);
+
+  // cross-link to the oneIP.ai storefront: real .ai domain in production, same-origin /ai in dev
+  const aiBase = location.hostname.endsWith('oneip.io') ? 'https://www.oneip.ai' : '/ai';
+  ['goAi','navAi'].forEach(id=>{ const e=document.getElementById(id); if(e) e.href=aiBase; });
+  // (logo / nav / language / Connect Wallet now live in the shared header — header.js)
+
+  // ---- 创业者发币流程 ----
+  const FLOW={
+    zh:`
+    <div class="fsec"><h4><span class="n">1</span> 代币供应 · 100% 公平</h4>
+      <div class="fbar"><div style="flex:100;background:var(--grad-btn)">买家 100%</div></div>
+      <div class="fnote">总量 10 亿,全部由曲线<b>按需铸给买家</b>。无预售、无团队预留、无暗铸 —— 创作者要和大家一样花钱买。</div></div>
+    <div class="fsec"><h4><span class="n">2</span> 每笔【买入】SOL 怎么分(=100%)</h4>
+      <div class="fbar"><div style="flex:79;background:#22D3EE">流动池 79%</div><div style="flex:19.75;background:#A855F7">地板 19.75%</div><div style="flex:1.25;background:#FB7185">费</div></div>
+      <div class="frow"><span class="l">🟢 流动性池(曲线)</span><span class="v">~79%</span></div>
+      <div class="frow"><span class="l">🛡️ 20% 地板金库 · 锁死 · 归持有者</span><span class="v">~19.75%</span></div>
+      <div class="frow"><span class="l">平台</span><span class="v">0.75%</span></div>
+      <div class="frow"><span class="l">创作者(交易分成)</span><span class="v">0.50%</span></div>
+      <div class="fnote">先扣 1.25% 费,剩 98.75% 再按 80/20 分给曲线和地板。链上实测:买 0.5◎ → 0.098750◎ 进金库。</div></div>
+    <div class="fsec"><h4><span class="n">3</span> 每笔【卖出】SOL 怎么分</h4>
+      <div class="frow"><span class="l">卖家拿到</span><span class="v">96.75%</span></div>
+      <div class="frow"><span class="l">🛡️ 地板金库 · 砸盘反而抬高地板</span><span class="v">2%</span></div>
+      <div class="frow"><span class="l">平台 / 创作者</span><span class="v">0.75% / 0.50%</span></div></div>
+    <div class="fsec"><h4><span class="n">4</span> 其它环节</h4>
+      <div class="frow"><span class="l">随时赎回</span><span class="v">按持仓比例从地板拿回 SOL(数学硬底)</span></div>
+      <div class="frow"><span class="l">发币费</span><span class="v">0.1 SOL → 平台</span></div>
+      <div class="frow"><span class="l">毕业</span><span class="v">灌满 ~85◎ → Raydium(地板永久保留)</span></div>
+      <div class="frow"><span class="l">电商回购</span><span class="v">卖货收入 → 买回代币 → 注入地板</span></div></div>
+    <div class="fsec"><h4><span class="n">5</span> 创作者靠什么赚(他不预留币)</h4>
+      <span class="fpill">公平买入的币涨</span><span class="fpill">每笔交易 0.5% 分成</span><span class="fpill">粉丝订阅 / 打赏</span><span class="fpill">卖货(顺便抬高地板)</span></div>`,
+    en:`
+    <div class="fsec"><h4><span class="n">1</span> Token supply · 100% fair</h4>
+      <div class="fbar"><div style="flex:100;background:var(--grad-btn)">Buyers 100%</div></div>
+      <div class="fnote">1B supply, all minted to buyers on demand. No presale, no team allocation, no hidden mint — the creator buys like everyone else.</div></div>
+    <div class="fsec"><h4><span class="n">2</span> Each BUY of SOL (= 100%)</h4>
+      <div class="fbar"><div style="flex:79;background:#22D3EE">Pool 79%</div><div style="flex:19.75;background:#A855F7">Floor 19.75%</div><div style="flex:1.25;background:#FB7185">Fee</div></div>
+      <div class="frow"><span class="l">🟢 Liquidity pool (curve)</span><span class="v">~79%</span></div>
+      <div class="frow"><span class="l">🛡️ 20% floor vault · locked · holders'</span><span class="v">~19.75%</span></div>
+      <div class="frow"><span class="l">Platform</span><span class="v">0.75%</span></div>
+      <div class="frow"><span class="l">Creator (trade cut)</span><span class="v">0.50%</span></div>
+      <div class="fnote">1.25% fee first, then the 98.75% net splits 80/20 between curve and floor. On-chain: 0.5◎ buy → 0.098750◎ to the vault.</div></div>
+    <div class="fsec"><h4><span class="n">3</span> Each SELL of SOL</h4>
+      <div class="frow"><span class="l">Seller receives</span><span class="v">96.75%</span></div>
+      <div class="frow"><span class="l">🛡️ Floor vault · dumping raises the floor</span><span class="v">2%</span></div>
+      <div class="frow"><span class="l">Platform / Creator</span><span class="v">0.75% / 0.50%</span></div></div>
+    <div class="fsec"><h4><span class="n">4</span> Other</h4>
+      <div class="frow"><span class="l">Redeem anytime</span><span class="v">pro-rata share of the floor vault</span></div>
+      <div class="frow"><span class="l">Launch fee</span><span class="v">0.1 SOL → platform</span></div>
+      <div class="frow"><span class="l">Graduation</span><span class="v">fills ~85◎ → Raydium (floor persists)</span></div>
+      <div class="frow"><span class="l">Commerce buyback</span><span class="v">sales → buy back → into the floor</span></div></div>
+    <div class="fsec"><h4><span class="n">5</span> How the creator earns (no premint)</h4>
+      <span class="fpill">Coin they fairly bought rising</span><span class="fpill">0.5% of every trade</span><span class="fpill">Fan subs / tips</span><span class="fpill">Selling goods (lifts the floor)</span></div>`
+  };
+  function openFlow(){document.getElementById('flowTitle').textContent=curLang==='zh'?'创业者发币流程':'How a launch works';document.getElementById('flowBody').innerHTML=FLOW[curLang]||FLOW.en;document.getElementById('flowModal').style.display='flex';}
+  function closeFlow(){document.getElementById('flowModal').style.display='none';}
+</script>
+</body>
+</html>

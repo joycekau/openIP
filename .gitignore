@@ -1,25 +1,42 @@
-# dependencies
-node_modules/
-
-# secrets — NEVER commit real keys
+# --- Secrets (NEVER commit) ---
 .env
 .env.local
+*.pem
 *.key
-*-keypair.json
 
-# runtime data / uploads
-data/*.json
-!data/.gitkeep
-uploads/
-
-# build / logs
-dist/
-*.log
+# --- Node ---
+node_modules/
 npm-debug.log*
+package-lock.json
 
-# os
+# --- Runtime data (generated at runtime; contains test emails + password hashes, PII) ---
+# Ignore ALL runtime JSON; the app recreates these on demand. Keep the dir via .gitkeep.
+data/*.json
+data/uploads/
+
+# --- Snapshots carried between machines ---
+*.zip
+
+# --- Solana / Anchor / Rust build artifacts (onchain/) ---
+onchain/target/
+onchain/.anchor/
+onchain/test-ledger/
+onchain/**/target/
+**/*.rs.bk
+
+# --- OS / editor noise ---
 .DS_Store
 Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
 
-# snapshots (the big zips carried between machines)
-*.zip
+# devnet deploy temp scripts
+onchain/_*.sh
+
+# devnet deployer keypair (throwaway, never commit)
+onchain/.deployer.json
+
+# on-chain client transient state
+scripts/sol/.last-mint.txt

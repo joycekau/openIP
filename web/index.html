@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oneIP.io · 网红IP发币 · 连接粉丝 · 价值共创</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700;900&family=Space+Grotesk:wght@500;600;700&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(168,85,247,0.16);
+    --gold:#EC4899; --gold-dim:#A855F7; --txt:#F4EFFC; --muted:#A99FC0;
+    --up:#6FE0A8; --down:#FB7185; --blue:#22D3EE; --amber:#FB923C; --red:#FB7185;
+    --grad:linear-gradient(120deg,#22D3EE,#8B5CF6 38%,#EC4899 70%,#FB7185);
+    --grad-btn:linear-gradient(120deg,#A855F7,#EC4899 55%,#FB7185);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:
+      radial-gradient(680px 420px at 84% -6%, rgba(236,72,153,0.16), transparent 62%),
+      radial-gradient(620px 460px at 10% 0%, rgba(139,92,246,0.14), transparent 60%),
+      var(--bg);
+    color:var(--txt); font-family:"Plus Jakarta Sans","Noto Sans SC",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased; padding:0 0 60px;}
+  .mono{font-family:"Spline Sans Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-variant-numeric:tabular-nums}
+  .serif{font-family:"Space Grotesk","Plus Jakarta Sans","Noto Sans SC",sans-serif;font-weight:700}
+  header{display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(8,10,15,0.86);backdrop-filter:blur(10px);z-index:5}
+  .brand{display:flex;align-items:baseline;gap:2px}
+  .brand b{font-weight:600;font-size:22px;color:var(--gold);letter-spacing:.5px}
+  .brand span{color:var(--muted);font-size:22px}
+  nav{display:flex;gap:26px}
+  nav a{color:var(--muted);text-decoration:none;font-size:14px;letter-spacing:.3px}
+  nav a.active,nav a:hover{color:var(--gold)}
+  .cta{border:1px solid var(--gold-dim);color:var(--txt);background:rgba(168,85,247,0.06);
+    padding:9px 18px;border-radius:999px;font-size:13px;cursor:pointer;letter-spacing:.3px;font-weight:600}
+  .cta:hover{background:rgba(236,72,153,0.12);border-color:var(--gold)}
+  #connectBtn{background:var(--grad-btn);color:#fff;border:none;font-weight:700;
+    box-shadow:0 8px 22px -8px rgba(236,72,153,.55)}
+  #connectBtn:hover{filter:brightness(1.06)}
+  .wrap{max-width:1240px;margin:26px auto 0;padding:0 28px;display:grid;
+    grid-template-columns:1.7fr 1fr;gap:22px}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .card h2{font-size:15px;font-weight:500;color:var(--txt);padding:16px 20px;
+    border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px;letter-spacing:.3px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(236,72,153,0.16)}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);
+    text-align:right;padding:12px 16px;font-weight:500}
+  th:first-child{text-align:left}
+  td{padding:13px 16px;border-top:1px solid rgba(255,255,255,0.03);font-size:13px;text-align:right}
+  td:first-child{text-align:left}
+  tbody tr:hover{background:rgba(236,72,153,0.05)}
+  .sym{display:flex;align-items:center;gap:10px}
+  .ico{width:26px;height:26px;border-radius:8px;background:#1b2233;border:1px solid var(--line);
+    display:grid;place-items:center;font-size:12px;color:var(--gold-dim);font-weight:600}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .pill{font-size:10px;letter-spacing:.5px;padding:2px 7px;border-radius:6px;margin-left:5px;font-weight:600}
+  .p-new{color:#cfe0ff;background:rgba(79,141,245,0.16)}
+  .p-hot{color:#ffe2ad;background:rgba(224,169,59,0.16)}
+  .p-low{color:#ffc9cb;background:rgba(229,72,77,0.16)}
+  .kol{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid rgba(255,255,255,0.03)}
+  .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;
+    color:#fff;font-size:14px;background:var(--grad-btn)}
+  .rank{width:18px;color:var(--gold-dim);font-size:13px;text-align:center}
+  .kname{font-size:14px} .ktw{font-size:12px;color:var(--muted)}
+  .sig{display:flex;align-items:center;gap:10px;padding:11px 18px;border-top:1px solid rgba(255,255,255,0.03);font-size:13px}
+  .badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.5px}
+  .b-buy{color:#062;background:rgba(63,185,80,0.18);color:#7ee29a}
+  .b-sell{color:#f8b;background:rgba(240,97,109,0.18);color:#ff9aa3}
+  .foot{max-width:1240px;margin:18px auto 0;padding:0 28px;color:var(--muted);font-size:12px}
+  .mktabs{display:inline-flex;gap:4px;margin-left:12px}
+  .mtab{font-family:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:transparent;color:var(--muted);padding:3px 11px;border-radius:999px;cursor:pointer}
+  .mtab.active{background:var(--grad-btn);color:#fff;border-color:transparent}
+  .oirow{display:flex;align-items:center;gap:11px;padding:12px 18px;border-top:1px solid rgba(255,255,255,0.03);cursor:pointer}
+  .oirow:hover{background:rgba(236,72,153,0.05)}
+  .oilogo{width:32px;height:32px;border-radius:9px;background:var(--grad-btn);display:grid;place-items:center;font-weight:700;color:#fff;font-size:12px;background-size:cover;background-position:center}
+  .vchk{font-size:10px;font-weight:700;color:#7ee29a;background:rgba(63,185,80,0.16);padding:1px 6px;border-radius:5px}
+  @media(max-width:900px){.wrap{grid-template-columns:1fr}}
+  .modal-overlay{position:fixed;inset:0;background:rgba(4,6,10,0.82);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}
+  .modal{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;width:100%;max-width:760px;max-height:90vh;overflow:auto}
+  .modal-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .mstat{background:#0b0f18;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .mstat .ml{font-size:11px;color:var(--muted)}.mstat .mv{font-size:16px;margin-top:3px;font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums}
+  .mlinks a{color:var(--gold);text-decoration:none;font-size:13px;border:1px solid var(--line);padding:9px 14px;border-radius:9px}
+  .mlinks a.buy{background:var(--grad-btn);color:#fff;font-weight:700;border:none}
+  @media(max-width:560px){.mstats{grid-template-columns:repeat(2,1fr)}}
+  .trow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid rgba(255,255,255,0.04);font-size:13px}
+  @media(max-width:700px){header nav{display:none}}
+  @media(max-width:560px){table th:nth-child(5),table td:nth-child(5),table th:nth-child(6),table td:nth-child(6){display:none}}
+</style>
+</head>
+<body>
+  <div id="appHeader"></div>
+
+  <div class="wrap">
+    <section class="card">
+      <h2><span class="dot"></span> <span data-i18n="mkt_title">全网 SOL Meme</span>
+        <span class="mktabs">
+          <button class="mtab active" id="mt-all" onclick="setMkt('all')" data-i18n="mkt_hot">热门</button>
+          <button class="mtab" id="mt-new" onclick="setMkt('new')" data-i18n="mkt_new">新币</button>
+          <button class="mtab" id="mt-pump" onclick="setMkt('pump')">pump.fun</button>
+          <button class="mtab" id="mt-gainers" onclick="setMkt('gainers')" data-i18n="mkt_gainers">涨幅</button>
+        </span>
+        <span style="color:var(--muted);font-weight:400;font-size:12px;margin-left:auto" id="mts">live</span>
+      </h2>
+      <table>
+        <thead><tr><th>Token</th><th>Price</th><th>24h</th><th>Volume</th><th>Liq</th><th>Age</th></tr></thead>
+        <tbody id="mkRows"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:30px" data-i18n="mkt_loading">聚合 GeckoTerminal · DexScreener · pump.fun…</td></tr></tbody>
+      </table>
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <section class="card">
+        <h2><span class="dot"></span> <span data-i18n="oneip_board">oneIP 榜</span> <span style="margin-left:auto;font-size:11px;color:var(--gold)" data-i18n="floor_tag_20">带 20% 底池</span></h2>
+        <div id="oneip"><div style="padding:22px 18px;color:var(--muted);font-size:13px;text-align:center" data-i18n="loading_w">加载中…</div></div>
+      </section>
+      <section class="card">
+        <h2><span class="dot"></span> <span data-i18n="smart_kol">聪明钱 · KOL</span></h2>
+        <div id="kol"></div>
+      </section>
+      <section class="card">
+        <h2><span class="dot"></span> <span data-i18n="live_signals">Live Signals</span></h2>
+        <div id="signals"></div>
+      </section>
+    </div>
+  </div>
+  <div class="foot" data-i18n="foot_data">数据:GeckoTerminal · DexScreener · pump.fun(全网)· Helius(聪明钱)· 实时,非投资建议。</div>
+
+  <div class="modal-overlay" id="tokenModal" onclick="if(event.target===this)closeToken()">
+    <div class="modal">
+      <div class="modal-head">
+        <div style="flex:1"><div style="font-size:18px;font-weight:500" id="mTitle"></div><div style="font-size:13px;color:var(--muted)" id="mSub"></div></div>
+        <div id="mSec" style="font-size:12px"></div>
+        <button class="cta" onclick="closeToken()" style="padding:6px 12px">Close</button>
+      </div>
+      <div style="padding:16px 20px">
+        <div class="mstats" id="mStats"></div>
+        <iframe id="mChart" title="price chart" style="width:100%;height:360px;border:0;border-radius:12px;margin-top:14px;background:#0b0f18"></iframe>
+        <div class="mlinks" id="mLinks" style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="kolModal" onclick="if(event.target===this)closeKol()">
+    <div class="modal" style="max-width:560px">
+      <div class="modal-head">
+        <div style="flex:1"><div style="font-size:18px;font-weight:500" id="kTitle"></div><div style="font-size:13px;color:var(--muted)" id="kSub"></div></div>
+        <button class="cta" onclick="closeKol()" style="padding:6px 12px">Close</button>
+      </div>
+      <div style="padding:16px 20px" id="kBody"></div>
+    </div>
+  </div>
+
+<script src="i18n.js"></script>
+<script src="wallet.js"></script>
+<script src="header.js"></script>
+<script>
+const fmtUsd=n=>{const a=Math.abs(n);if(a>=1e9)return'$'+(n/1e9).toFixed(2)+'B';if(a>=1e6)return'$'+(n/1e6).toFixed(2)+'M';if(a>=1e3)return'$'+(n/1e3).toFixed(1)+'K';if(a>=1)return'$'+n.toFixed(2);return'$'+n.toPrecision(3);};
+const age=ms=>{const h=ms/3.6e6;if(h<1)return Math.round(h*60)+'m';if(h<48)return Math.round(h)+'h';return Math.round(h/24)+'d';};
+const flags=p=>{let f='';const liq=p.liquidity?.usd||0,vol=p.volume?.h24||0,a=p.pairCreatedAt?Date.now()-p.pairCreatedAt:1e12;
+  if(a<864e5)f+='<span class="pill p-new">NEW</span>';if(liq&&vol/liq>20)f+='<span class="pill p-hot">HOT</span>';if(liq&&liq<1e4)f+='<span class="pill p-low">LOW LIQ</span>';return f;};
+
+let currentToks=[];
+const mstat=(l,v,cls)=>`<div class="mstat"><div class="ml">${l}</div><div class="mv ${cls||''}">${v}</div></div>`;
+function openToken(i){
+  const p=currentToks[i]; if(!p)return;
+  const ch=p.priceChange?.h24||0, addr=p.baseToken?.address;
+  document.getElementById('mTitle').textContent='$'+(p.baseToken?.symbol||'?');
+  document.getElementById('mSub').textContent=p.baseToken?.name||'';
+  document.getElementById('mStats').innerHTML=
+    mstat('Price',fmtUsd(+p.priceUsd||0))+
+    mstat('24h',(ch>=0?'+':'')+ch.toFixed(1)+'%',ch>=0?'up':'down')+
+    mstat('Liquidity',fmtUsd(p.liquidity?.usd||0))+
+    mstat('Market cap',fmtUsd(p.marketCap||p.fdv||0))+
+    mstat('Volume 24h',fmtUsd(p.volume?.h24||0))+
+    mstat('Age',p.pairCreatedAt?age(Date.now()-p.pairCreatedAt):'?');
+  document.getElementById('mChart').src='https://dexscreener.com/solana/'+p.pairAddress+'?embed=1&theme=dark&info=0&trades=0';
+  document.getElementById('mLinks').innerHTML=
+    `<a href="https://dexscreener.com/solana/${p.pairAddress}" target="_blank" rel="noopener">DexScreener</a>`+
+    `<a href="https://solscan.io/token/${addr}" target="_blank" rel="noopener">Solscan</a>`+
+    `<a class="buy" href="https://jup.ag/swap/SOL-${addr}" target="_blank" rel="noopener">Trade on Jupiter</a>`;
+  const sec=document.getElementById('mSec'); sec.textContent='';
+  if(addr) fetch('/api/token/security?mint='+addr).then(r=>r.json()).then(s=>{
+    if(!s||!s.verdict)return;
+    const m={safe:['#7ee29a','SAFE'],caution:['#ffd479','CAUTION'],danger:['#ff9aa3','DANGER'],unknown:['#8B93A7','?']}[s.verdict]||['#8B93A7','?'];
+    sec.innerHTML='<span style="color:'+m[0]+'">● '+m[1]+'</span>';
+  }).catch(()=>{});
+  document.getElementById('tokenModal').style.display='flex';
+}
+function closeToken(){ document.getElementById('tokenModal').style.display='none'; document.getElementById('mChart').src='about:blank'; }
+function openKol(w){
+  const m=document.getElementById('kolModal');
+  document.getElementById('kTitle').textContent=''; document.getElementById('kSub').textContent='';
+  document.getElementById('kBody').innerHTML='<div style="padding:30px;text-align:center;color:var(--muted)">loading…</div>';
+  m.style.display='flex';
+  fetch('/api/kol/detail?w='+w).then(r=>r.json()).then(d=>{
+    if(!d||d.error){document.getElementById('kBody').innerHTML='<div style="padding:30px;text-align:center;color:var(--down)">not found</div>';return;}
+    const pos=d.realizedSol>=0;
+    const stats=mstat('Trades',d.trades)+mstat('Win rate',(d.winRate*100).toFixed(0)+'%')+mstat('Realized',(pos?'+':'')+d.realizedSol.toFixed(2)+'◎',pos?'up':'down')+mstat('Unrealized',d.unrealizedSol.toFixed(2)+'◎')+mstat('Avg hold',d.avgHoldH.toFixed(0)+'h')+mstat('Score',d.score.toFixed(1));
+    const trades=(d.recent||[]).map(s=>`<div class="trow"><span class="badge ${s.side==='buy'?'b-buy':'b-sell'}">${s.side.toUpperCase()}</span><span>${s.symbol}</span><span class="mono" style="margin-left:auto;color:var(--gold)">${s.sol.toFixed(2)}◎</span><span class="ktw" style="margin-left:10px;color:var(--muted)">${new Date(s.ts*1000).toLocaleDateString()}</span></div>`).join('')||'<div class="ktw" style="color:var(--muted);padding:8px 0">no recent trades</div>';
+    document.getElementById('kTitle').textContent=d.kol;
+    document.getElementById('kSub').textContent=d.twitter||((d.wallet||'').slice(0,6)+'…'+(d.wallet||'').slice(-4));
+    document.getElementById('kBody').innerHTML='<div class="mstats">'+stats+'</div><div style="margin-top:16px;font-size:12px;color:var(--muted)">Recent trades</div>'+trades;
+  }).catch(()=>{document.getElementById('kBody').innerHTML='<div style="padding:20px;color:var(--down)">failed to load</div>';});
+}
+function closeKol(){ document.getElementById('kolModal').style.display='none'; }
+
+let mkKind='all';
+function flagPills(arr){return (arr||[]).map(f=>{const m={NEW:'p-new',HOT:'p-hot',LOW_LIQ:'p-low'}[f];return m?`<span class="pill ${m}">${f==='LOW_LIQ'?'LOW LIQ':f}</span>`:'';}).join('');}
+async function loadMarkets(kind){
+  kind=kind||mkKind;
+  try{
+    const ep=kind==='new'?'/new':kind==='pump'?'/pump':'';
+    let list=await (await fetch('/api/markets'+ep)).json();
+    if(kind==='gainers'&&Array.isArray(list)) list=[...list].sort((a,b)=>(b.change24h||0)-(a.change24h||0));
+    const tb=document.getElementById('mkRows');
+    if(!Array.isArray(list)||!list.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">'+(window.KolI18n?KolI18n.t('no_data'):'No data')+'</td></tr>';return;}
+    tb.innerHTML=list.map(c=>{
+      const ch=c.change24h||0; const sym=(c.symbol||'?').slice(0,12);
+      const ico=c.image?`<div class="ico" style="background:url('${c.image}') center/cover;border:none"></div>`:`<div class="ico">${sym.slice(0,2).toUpperCase()}</div>`;
+      return `<tr onclick="openCoin('${c.address}','${(c.symbol||'').replace(/[\\'\"]/g,'')}','${(c.name||'').replace(/[\\'\"<>]/g,'')}')" style="cursor:pointer">
+        <td><div class="sym">${ico}${sym}${flagPills(c.flags)}</div></td>
+        <td class="mono">${c.priceUsd?fmtUsd(c.priceUsd):'—'}</td>
+        <td class="mono ${ch>=0?'up':'down'}">${ch?((ch>=0?'+':'')+ch.toFixed(1)+'%'):'—'}</td>
+        <td class="mono">${c.volume24h?fmtUsd(c.volume24h):'—'}</td>
+        <td class="mono">${c.liquidity?fmtUsd(c.liquidity):'—'}</td>
+        <td class="mono" style="color:var(--muted)">${c.ageHours!=null?age(c.ageHours*3.6e6):'?'}</td></tr>`;
+    }).join('');
+    document.getElementById('mts').textContent='updated '+new Date().toLocaleTimeString();
+  }catch(e){document.getElementById('mkRows').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--down);padding:24px">load error</td></tr>';}
+}
+function setMkt(kind){mkKind=kind;['all','new','pump','gainers'].forEach(k=>document.getElementById('mt-'+k).classList.toggle('active',k===kind));loadMarkets(kind);}
+// On-platform coin detail (chart + stats + buy) — no leaving the site.
+async function openCoin(addr,sym,name){
+  if(!addr)return;
+  const $=id=>document.getElementById(id);
+  $('mTitle').textContent='$'+(sym||'?'); $('mSub').textContent=name||(addr.slice(0,6)+'…'+addr.slice(-4));
+  $('mStats').innerHTML='<div style="grid-column:1/-1;color:var(--muted);padding:14px;text-align:center">loading…</div>';
+  $('mChart').src='about:blank'; $('mLinks').innerHTML=''; $('mSec').textContent='';
+  $('tokenModal').style.display='flex';
+  try{
+    const pairs=await (await fetch('https://api.dexscreener.com/tokens/v1/solana/'+addr)).json();
+    const p=(Array.isArray(pairs)?pairs:[]).sort((a,b)=>(b.liquidity?.usd||0)-(a.liquidity?.usd||0))[0];
+    const links=`<a href="https://solscan.io/token/${addr}" target="_blank" rel="noopener">Solscan</a>`+
+      `<a class="buy" href="https://jup.ag/swap/SOL-${addr}" target="_blank" rel="noopener">Buy on Jupiter</a>`;
+    if(!p){$('mStats').innerHTML='<div style="grid-column:1/-1;color:var(--muted);padding:14px;text-align:center">'+(window.KolI18n?KolI18n.t('coin_no_pair'):'No DEX pair yet.')+'</div>';$('mLinks').innerHTML=links;return;}
+    const ch=p.priceChange?.h24||0;
+    $('mSub').textContent=p.baseToken?.name||name||'';
+    $('mStats').innerHTML=
+      mstat('Price',fmtUsd(+p.priceUsd||0))+
+      mstat('24h',(ch>=0?'+':'')+ch.toFixed(1)+'%',ch>=0?'up':'down')+
+      mstat('Liquidity',fmtUsd(p.liquidity?.usd||0))+
+      mstat('Market cap',fmtUsd(p.marketCap||p.fdv||0))+
+      mstat('Volume 24h',fmtUsd(p.volume?.h24||0))+
+      mstat('Age',p.pairCreatedAt?age(Date.now()-p.pairCreatedAt):'?');
+    $('mChart').src='https://dexscreener.com/solana/'+p.pairAddress+'?embed=1&theme=dark&info=0&trades=0';
+    $('mLinks').innerHTML=`<a href="https://dexscreener.com/solana/${p.pairAddress}" target="_blank" rel="noopener">DexScreener</a>`+links;
+    fetch('/api/token/security?mint='+addr).then(r=>r.json()).then(s=>{
+      if(!s||!s.verdict)return; const map={safe:['#7ee29a','SAFE'],caution:['#ffd479','CAUTION'],danger:['#ff9aa3','DANGER'],unknown:['#A99FC0','?']};const mm=map[s.verdict]||map.unknown;
+      $('mSec').innerHTML='<span style="color:'+mm[0]+'">● '+mm[1]+'</span>';
+    }).catch(()=>{});
+  }catch(e){$('mStats').innerHTML='<div style="grid-column:1/-1;color:var(--down);padding:14px;text-align:center">load error</div>';}
+}
+async function loadOneip(){
+  try{
+    const list=await (await fetch('/api/markets/oneip')).json();
+    const el=document.getElementById('oneip');
+    if(!Array.isArray(list)||!list.length){const T=window.KolI18n?KolI18n:{t:k=>k};el.innerHTML='<div style="padding:20px 18px;color:var(--muted);font-size:13px;text-align:center">'+T.t('board_no_coins')+'<a href="/launch" style="color:var(--gold)">'+T.t('board_go_launch')+'</a></div>';return;}
+    el.innerHTML=list.slice(0,8).map(c=>{
+      const sym=(c.symbol||'?').slice(0,10);
+      const logo=c.logo?`style="background:url('${c.logo}') center/cover"`:'';
+      return `<div class="oirow" onclick="location.href='/coin?mint=${c.mint}'">
+        <div class="oilogo" ${logo}>${c.logo?'':sym.slice(0,2).toUpperCase()}</div>
+        <div style="flex:1"><div style="font-size:14px;display:flex;align-items:center;gap:6px">$${sym} ${c.verified?'<span class="vchk">✓</span>':''}</div>
+          <div class="ktw">${(c.name||'').slice(0,24)}</div></div>
+        <div style="text-align:right"><div class="mono" style="color:var(--gold);font-size:13px">${c.floorBps/100}% ${window.KolI18n?KolI18n.t('floor_word'):'floor'}</div>
+          <div class="ktw">${c.socials} ${window.KolI18n?KolI18n.t('socials_word'):'socials'}</div></div></div>`;
+    }).join('');
+  }catch(e){}
+}
+const kols=[{r:1,n:'Ansem',t:'@blknoiz06',w:100,p:'+14.0◎',s:14.0},{r:2,n:'Cupsey',t:'@Cupseyy',w:67,p:'+4.8◎',s:4.0},{r:3,n:'DegenJoe',t:'@degenjoe',w:0,p:'-10.3◎',s:-5.2}];
+document.getElementById('kol').innerHTML=kols.map(k=>`<div class="kol"><div class="rank">${k.r}</div><div class="av">${k.n[0]}</div>
+  <div style="flex:1"><div class="kname">${k.n}</div><div class="ktw">${k.t}</div></div>
+  <div style="text-align:right"><div class="mono ${k.s>=0?'up':'down'}">${k.p}</div><div class="ktw">win ${k.w}% · score ${k.s}</div></div></div>`).join('');
+const sigs=[{k:'Cupsey',s:'sell',sym:'PNUT',a:'9.5◎'},{k:'Ansem',s:'buy',sym:'POPCAT',a:'6.0◎'},{k:'Cupsey',s:'buy',sym:'PNUT',a:'5.0◎'},{k:'Ansem',s:'sell',sym:'WIF',a:'15.0◎'},{k:'Ansem',s:'buy',sym:'WIF',a:'8.0◎'}];
+document.getElementById('signals').innerHTML=sigs.map(g=>`<div class="sig"><span class="badge ${g.s==='buy'?'b-buy':'b-sell'}">${g.s.toUpperCase()}</span>
+  <b style="font-weight:500">${g.k}</b><span style="color:var(--muted)">·</span><span>${g.sym}</span><span class="mono" style="margin-left:auto;color:var(--gold)">${g.a}</span></div>`).join('');
+async function loadKol(){
+  try{
+    const [board,sigsApi]=await Promise.all([fetch('/api/kol/leaderboard').then(r=>r.json()),fetch('/api/kol/signals').then(r=>r.json())]);
+    if(Array.isArray(board)&&board.length){
+      document.getElementById('kol').innerHTML=board.map((k,i)=>{const pos=k.realizedSol>=0;const av=k.score>=0?'linear-gradient(120deg,#A855F7,#EC4899 55%,#FB7185)':'linear-gradient(135deg,#5a5f6b,#3a3e47)';
+        return `<div class="kol" onclick="openKol('${k.wallet}')" style="cursor:pointer"><div class="rank">${i+1}</div><div class="av" style="background:${av}">${k.kol[0]}</div><div style="flex:1"><div class="kname">${k.kol}</div><div class="ktw">${k.twitter}</div></div><div style="text-align:right"><div class="mono ${pos?'up':'down'}">${pos?'+':''}${k.realizedSol.toFixed(1)}◎</div><div class="ktw">win ${(k.winRate*100).toFixed(0)}% · score ${k.score.toFixed(1)}</div></div></div>`;}).join('');
+    }
+    if(Array.isArray(sigsApi)&&sigsApi.length){
+      document.getElementById('signals').innerHTML=sigsApi.map(g=>`<div class="sig"><span class="badge ${g.side==='buy'?'b-buy':'b-sell'}">${g.side.toUpperCase()}</span><b style="font-weight:500">${g.kol}</b><span style="color:var(--muted)">·</span><span>${g.symbol}</span><span class="mono" style="margin-left:auto;color:var(--gold)">${g.sol.toFixed(1)}◎</span></div>`).join('');
+    }
+  }catch(e){ /* backend not running — keep the baked demo data */ }
+}
+// header (logo / nav / language / Connect Wallet) is the shared component in header.js
+loadMarkets();loadOneip();loadKol();
+setInterval(()=>loadMarkets(),20000);setInterval(loadOneip,30000);setInterval(loadKol,15000);
+// re-render the dynamic lists when the language changes (their innerHTML isn't auto-translated)
+window.addEventListener('i18n',()=>{ loadMarkets(); loadOneip(); loadKol(); });
+</script>
+</body>
+</html>

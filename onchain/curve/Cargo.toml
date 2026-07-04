@@ -1,0 +1,11 @@
+[package]
+name = "kolpad-curve"
+version = "0.1.0"
+edition = "2021"
+description = "Pure floor + bonding-curve math for kolpad. Zero deps -> testable without the Solana toolchain."
+
+[lib]
+name = "kolpad_curve"
+path = "src/lib.rs"
+
+[dependencies]

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oneIP.io · coin</title>
+<style>
+  :root{--bg:#080510;--panel:#150E26;--panel2:#1B1232;--line:rgba(168,85,247,0.14);
+    --gold:#EC4899;--gold-dim:#A855F7;--txt:#F4EFFC;--muted:#A99FC0;--up:#6FE0A8;--down:#FB7185;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:radial-gradient(900px 420px at 80% -10%,rgba(236,72,153,0.06),transparent 60%),var(--bg);
+    color:var(--txt);font-family:Inter,system-ui,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;padding:0 0 60px}
+  .serif{font-family:Fraunces,Georgia,serif}.mono{font-family:"JetBrains Mono",monospace}
+  header{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(8,10,15,0.86);backdrop-filter:blur(10px);z-index:5}
+  .brand{display:flex;align-items:center;gap:6px}.brand b{font-weight:600;font-size:22px;color:var(--gold)}.brand span{color:var(--muted);font-size:22px}
+  nav{display:flex;gap:24px}nav a{color:var(--muted);text-decoration:none;font-size:14px}nav a:hover{color:var(--gold)}
+  .btn{border:1px solid var(--gold-dim);color:var(--gold);background:transparent;padding:9px 15px;border-radius:9px;font-size:13px;cursor:pointer;font-family:inherit}
+  .btn:hover{background:rgba(236,72,153,0.08)}.btn.primary{background:linear-gradient(135deg,#EC4899,#A855F7);color:#fff;border:none;font-weight:600}.btn.sm{padding:6px 11px;font-size:12px}
+  .wrap{max-width:720px;margin:24px auto 0;padding:0 28px}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:18px}
+  textarea,input{width:100%;background:#0b0f18;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:11px 12px;font-size:14px;font-family:inherit}
+  textarea:focus,input:focus{outline:none;border-color:var(--gold-dim)}textarea{resize:vertical;min-height:60px}
+  .chead{display:flex;align-items:center;gap:14px}
+  .cav{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-weight:600;color:#fff;font-size:20px;background:linear-gradient(135deg,#EC4899,#A855F7)}
+  .csym{font-size:22px;font-weight:600;color:var(--gold);font-family:Fraunces,Georgia,serif;display:flex;align-items:center;gap:6px}
+  .grad{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#EC4899,#A855F7);padding:2px 9px;border-radius:7px}
+  .cmint{font-family:monospace;font-size:12px;color:var(--muted)}
+  .cstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .cstat{background:#0b0f18;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .cl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}.cv{font-size:16px;margin-top:3px}
+  h3{font-size:14px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px}.dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+  .post{border-top:1px solid rgba(255,255,255,0.05);padding:15px 0}.post:first-child{border-top:0}
+  .phead{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;color:#fff;font-size:14px;background:linear-gradient(135deg,#EC4899,#A855F7)}
+  .pname{font-weight:500;font-size:14px}.ptime{font-size:12px;color:var(--muted)}
+  .pro{font-size:10px;font-weight:700;color:#fff;background:linear-gradient(135deg,#EC4899,#A855F7);padding:1px 7px;border-radius:5px;margin-left:6px}
+  .ptext{font-size:14px;line-height:1.55;white-space:pre-wrap;margin:4px 0}.pimg{width:100%;border-radius:12px;margin-top:10px;border:1px solid var(--line)}
+  .pfoot{display:flex;gap:6px;margin-top:12px;font-size:13px;color:var(--muted)}
+  .pfoot button,.like{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;font-family:inherit;display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:8px;transition:color .15s,background .15s}
+  .pfoot button svg,.like svg{width:16px;height:16px;display:block}
+  .pfoot button:hover,.like:hover{color:var(--gold);background:rgba(236,72,153,0.08)}.like.liked{color:var(--down)}.like.liked svg{fill:var(--down)}
+  .cmts{margin-top:12px;padding-left:12px;border-left:2px solid var(--line)}
+  .cmt{padding:7px 0;font-size:13px;border-top:1px solid rgba(255,255,255,0.03)}.cmt:first-child{border-top:0}.cmt .who{color:var(--gold-dim);font-weight:500}.cmt.auto{color:var(--up)}.cmt.auto .who{color:var(--up)}
+  .crow{display:flex;gap:8px;margin-top:8px}.muted{color:var(--muted)}.hint{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.2.0/tabler-icons.min.css">
+</head>
+<body>
+  <div id="appHeader"></div>
+
+  <div class="wrap">
+    <div class="card" id="header"><div class="muted" style="font-size:13px">Loading coin…</div></div>
+    <div class="card" id="composer" style="display:none">
+      <textarea id="postText" placeholder="Post to this community…"></textarea>
+      <input id="postImg" placeholder="image URL (optional)" style="margin-top:8px" />
+      <div style="margin-top:10px;text-align:right"><button class="btn primary" onclick="submitPost()">Post</button></div>
+    </div>
+    <div class="card"><h3><span class="dot"></span> Community posts</h3><div id="feed"><div class="muted" style="font-size:13px">Loading…</div></div></div>
+  </div>
+
+<script src="i18n.js"></script>
+<script src="wallet.js"></script>
+<script src="header.js"></script>
+<script type="module" src="chain.js"></script>
+<script>
+const mint=new URLSearchParams(location.search).get('mint')||'';
+const api=(p,o)=>fetch(p,o).then(r=>r.json());
+const post=(p,b)=>api(p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
+const me=()=>window.KolWallet&&KolWallet.address;
+const esc=s=>(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+const ago=ts=>{const m=(Date.now()-ts)/6e4;if(m<1)return'now';if(m<60)return Math.round(m)+'m';if(m<1440)return Math.round(m/60)+'h';return Math.round(m/1440)+'d';};
+const mintShort=m=>m?m.slice(0,4)+'…'+m.slice(-4):'';
+
+// The shared header (header.js) owns the wallet button + language switcher.
+function onWallet(a){
+  const composer=document.getElementById('composer'); if(composer) composer.style.display=a?'block':'none';
+  loadFeed();
+}
+document.addEventListener('DOMContentLoaded',()=>{ if(window.KolWallet){ KolWallet.onChange(onWallet); onWallet(KolWallet.address); } });
+
+async function loadHeader(){
+  if(!mint){document.getElementById('header').innerHTML='<div class="muted">No coin specified.</div>';return;}
+  const c=await api('/api/launch?mint='+mint);
+  if(!c||c.error){document.getElementById('header').innerHTML='<div class="muted">Coin not found.</div>';return;}
+  const av=(c.symbol||'?').slice(0,2).toUpperCase();
+  const socials=Object.keys(c.socials||{}).length;
+  const onchain=isOnchainCoin(c);
+  COIN_CREATOR=c.creator||''; // on-chain launch.creator — needed as an account for buy/sell
+  document.getElementById('header').innerHTML=`
+    <div class="chead"><div class="cav"${c.logo?` style="background:url('${esc(c.logo)}') center/cover"`:''}>${c.logo?'':av}</div>
+      <div style="flex:1"><div class="csym">$${esc(c.symbol)} ${c.verified?'<span class="grad"><i class="ti ti-check"></i> Verified</span>':''}</div>
+        <div class="cmint">${esc(c.name||'')} · ${mintShort(c.mint)} · by ${mintShort(c.creator)}</div></div></div>
+    <div class="cstats">
+      <div class="cstat"><div class="cl">Floor</div><div class="cv">${(c.floorBps||0)/100}%</div></div>
+      <div class="cstat"><div class="cl">Socials</div><div class="cv">${socials}</div></div>
+      <div class="cstat"><div class="cl">Created</div><div class="cv">${ago(c.createdAt)} ago</div></div>
+    </div>
+    <div class="hint"><i class="ti ti-shield-check"></i> 20% floor — holders can't be zeroed. On-chain trading enabled after the coin deploys on Solana.</div>
+    ${onchain?`<div class="trade" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line,rgba(255,255,255,.08))">
+      <div style="font-size:13px;font-weight:500;margin-bottom:6px"><i class="ti ti-arrows-exchange"></i> 交易 · Trade <span class="muted" style="font-size:11px">(devnet)</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input id="buyAmt" type="number" min="0" step="0.01" placeholder="SOL" style="width:110px">
+        <button class="btn primary" onclick="doBuy(this)">买入 · Buy</button>
+        <button class="btn" onclick="doSell(this)">卖出全部 · Sell all</button>
+      </div>
+      <div class="muted" style="font-size:11px;margin-top:6px">买入:80% 进流动性 / 20% 灌地板。卖出:抽 2% 进地板(砸盘反抬保底)。</div>
+      <div id="tradeMsg" class="muted" style="font-size:12px;margin-top:6px"></div>
+    </div>`:''}
+    ${onchain?`<div class="redeem" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line,rgba(255,255,255,.08))">
+      <div style="font-size:13px;font-weight:500;margin-bottom:6px"><i class="ti ti-shield-lock"></i> 赎回地板 · Redeem your floor share</div>
+      <div class="muted" style="font-size:12px;margin-bottom:8px">任何时候都能烧掉你的币,按持仓比例领回金库 SOL。价格再低,这份保底谁都拿不走。</div>
+      <button class="btn" onclick="checkRedeem()">查看我的地板份额 · Check my share</button>
+      <div id="rq" style="margin-top:10px"></div>
+    </div>`:''}`;
+  document.title='$'+c.symbol+' · oneIP.io';
+  document.getElementById('postText').placeholder='Post to $'+c.symbol+' community…';
+}
+
+let COIN_CREATOR='';
+// Redeem/trade is only meaningful once the coin is a REAL on-chain SPL mint (placeholder pools start "Kol").
+function isOnchainCoin(c){ return !!(c && (c.onchain || (c.mint && !/^Kol/.test(c.mint)))); }
+
+async function doBuy(btn){
+  const msg=document.getElementById('tradeMsg'); const amt=parseFloat((document.getElementById('buyAmt')||{}).value);
+  if(!(amt>0)){msg.textContent='输入要买入的 SOL 数量';return;}
+  if(!window.OneChain){msg.textContent='链上模块加载中,请稍候重试…';return;}
+  btn.disabled=true; const t=btn.textContent; btn.textContent='在 Phantom 确认…';
+  try{ const r=await OneChain.buy({mint,creator:COIN_CREATOR,solAmount:amt});
+    msg.innerHTML='买入成功 · <a href="'+r.explorer+'" target="_blank" rel="noopener">查看交易 →</a>'; loadHeader();
+  }catch(e){ msg.textContent='未完成:'+esc(e.message||String(e)); }
+  finally{ btn.disabled=false; btn.textContent=t; }
+}
+async function doSell(btn){
+  const msg=document.getElementById('tradeMsg');
+  if(!window.OneChain){msg.textContent='链上模块加载中,请稍候重试…';return;}
+  btn.disabled=true; const t=btn.textContent; btn.textContent='在 Phantom 确认…';
+  try{ const r=await OneChain.sellMarket({mint,creator:COIN_CREATOR});
+    msg.innerHTML='卖出成功(2% 已进地板)· <a href="'+r.explorer+'" target="_blank" rel="noopener">查看交易 →</a>'; loadHeader();
+  }catch(e){ msg.textContent='未完成:'+esc(e.message||String(e)); }
+  finally{ btn.disabled=false; btn.textContent=t; }
+}
+
+async function checkRedeem(){
+  const box=document.getElementById('rq'); if(!box) return;
+  if(!window.OneChain){ box.innerHTML='<div class="muted" style="font-size:12px">链上模块加载中,请稍候重试…</div>'; return; }
+  box.innerHTML='<div class="muted" style="font-size:12px">读取链上金库与你的持仓…</div>';
+  try{
+    let owner=me(); if(!owner && window.KolWallet){ await KolWallet.connect(); owner=me(); }
+    const q=await OneChain.redeemQuote(mint, owner);
+    if(!q.holderRaw||BigInt(q.holderRaw)<=0n){ box.innerHTML='<div class="muted" style="font-size:12px">你的钱包里没有这个币,无可赎回。</div>'; return; }
+    box.innerHTML=`<div class="cstats" style="margin:0 0 10px">
+        <div class="cstat"><div class="cl">你持有</div><div class="cv">${(q.holderUi||0).toLocaleString()}</div></div>
+        <div class="cstat"><div class="cl">占比</div><div class="cv">${(q.fraction*100).toFixed(3)}%</div></div>
+        <div class="cstat"><div class="cl">预估可赎回</div><div class="cv">≈${q.estSol.toFixed(4)}◎</div></div>
+      </div>
+      <div class="muted" style="font-size:11px;margin-bottom:8px">按链上 金库SOL × 你的持仓/流通量 精确结算,预估值仅供参考。赎回将销毁你的全部持币。</div>
+      <button class="btn primary" onclick="doRedeem(this)">赎回全部 · Redeem all (≈${q.estSol.toFixed(4)}◎)</button>`;
+  }catch(e){ box.innerHTML='<div class="muted" style="font-size:12px">读取失败:'+esc(e.message||String(e))+'</div>'; }
+}
+
+async function doRedeem(btn){
+  const box=document.getElementById('rq');
+  btn.disabled=true; const t=btn.textContent; btn.textContent='在 Phantom 里确认…';
+  try{
+    const r=await OneChain.redeemFloor({mint});
+    box.innerHTML=`<div class="hint" style="border-color:var(--acc,#7c5cff)"><i class="ti ti-check"></i> 赎回成功,SOL 已进你钱包。
+      <a href="${r.explorer}" target="_blank" rel="noopener">查看交易 →</a></div>`;
+    loadHeader(); // supply/floor changed
+  }catch(e){ btn.disabled=false; btn.textContent=t;
+    box.insertAdjacentHTML('beforeend','<div class="muted" style="font-size:12px;margin-top:8px">未完成:'+esc(e.message||String(e))+'</div>'); }
+}
+
+async function submitPost(){
+  const text=document.getElementById('postText').value.trim(), image=document.getElementById('postImg').value.trim();
+  if(!text&&!image)return;
+  const r=await post('/api/posts',{creator:me(),text,image,coin:mint});
+  if(r.error){alert(r.error);return;}
+  document.getElementById('postText').value='';document.getElementById('postImg').value='';loadFeed();
+}
+async function loadFeed(){
+  const posts=await api('/api/feed?coin='+mint+(me()?'&viewer='+me():''));
+  document.getElementById('feed').innerHTML = posts.length ? posts.map(p=>`
+    <div class="post">
+      <div class="phead"><div class="av">${esc((p.creatorName||'?')[0]).toUpperCase()}</div>
+        <div style="flex:1"><span class="pname">${esc(p.creatorName)}</span>${p.creatorPro?'<span class="pro">PRO</span>':''}<div class="ptime">${ago(p.ts)} ago</div></div></div>
+      ${p.text?`<div class="ptext">${esc(p.text)}</div>`:''}
+      ${p.image?`<img class="pimg" src="${esc(p.image)}" onerror="this.style.display='none'">`:''}
+      <div class="pfoot">
+        <button class="like ${p.liked?'liked':''}" onclick="toggleLike('${p.id}',this)" aria-label="like"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg><span>${p.likes}</span></button>
+        <button onclick="toggleC('${p.id}')" aria-label="comments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-4-.9L3 21l1.9-4.5A8.4 8.4 0 1 1 21 11.5z"/></svg><span>${p.commentCount}</span></button></div>
+      <div class="cmts" id="cm-${p.id}" style="display:none"></div>
+    </div>`).join('') : '<div class="muted" style="font-size:13px">No posts in this community yet. Be the first.</div>';
+}
+async function toggleLike(id,btn){ if(!me()){alert('connect wallet');return;} const r=await post('/api/like',{postId:id,fan:me()}); btn.classList.toggle('liked',r.liked); btn.querySelector('span').textContent=r.likes; }
+async function toggleC(id){
+  const el=document.getElementById('cm-'+id);
+  if(el.style.display==='block'){el.style.display='none';return;}
+  el.style.display='block';
+  const cs=await api('/api/comments?post='+id);
+  el.innerHTML=cs.map(c=>`<div class="cmt ${c.auto?'auto':''}"><span class="who">${c.auto?'↩ auto':esc((c.fan||'').slice(0,6))}</span> ${esc(c.text)}</div>`).join('')
+    +(me()?`<div class="crow"><input id="ci-${id}" placeholder="add a comment…"><button class="btn sm" onclick="addC('${id}')">Send</button></div>`:'<div class="hint">connect wallet to comment</div>');
+}
+async function addC(id){ const v=document.getElementById('ci-'+id).value.trim(); if(!v)return; await post('/api/comments',{postId:id,fan:me(),text:v}); document.getElementById('cm-'+id).style.display='none';toggleC(id);loadFeed(); }
+
+loadHeader();onWallet(me());
+</script>
+</body>
+</html>

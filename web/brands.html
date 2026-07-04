@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oneIP.ai · Brands & supply</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080510;--bg-2:#0F0A1C;--panel:#150E26;--panel-2:#1B1232;
+    --line:rgba(255,255,255,.08);--line-grad:rgba(168,85,247,.28);
+    --violet:#8B5CF6;--purple:#A855F7;--magenta:#EC4899;--coral:#FB7185;--cyan:#22D3EE;
+    --text:#F4EFFC;--muted:#A99FC0;--muted-2:#766C8E;--ok:#34D399;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --r:18px;--wrap:1080px;
+    --ff:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif;
+    --ff-disp:"Space Grotesk","Plus Jakarta Sans","Noto Sans SC",sans-serif;
+  }
+  html[data-lang="zh"]{--ff:"Noto Sans SC","Plus Jakarta Sans",system-ui,sans-serif;--ff-disp:"Noto Sans SC","Space Grotesk",sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ff);font-size:16px;line-height:1.6}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.14),transparent 62%),radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.14),transparent 60%)}
+  .wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 22px;position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .logo{display:flex;align-items:center;gap:8px;cursor:pointer}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:var(--grad-btn);display:grid;place-items:center;font-size:16px}
+  .logo .word{font-family:var(--ff-disp);font-weight:700;font-size:20px}.logo .word .ai{color:var(--muted)}
+  .nav{border-bottom:1px solid var(--line)}
+  .nav__in{display:flex;align-items:center;justify-content:space-between;height:64px;gap:14px}
+  .nav__right{display:flex;align-items:center;gap:12px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(255,255,255,.03)}
+  .lang button{font-family:var(--ff);font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 12px;border-radius:999px}
+  .lang button[aria-pressed="true"]{background:var(--grad-btn);color:#fff}
+  .btn{font-family:var(--ff);font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:7px;cursor:pointer;padding:10px 16px;border-radius:999px;border:1px solid transparent;transition:transform .18s,background .2s}
+  .btn--grad{background:var(--grad-btn);color:#fff}.btn--grad:hover{transform:translateY(-2px)}
+  .btn--ghost{border-color:var(--line-grad);color:var(--text);background:rgba(168,85,247,.06)}.btn--ghost:hover{border-color:var(--magenta)}
+  .btn--sm{padding:7px 13px;font-size:13px}.btn--block{width:100%;justify-content:center}
+  h1{font-family:var(--ff-disp);font-size:clamp(24px,3.6vw,32px);font-weight:800;margin:24px 0 4px}
+  .sub{color:var(--muted);margin:0 0 18px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;padding:4px;background:rgba(255,255,255,.03);margin-bottom:18px}
+  .seg button{font-family:var(--ff);font-weight:700;font-size:13.5px;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:9px 18px;border-radius:9px}
+  .seg button.sel{background:var(--grad-btn);color:#fff}
+  .tabs{display:inline-flex;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px;background:rgba(255,255,255,.03);margin-bottom:18px}
+  .tab{font-family:var(--ff);font-weight:700;font-size:13px;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:7px 14px;border-radius:999px}
+  .tab.sel{background:var(--grad-btn);color:#fff}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .offer{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent);display:flex;flex-direction:column}
+  .offer:hover{border-color:var(--line-grad)}
+  .offer .ph{aspect-ratio:16/10;background:radial-gradient(120% 120% at 30% 20%,rgba(236,72,153,.18),rgba(139,92,246,.09));display:grid;place-items:center;font-size:34px;overflow:hidden;position:relative}
+  .offer .ph img{width:100%;height:100%;object-fit:cover}
+  .offer .kind{position:absolute;top:8px;left:8px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;background:rgba(8,5,16,.62);border:1px solid var(--line-grad)}
+  .offer .body{padding:14px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .offer .brand{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+  .offer .brand .av{width:20px;height:20px;border-radius:6px;background:var(--grad-btn);display:grid;place-items:center;font-size:9px;color:#fff;font-weight:700;overflow:hidden}
+  .offer .brand .av img{width:100%;height:100%;object-fit:cover}
+  .offer .ttl{font-weight:700;font-size:14.5px;line-height:1.35}
+  .offer .desc{font-size:12.5px;color:var(--muted);flex:1}
+  .offer .row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px}
+  .offer .pr{font-family:var(--ff-disp);font-weight:800;font-size:17px}
+  .offer .contact{font-size:12px;color:var(--cyan);word-break:break-all}
+  .empty{border:1px dashed var(--line-grad);border-radius:var(--r);padding:40px;text-align:center;color:var(--muted);grid-column:1/-1}
+  .panel{border:1px solid var(--line);border-radius:var(--r);padding:20px;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent);margin-bottom:16px}
+  .panel h3{font-family:var(--ff-disp);font-size:16px;font-weight:700;margin:0 0 12px}
+  label{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:11px 0 5px}
+  input,select,textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:14px;padding:10px 12px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--magenta)}
+  textarea{resize:vertical;min-height:60px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .hint{font-size:12px;color:var(--muted-2);margin-top:8px;line-height:1.5}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(18px);background:var(--panel-2);border:1px solid var(--line-grad);border-radius:12px;padding:11px 17px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{border-color:var(--coral);color:var(--coral)}
+  .hide{display:none!important}
+  @media(max-width:880px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid,.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="aiHeader"></div>
+
+<main class="wrap">
+  <h1 data-i18n="h.title">Brands &amp; supply</h1>
+  <p class="sub" data-i18n="h.sub">Factories, supply chains and brands post offers; creators link them and bring the products to their fans.</p>
+
+  <div class="seg" id="modeSeg">
+    <button data-m="browse" class="sel" onclick="setMode('browse')" data-i18n="mode.browse">Browse offers</button>
+    <button data-m="brand" onclick="setMode('brand')" data-i18n="mode.brand">I'm a brand / supplier</button>
+  </div>
+
+  <!-- BROWSE (creators) -->
+  <section id="browse">
+    <div class="tabs" id="kindTabs">
+      <button class="tab sel" data-k="all" onclick="setKind('all')" data-i18n="k.all">All</button>
+      <button class="tab" data-k="product" onclick="setKind('product')" data-i18n="k.product">Products</button>
+      <button class="tab" data-k="endorsement" onclick="setKind('endorsement')" data-i18n="k.endorsement">Endorsement</button>
+      <button class="tab" data-k="need" onclick="setKind('need')" data-i18n="k.need">Needs</button>
+    </div>
+    <div class="grid" id="offerGrid"><div class="empty" data-i18n="o.loading">Loading…</div></div>
+  </section>
+
+  <!-- BRAND PORTAL -->
+  <section id="brandPortal" class="hide">
+    <div id="brandReg" class="panel">
+      <h3>🏭 <span data-i18n="reg.title">Register your brand / supply</span></h3>
+      <div class="two">
+        <div><label data-i18n="reg.name">Name</label><input id="bName" placeholder="Shenzhen Onee Toys"></div>
+        <div><label data-i18n="reg.type">Type</label><select id="bType"><option value="factory" data-i18n="type.factory">Factory</option><option value="supply" data-i18n="type.supply">Supply chain</option><option value="brand" data-i18n="type.brand">Brand</option></select></div>
+      </div>
+      <label data-i18n="reg.contact">Contact (phone / WhatsApp / WeChat)</label><input id="bContact" placeholder="+86 138… / wa.me/…">
+      <label data-i18n="reg.website">Website (optional)</label><input id="bWebsite" placeholder="https://…">
+      <label data-i18n="reg.bio">About (optional)</label><textarea id="bBio" placeholder="What you make / supply…"></textarea>
+      <button class="btn btn--grad btn--block" style="margin-top:14px" onclick="registerBrand()" data-i18n="reg.submit">Register</button>
+    </div>
+
+    <div id="brandDash" class="hide">
+      <div class="panel" id="brandHead"></div>
+      <div class="panel">
+        <h3>➕ <span data-i18n="off.title">Post an offer</span></h3>
+        <div class="seg" id="kindSeg">
+          <button data-k="product" class="sel" onclick="setOfferKind('product')" data-i18n="k.product">Product</button>
+          <button data-k="endorsement" onclick="setOfferKind('endorsement')" data-i18n="k.endorsement">Endorsement</button>
+          <button data-k="need" onclick="setOfferKind('need')" data-i18n="k.need">Need</button>
+        </div>
+        <label data-i18n="off.name">Title</label><input id="oTitle" placeholder="Onee plush 35cm">
+        <div id="priceWrap"><label data-i18n="off.price">Supply price (USD)</label><input id="oPrice" type="number" min="0" step="0.01" placeholder="12.00"></div>
+        <label data-i18n="off.desc">Description</label><textarea id="oDesc" placeholder="MOQ, specs, terms…"></textarea>
+        <label data-i18n="off.image">Image URL (optional)</label><input id="oImage" placeholder="https://…">
+        <label data-i18n="off.contact">Contact for this offer (optional)</label><input id="oContact" placeholder="defaults to your brand contact">
+        <button class="btn btn--grad btn--block" style="margin-top:14px" onclick="postOffer()" data-i18n="off.submit">Publish offer</button>
+      </div>
+      <div class="panel"><h3>📋 <span data-i18n="my.title">Your offers</span></h3><div class="grid" id="myOffers"></div></div>
+      <div style="text-align:center;margin:8px 0 30px"><button class="btn btn--ghost btn--sm" onclick="brandSignOut()" data-i18n="reg.switch">Switch brand</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const esc=(s)=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const money=(c)=>'$'+((c||0)/100).toFixed(2);
+  const initials=(s)=>(s||'?').slice(0,2).toUpperCase();
+  let BRAND=localStorage.getItem('oneip_brand')||'';
+  let kindFilter='all', offerKind='product';
+  function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2300);}
+
+  function setMode(m){
+    document.querySelectorAll('#modeSeg button').forEach(b=>b.classList.toggle('sel',b.dataset.m===m));
+    document.getElementById('browse').classList.toggle('hide',m!=='browse');
+    document.getElementById('brandPortal').classList.toggle('hide',m!=='brand');
+    if(m==='brand') loadBrand();
+  }
+
+  // ---- browse (creators) ----
+  function setKind(k){kindFilter=k;document.querySelectorAll('#kindTabs .tab').forEach(t=>t.classList.toggle('sel',t.dataset.k===k));loadOffers();}
+  const kindBadge=(k)=>({product:T('k.product'),endorsement:T('k.endorsement'),need:T('k.need')}[k]||k);
+  async function loadOffers(){
+    const g=document.getElementById('offerGrid');
+    let list=[];try{list=await(await fetch('/api/offers'+(kindFilter==='all'?'':'?kind='+kindFilter))).json();}catch(e){}
+    if(!list.length){g.innerHTML=`<div class="empty">${T('o.none')}</div>`;return;}
+    g.innerHTML=list.map(o=>`
+      <div class="offer">
+        <div class="ph">${o.image?`<img src="${esc(o.image)}">`:'📦'}<span class="kind">${kindBadge(o.kind)}</span></div>
+        <div class="body">
+          <div class="brand"><span class="av">${o.brandLogo?`<img src="${esc(o.brandLogo)}">`:initials(o.brandName)}</span><span>${esc(o.brandName)} · ${T('type.'+o.brandType)}</span></div>
+          <div class="ttl">${esc(o.title)}</div>
+          <div class="desc">${esc((o.description||'').slice(0,110))}</div>
+          ${o.kind==='product'?`<div class="row"><span class="pr">${money(o.priceCents)}</span><span style="color:var(--muted-2);font-size:12px">${T('o.supply')}</span></div>`:''}
+          <div class="contact">📞 ${esc(o.contact||'—')}</div>
+          <button class="btn btn--grad btn--block btn--sm" onclick='linkOffer(${JSON.stringify(o.id)},${JSON.stringify(o.kind)})'>${T('o.link')}</button>
+        </div>
+      </div>`).join('');
+  }
+  async function linkOffer(offerId,kind){
+    let creator=localStorage.getItem('oneip_creator')||'';
+    if(!creator){creator=(prompt(T('o.handle'))||'').trim();if(!creator)return;localStorage.setItem('oneip_creator',creator);}
+    let r;try{r=await(await fetch('/api/brand/link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({creator,offerId})})).json();}catch(e){toast('network',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    toast(r.product?T('o.linkedProduct'):T('o.linked'));
+  }
+
+  // ---- brand portal ----
+  function brandSignOut(){localStorage.removeItem('oneip_brand');BRAND='';loadBrand();}
+  async function registerBrand(){
+    const name=document.getElementById('bName').value.trim();
+    const contact=document.getElementById('bContact').value.trim();
+    if(!name||!contact){toast(T('reg.need'),1);return;}
+    const body={name,type:document.getElementById('bType').value,contact,website:document.getElementById('bWebsite').value.trim(),bio:document.getElementById('bBio').value.trim()};
+    let r;try{r=await(await fetch('/api/brands',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})).json();}catch(e){toast('network',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    BRAND=r.id;localStorage.setItem('oneip_brand',BRAND);toast(T('reg.ok'));loadBrand();
+  }
+  function setOfferKind(k){offerKind=k;document.querySelectorAll('#kindSeg button').forEach(b=>b.classList.toggle('sel',b.dataset.k===k));document.getElementById('priceWrap').classList.toggle('hide',k!=='product');}
+  async function loadBrand(){
+    const reg=document.getElementById('brandReg'),dash=document.getElementById('brandDash');
+    if(!BRAND){reg.classList.remove('hide');dash.classList.add('hide');return;}
+    let b;try{b=await(await fetch('/api/brand?id='+encodeURIComponent(BRAND))).json();}catch(e){b={error:1};}
+    if(b.error||!b.id){BRAND='';localStorage.removeItem('oneip_brand');reg.classList.remove('hide');dash.classList.add('hide');return;}
+    reg.classList.add('hide');dash.classList.remove('hide');
+    document.getElementById('brandHead').innerHTML=`<div style="display:flex;align-items:center;gap:12px">
+      <div style="width:46px;height:46px;border-radius:13px;background:var(--grad-btn);display:grid;place-items:center;font-weight:800;color:#fff;overflow:hidden">${b.logo?`<img src="${esc(b.logo)}" style="width:100%;height:100%;object-fit:cover">`:initials(b.name)}</div>
+      <div><div style="font-family:var(--ff-disp);font-weight:800;font-size:18px">${esc(b.name)}</div><div style="font-size:13px;color:var(--muted)">${T('type.'+b.type)} · 📞 ${esc(b.contact)}</div></div></div>`;
+    const my=document.getElementById('myOffers');
+    my.innerHTML=(b.offers&&b.offers.length)?b.offers.map(o=>`
+      <div class="offer"><div class="ph">${o.image?`<img src="${esc(o.image)}">`:'📦'}<span class="kind">${kindBadge(o.kind)}</span></div>
+        <div class="body"><div class="ttl">${esc(o.title)}</div>
+        ${o.kind==='product'?`<div class="pr">${money(o.priceCents)}</div>`:''}
+        <button class="btn btn--ghost btn--sm btn--block" onclick='toggleOffer(${JSON.stringify(o.id)},${!o.active})'>${o.active?'● '+T('my.live'):'○ '+T('my.off')}</button></div></div>`).join('')
+      :`<div class="empty">${T('my.none')}</div>`;
+  }
+  async function postOffer(){
+    const title=document.getElementById('oTitle').value.trim();
+    if(!title){toast(T('off.name'),1);return;}
+    const body={brandId:BRAND,kind:offerKind,title,description:document.getElementById('oDesc').value.trim(),image:document.getElementById('oImage').value.trim(),contact:document.getElementById('oContact').value.trim()};
+    if(offerKind==='product')body.priceCents=Math.round(parseFloat(document.getElementById('oPrice').value||'0')*100);
+    let r;try{r=await(await fetch('/api/brand/offer',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})).json();}catch(e){toast('network',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    ['oTitle','oPrice','oDesc','oImage','oContact'].forEach(id=>document.getElementById(id).value='');
+    toast(T('off.ok'));loadBrand();
+  }
+  async function toggleOffer(id,active){try{await fetch('/api/brand/offer/active',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,brandId:BRAND,active})});loadBrand();}catch(e){}}
+
+  // ---- i18n ----
+  const I18N={
+    en:{"nav.shop":"Storefront","nav.studio":"Studio",
+      "h.title":"Brands & supply","h.sub":"Factories, supply chains and brands post offers; creators link them and bring the products to their fans.",
+      "mode.browse":"Browse offers","mode.brand":"I'm a brand / supplier",
+      "k.all":"All","k.product":"Products","k.endorsement":"Endorsement","k.need":"Needs",
+      "type.factory":"Factory","type.supply":"Supply chain","type.brand":"Brand",
+      "o.loading":"Loading…","o.none":"No offers yet — brands are joining. Check back soon.","o.supply":"supply price","o.link":"Link this brand","o.handle":"Enter your creator handle to link:","o.linked":"Linked ✓ — contact the brand to proceed","o.linkedProduct":"Linked ✓ — product added to your storefront",
+      "reg.title":"Register your brand / supply","reg.name":"Name","reg.type":"Type","reg.contact":"Contact (phone / WhatsApp / WeChat)","reg.website":"Website (optional)","reg.bio":"About (optional)","reg.submit":"Register","reg.need":"Name and contact required","reg.ok":"Brand registered ✓","reg.switch":"Switch brand",
+      "off.title":"Post an offer","off.name":"Title","off.price":"Supply price (USD)","off.desc":"Description","off.image":"Image URL (optional)","off.contact":"Contact for this offer (optional)","off.submit":"Publish offer","off.ok":"Offer published ✓",
+      "my.title":"Your offers","my.none":"No offers yet — post your first above.","my.live":"Live","my.off":"Hidden"},
+    zh:{"nav.shop":"商城","nav.studio":"工作台",
+      "h.title":"品牌与供应","h.sub":"厂商、供应链、品牌发布机会;创业者一键链接,把产品带给粉丝。",
+      "mode.browse":"浏览机会","mode.brand":"我是品牌 / 供应商",
+      "k.all":"全部","k.product":"产品","k.endorsement":"代言","k.need":"需求",
+      "type.factory":"厂商","type.supply":"供应链","type.brand":"品牌",
+      "o.loading":"加载中…","o.none":"还没有机会 —— 品牌正在入驻,敬请期待。","o.supply":"供货价","o.link":"链接品牌","o.handle":"输入你的创作者名以链接:","o.linked":"已链接 ✓ —— 联系品牌洽谈","o.linkedProduct":"已链接 ✓ —— 产品已加入你的店铺",
+      "reg.title":"入驻你的品牌 / 供应","reg.name":"名称","reg.type":"类型","reg.contact":"联系方式(电话 / WhatsApp / 微信)","reg.website":"官网(可选)","reg.bio":"简介(可选)","reg.submit":"入驻","reg.need":"名称和联系方式必填","reg.ok":"品牌已入驻 ✓","reg.switch":"切换品牌",
+      "off.title":"发布机会","off.name":"标题","off.price":"供货价(美元)","off.desc":"描述","off.image":"图片链接(可选)","off.contact":"此机会的联系方式(可选)","off.submit":"发布","off.ok":"已发布 ✓",
+      "my.title":"你的机会","my.none":"还没有 —— 在上方发布第一个。","my.live":"展示中","my.off":"隐藏"}
+  };
+  let curLang=(localStorage.getItem('kol_lang')==='zh')?'zh':'en';
+  const T=(k)=>{const d=I18N[curLang]||I18N.en;return d[k]!=null?d[k]:(I18N.en[k]||k);};
+  function setLang(l){
+    curLang=(l==='zh')?'zh':'en';const d=I18N[curLang];
+    document.documentElement.setAttribute('lang',curLang==='zh'?'zh-CN':'en');document.documentElement.setAttribute('data-lang',curLang);
+    document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.getAttribute('data-i18n');if(d[k]!=null)e.textContent=d[k]});
+    loadOffers();
+  }
+  window.onLangChange=setLang; // the shared header (aiheader.js) drives this page's body
+  setLang(curLang);
+  loadOffers();
+</script>
+<script src="aiheader.js"></script>
+</body>
+</html>

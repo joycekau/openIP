@@ -1,0 +1,40 @@
+# Render Blueprint — one-click deploy for oneIP.io
+# In Render: New → Blueprint → pick the oneIP.io repo → fill the secret env vars → Apply.
+services:
+  - type: web
+    name: oneip
+    runtime: node
+    plan: free
+    buildCommand: npm install --omit=dev --omit=optional
+    startCommand: node src/server.js
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: PUBLIC_URL
+        value: https://oneip.io
+      - key: IPFS_GATEWAY
+        value: https://gateway.pinata.cloud/ipfs/
+      # secrets — Render will prompt you to paste these (not stored in git):
+      - key: HELIUS_API_KEY
+        sync: false
+      - key: PINATA_JWT
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      # optional — leave blank if you don't have them yet:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: STRIPE_PRICE_ID_PUBLISH
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: AITOEARN_API_KEY
+        sync: false
+      - key: AITOEARN_BASE_URL
+        sync: false
