@@ -1,0 +1,35 @@
+OneIP.io
+
+API Key helius :d6ea9b76-3346-4f0e-9443-aefbcf87cf14
+Pinata : 6c3006f4b9956836b2a3
+
+API Key: 6c3006f4b9956836b2a3
+API Secret: 0ce2b0cc30a8ad0a264fda68e48c9a3f2271dc3986c1c88e7e7afc7253ef5768
+JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyNDFlNWQyNy0zNDUzLTQ4NmItYjk1Yi1lOThjZDUwNGY5OGEiLCJlbWFpbCI6ImJvc3NzZXMwMDFAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiRlJBMSJ9LHsiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjZjMzAwNmY0Yjk5NTY4MzZiMmEzIiwic2NvcGVkS2V5U2VjcmV0IjoiMGNlMmIwY2MzMGE4YWQwYTI2NGZkYTY4ZTQ4YzlhM2YyMjcxZGMzOTg2YzFjODhlN2U3YWZjNzI1M2VmNTc2OCIsImV4cCI6MTgxNDE4ODU1MH0.JKLh-ouiT-z9A-NIkDzxPv3LINzSe8ZiN8aLrZhSiek
+
+
+✅ 确认上链 —— kolpad 正式运行在 Solana devnet!
+Program Id:    5SVSaKceFdzdynnuGJDFy74tspXDDxJccWRXh6B1NUdG
+Owner:         BPFLoaderUpgradeable(可升级,以后能推更新)
+Authority:     4U5Jzb2H…(你的升级权限钱包)
+Data Length:   397,592 bytes
+Deployed Slot: 472581912
+🔗 在区块浏览器上看你的程序(真实可查)
+Solana Explorer:https://explorer.solana.com/address/5SVSaKceFdzdynnuGJDFy74tspXDDxJccWRXh6B1NUdG?cluster=devnet
+Solscan:https://solscan.io/account/5SVSaKceFdzdynnuGJDFy74tspXDDxJccWRXh6B1NUdG?cluster=devnet
+
+
+① logo→IPFS	✅ 闭环
+② 标准 metadata	✅
+③ Metaplex 写链上 uri	✅
+④ revoke mint + immutable	✅ 代码+编译(待部署)
+⑤ 建池 + Jupiter Verify	🟡 缺真 Raydium 迁移 + Jupiter Verify
+
+要花 ~2.8 devnet SOL
+graduate 需要真实 85◎ 曲线储备才会触发 —— devnet 上没法 e2e 实测,所以部署后也验证不了运行时
+命令就一条(已记进记忆):
+docker run --rm -v C:\Users\user\kol-meme\onchain:/workdir \
+  -v kolpad-cargo:/root/.cargo -v kolpad-solana:/root/.config -w /workdir \
+  backpackapp/build:v0.30.1 sh -c \
+  "solana config set --url https://api.devnet.solana.com && \
+   solana program deploy target/deploy/kolpad.so --program-id target/deploy/kolpad-keypair.json"

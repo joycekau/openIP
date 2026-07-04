@@ -1,0 +1,79 @@
+这是个大工程,但正合适——你要换电脑,必须留一份完整的现状文档 + 可带走的快照。而且我得提醒你一件要紧事:
+
+⚠️ 我这个 session 的所有改动(Pinterest 改版、图片上传、社交账号后台等)现在还没提交 git。你要是去另一台电脑 git clone,这些全都不在——会丢。 所以我做的 zip 会打包整个工作区(含未提交改动),你带走就不丢。
+
+我先系统扫一遍全仓库拿到准确清单(不凭记忆),再写文档。并行列出所有文件和路由:
+
+
+Found files
+Wrong root — let me point at the repo:
+
+
+Found files
+Now enumerate all API routes + the rest of the tree (scripts, onchain, docs, package):
+
+
+Searched code, ran a command
+完整清单拿到了:9 个 HTML 页、35 个后端模块、~130 个 API 路由、链上程序、脚本、文档。我现在写一份完整的现状文档,然后打包成 zip(含未提交改动)给你带走。
+
+先写文档:
+
+Created
+PROJECT-STATUS.md
++249
+-0
+文档写好了。现在打包成 zip —— 整个工作区快照(含所有未提交改动)+ 这份文档 + 详细记忆日志,排除 node_modules/.git/rust build(可再生)。放到你的 Downloads:
+
+Used PowerShell
+✅ 完成。两个交付物都好了。
+
+📄 1. 完整现状文档:PROJECT-STATUS.md(在仓库根 + zip 里)
+覆盖你要的全部:
+
+架构 + 身份模型 + 怎么运行
+oneIP.ai 全部(瀑布流首页/详情页、创作者工作台、品牌供给侧、每个后端模块 + 状态)
+oneIP.io 全部(首页/终端/发币页/币页、链上 kolpad 8 指令、每个模块)
+平台运营后台 admin 全部
+收益/经济模型(75/20/5 + 四方分账,链上宪法)
+~130 个 API 路由清单
+完善度总表(每块 ✅/🟡/❌/⏳)
+未完成清单(分:纯代码可做 / 需部署花钱 / 链上主网)
+换机接手必读(含那个 Pro 未决策、多会话、preview 坑)
+📦 2. 可带走的快照:C:\Users\user\Downloads\oneIP-snapshot-2026-07-02.zip(5.24 MB)
+整个工作区快照 —— 关键是含了我这个 session 所有未提交的改动(Pinterest 改版、图片上传、社交账号后台、内容门槛、收益分账、accounts/agents/aigen 等),换机后不会丢。
+里面有:src/ web/ onchain/ scripts/ data/ docs/ + package.json + render.yaml + .env(你的真 key)+ PROJECT-STATUS.md + MEMORY-detailed-log.md(超详细逐功能日志)。
+排除了 node_modules / .git / rust build(换机后 npm install 再生)。
+
+⚠️ 三点提醒
+zip 里有真 .env(含 PINATA_JWT / HELIUS / ADMIN_TOKEN 等密钥) —— 方便你换机直接用,但别把这个 zip 公开分享。
+换机后:解压 → npm install → npm run serve 即可跑。远端 git main 不含这些未提交改动,所以以这个 zip 为准;稳定后再 git add/提交到 dev。
+接手第一件事(文档 §11 有):定 Pro 砍不砍,然后统一发布门禁 + 二选一发布 UI(feed.html 老版 vs studio.html 新版)。
+换到新电脑打开 PROJECT-STATUS.md 就能无缝接上。需要我把这份文档再拆成"给开发者的 TODO 清单"或"给投资人的进度版"吗?
+
+到时候放这个MD 文件， 另外一个 cloude 账号就可以读取所有记忆吗？
+
+分两种情况,我讲清楚(有个关键区别):
+
+✅ 会读到 —— 但要"主动叫它读",不会自动加载
+PROJECT-STATUS.md 和 MEMORY-detailed-log.md 只是普通文件。 另一个 Claude 账号(另一台电脑)完全能读它们的全部内容 —— 只要那个仓库在,它就能打开看。里面已经包含了几乎所有信息(现状 + 超详细历史)。
+
+但是:新账号的 Claude 不会自动知道这两个文件的存在。你得在开头告诉它读,比如:
+
+「先读 PROJECT-STATUS.md 和 MEMORY-detailed-log.md(完整现状 + 历史日志),不用我重讲背景,读完接着开发。」
+
+它读完 = 拿到全部上下文,无缝接手。
+
+❌ 不会自动"继承记忆"
+你这台机器上的自动记忆(MEMORY.md + kol-meme-project.md,存在 .claude/.../memory/ 文件夹)是绑这个账号+这台机器的 —— 每次开新对话自动加载。它不会自动跟到另一个账号。 换账号 = 那边的记忆是空的。
+
+所以区别是:
+
+跟着走吗	怎么用
+MD 文件(status + log)	✅ 跟(在 zip/仓库里)	新 Claude 主动读
+自动记忆(auto-memory)	❌ 不跟	是本账号本机专属
+想让新账号也"自动"记得?两个办法
+A. 简单可靠(推荐): 每次新对话开头贴一句"先读 PROJECT-STATUS.md 和 MEMORY-detailed-log.md"。够用,零配置。
+
+B. 真做成自动记忆: 在新机器上,把 MEMORY-detailed-log.md 复制进那个 Claude 的记忆文件夹(.claude/projects/<项目>/memory/)+ 在 MEMORY.md 索引里加一行。这样它每次自动加载。但这是每台机/每账号要单独配的。
+
+一句话:MD 文件能带走、能被任何 Claude 读到全部内容,但要你开头叫它读一下;自动记忆不跟着换账号走。 你用办法 A 就行——把那两个 MD 放仓库里,新对话第一句让它读,它就"什么都记得"了。
