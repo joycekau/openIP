@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# secrets — NEVER commit real keys
+.env
+.env.local
+*.key
+*-keypair.json
+
+# runtime data / uploads
+data/*.json
+!data/.gitkeep
+uploads/
+
+# build / logs
+dist/
+*.log
+npm-debug.log*
+
+# os
+.DS_Store
+Thumbs.db
+
+# snapshots (the big zips carried between machines)
+*.zip

@@ -1,11 +1,15 @@
 OneIP.io
 
-API Key helius :d6ea9b76-3346-4f0e-9443-aefbcf87cf14
-Pinata : 6c3006f4b9956836b2a3
+API Key helius : <REDACTED — see .env / .env.example>
+Pinata : <REDACTED — see .env / .env.example>
 
-API Key: 6c3006f4b9956836b2a3
-API Secret: 0ce2b0cc30a8ad0a264fda68e48c9a3f2271dc3986c1c88e7e7afc7253ef5768
-JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIyNDFlNWQyNy0zNDUzLTQ4NmItYjk1Yi1lOThjZDUwNGY5OGEiLCJlbWFpbCI6ImJvc3NzZXMwMDFAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiRlJBMSJ9LHsiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjEsImlkIjoiTllDMSJ9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6IjZjMzAwNmY0Yjk5NTY4MzZiMmEzIiwic2NvcGVkS2V5U2VjcmV0IjoiMGNlMmIwY2MzMGE4YWQwYTI2NGZkYTY4ZTQ4YzlhM2YyMjcxZGMzOTg2YzFjODhlN2U3YWZjNzI1M2VmNTc2OCIsImV4cCI6MTgxNDE4ODU1MH0.JKLh-ouiT-z9A-NIkDzxPv3LINzSe8ZiN8aLrZhSiek
+API Key: <REDACTED>
+API Secret: <REDACTED>
+JWT: <REDACTED — store PINATA_JWT in .env, never commit>
+
+# NOTE: The live Helius + Pinata keys that used to be here were removed from
+# git and MUST be rotated (regenerate on the Helius and Pinata dashboards).
+# Real values now live only in a local, gitignored .env file (see .env.example).
 
 
 ✅ 确认上链 —— kolpad 正式运行在 Solana devnet!
