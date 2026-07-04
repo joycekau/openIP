@@ -350,7 +350,8 @@ async function toggleNotifs(){
 let rules=[];
 async function loadStudio(){
   const c=await api('/api/creator?w='+me());
-  const hasAi=true, hasPub=true; // subscription tiers removed — creator tools are free
+  // Subscription tiers removed — all creator tools (AI clone + multi-platform publishing) are free.
+  // Publishing is managed in one place: the Studio page. This inline panel is a read-only summary.
   document.getElementById('proBadge').innerHTML='';
   rules=Array.isArray(c.autoReplies)&&c.autoReplies.length?c.autoReplies:[{keyword:'',reply:''}];
   document.getElementById('studioBody').innerHTML=`
@@ -359,31 +360,24 @@ async function loadStudio(){
     <label>Auto-replies <span class="muted">(keyword → reply; leave keyword "*" for a default)</span></label>
     <div id="rules"></div>
     <button class="btn sm" onclick="addRule()" style="margin-top:6px">+ add rule</button>
-    ${hasAi?`<label style="margin-top:16px">AI clone <span class="muted">(drafts a reply when no keyword matches)</span></label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:13px"><input type="checkbox" id="s-ai" ${c.aiEnabled?'checked':''} style="width:auto"> Enable AI auto-reply</label>
-      <textarea id="s-persona" placeholder="Persona / instructions for your AI clone — tone, what to say, what to avoid" style="margin-top:6px;min-height:64px">${esc(c.aiPersona||'')}</textarea>`:`<div style="margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#0b0f18">
-      <div style="font-size:13px">Go <b style="color:var(--gold)">Pro</b> — $10/mo</div>
-      <div class="hint" style="margin-top:2px">Unlocks the AI clone that auto-replies to fans in your voice.</div>
-      <button class="btn primary sm" style="margin-top:10px" onclick="upgradePro('ai')">Upgrade — $10/mo</button></div>`}
+    <label style="margin-top:16px">AI clone <span class="muted">(drafts a reply when no keyword matches · free)</span></label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px"><input type="checkbox" id="s-ai" ${c.aiEnabled?'checked':''} style="width:auto"> Enable AI auto-reply</label>
+    <textarea id="s-persona" placeholder="Persona / instructions for your AI clone — tone, what to say, what to avoid" style="margin-top:6px;min-height:64px">${esc(c.aiPersona||'')}</textarea>
     <label style="margin-top:16px">Auto-sync from a social <span class="muted">(mirror your posts here)</span></label>
     <div style="display:flex;gap:6px">
       <select id="s-syncp" style="flex:1">${['','twitter','instagram','tiktok','youtube'].map(pf=>`<option value="${pf}" ${c.syncPlatform===pf?'selected':''}>${pf||'None'}</option>`).join('')}</select>
       <input id="s-synch" placeholder="@handle" value="${esc(c.syncHandle||'')}" style="flex:1" />
     </div>
     <button class="btn sm" onclick="syncNow()" style="margin-top:8px"><i class="ti ti-refresh"></i> Sync now</button>
-    ${hasPub?`<label style="margin-top:16px">Multi-platform publishing <span class="muted">(post once → everywhere)</span></label>
-      <div id="pubChips" style="display:flex;flex-wrap:wrap;gap:6px"><span class="muted" style="font-size:12px">loading…</span></div>
-      <div class="hint" style="margin-top:4px">Tick "Also publish to my connected platforms" in the composer to fan out a post.</div>`
-     :`<div style="margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#0b0f18">
-      <div style="font-size:13px">Go <b style="color:var(--gold)">Pro+</b> — $39/mo <span class="muted">· multi-platform</span></div>
-      <div class="hint" style="margin-top:2px">Connect Twitter, TikTok, YouTube, Instagram & more — publish to all in one click. Includes the AI clone.</div>
-      <button class="btn primary sm" style="margin-top:10px" onclick="upgradePro('publish')">Upgrade — $39/mo</button></div>`}
+    <label style="margin-top:16px">Multi-platform publishing <span class="muted">(post once → everywhere · free)</span></label>
+    <div id="pubChips" style="display:flex;flex-wrap:wrap;gap:6px"><span class="muted" style="font-size:12px">loading…</span></div>
+    <div class="hint" style="margin-top:4px">Tick "Also publish to my connected platforms" in the composer to fan out a post. <a href="/studio" style="color:var(--gold);text-decoration:none">Connect &amp; manage all 14 platforms in Studio →</a></div>
     <div style="margin-top:14px"><button class="btn primary" onclick="saveStudio()">Save</button>
       <span class="muted" id="saved" style="font-size:12px;margin-left:8px"></span></div>
     <div class="hint">Followers: ${c.followers||0} · Posts: ${(c.posts||[]).length}.</div>`;
   renderRules();
-  const adb=document.getElementById('aiDraftBtn'); if(adb) adb.style.display=hasAi?'inline-flex':'none';
-  if(hasPub) loadPublish();
+  const adb=document.getElementById('aiDraftBtn'); if(adb) adb.style.display='inline-flex';
+  loadPublish();
 }
 async function aiDraft(){
   if(!me())return;
@@ -397,33 +391,22 @@ async function aiDraft(){
 
 // ---- Multi-platform publishing (AiToEarn, hidden behind oneIP) ----
 const PUB_PLATFORMS=[['twitter','Twitter'],['tiktok','TikTok'],['youtube','YouTube'],['instagram','Instagram'],['facebook','Facebook'],['threads','Threads']];
+// Read-only connected summary. Connecting/disconnecting lives in the unified Studio publish panel
+// (web/studio.html) so there's a single management surface. The composer fan-out toggle below
+// still cross-posts to whatever is connected.
 async function loadPublish(){
   const box=document.getElementById('pubChips'); if(!box)return;
   const r=await api('/api/publish/accounts?wallet='+me());
   const acc=(r&&r.accounts)||{};
-  box.innerHTML=PUB_PLATFORMS.map(([id,label])=>{
-    const on=!!acc[id];
-    return on
-      ? `<span class="chip on" title="connected">✓ ${label}</span>`
-      : `<button class="chip" onclick="pubConnect('${id}')">+ ${label}</button>`;
-  }).join('');
+  const connected=PUB_PLATFORMS.filter(([id])=>acc[id]);
+  box.innerHTML = connected.length
+    ? connected.map(([,label])=>`<span class="chip on" title="connected">✓ ${label}</span>`).join('')
+      + `<a href="/studio" class="chip" style="text-decoration:none">＋ connect more</a>`
+    : `<a href="/studio" class="chip" style="text-decoration:none">＋ Connect platforms in Studio</a>`;
   // composer fan-out toggle reflects connected platforms
-  const names=PUB_PLATFORMS.filter(([id])=>acc[id]).map(([,l])=>l);
+  const names=connected.map(([,l])=>l);
   const row=document.getElementById('fanoutRow'), tag=document.getElementById('fanoutPlatforms');
   if(row){ row.style.display=names.length?'flex':'none'; if(tag)tag.textContent=names.length?('('+names.join(', ')+')'):''; }
-}
-async function pubConnect(platform){
-  if(!me())return;
-  const r=await post('/api/publish/connect',{wallet:me(),platform});
-  if(r.error){alert(r.error);return;}
-  if(r.authUrl) window.open(r.authUrl,'_blank','width=620,height=720');
-  const sid=r.sessionId; let tries=0;
-  const poll=async()=>{
-    const s=await api(`/api/publish/connect/status?platform=${platform}&sessionId=${encodeURIComponent(sid)}&wallet=${me()}`);
-    if(s.status==='authorized'&&s.accountId){ loadPublish(); return; }
-    if(++tries<30) setTimeout(poll,2000);
-  };
-  setTimeout(poll, r.mock?300:2000);
 }
 function renderRules(){
   document.getElementById('rules').innerHTML=rules.map((r,i)=>`<div class="rule">
@@ -439,17 +422,6 @@ async function syncNow(){
   if(r.error){alert(r.error);return;}
   alert('Synced '+(r.synced||0)+' post(s)'+(r.platform?(' from '+r.platform):''));
   loadFeed();
-}
-async function upgradePro(tier){
-  tier = tier==='publish'?'publish':'ai';
-  const r=await post('/api/pro/checkout',{wallet:me(),tier});
-  if(r.url){ location.href=r.url; return; }            // Stripe Checkout (production)
-  if(r.devMode){                                        // dev/local: grant the tier instantly
-    if(!confirm('No Stripe configured (dev mode). Grant '+(tier==='publish'?'Pro+ ($39)':'Pro ($10)')+' now for testing?'))return;
-    const d=await post('/api/pro/dev-upgrade',{wallet:me(),tier});
-    if(d.error){alert(d.error);return;}
-    loadStudio();
-  } else if(r.error){ alert(r.error); }
 }
 async function saveStudio(){
   const clean=rules.filter(r=>r.reply&&r.reply.trim());
