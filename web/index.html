@@ -272,9 +272,12 @@ async function loadOneip(){
     if(!Array.isArray(list)||!list.length){const T=window.KolI18n?KolI18n:{t:k=>k};el.innerHTML='<div style="padding:20px 18px;color:var(--muted);font-size:13px;text-align:center">'+T.t('board_no_coins')+'<a href="/launch" style="color:var(--gold)">'+T.t('board_go_launch')+'</a></div>';return;}
     el.innerHTML=list.slice(0,8).map(c=>{
       const sym=(c.symbol||'?').slice(0,10);
-      const logo=c.logo?`style="background:url('${c.logo}') center/cover"`:'';
-      return `<div class="oirow" onclick="location.href='/coin?mint=${c.mint}'">
-        <div class="oilogo" ${logo}>${c.logo?'':sym.slice(0,2).toUpperCase()}</div>
+      // Launch logos are user-controlled (via /api/markets/oneip) — only allow http(s)/data:image
+      // with no attribute-breakout chars, else fall back to initials. Prevents style-attr XSS.
+      const lg=(c.logo&&/^(https?:\/\/|data:image\/)/.test(c.logo)&&!/["'()\\\s]/.test(c.logo))?c.logo:'';
+      const logo=lg?`style="background:url('${lg}') center/cover"`:'';
+      return `<div class="oirow" onclick="location.href='/coin?mint=${encodeURIComponent(c.mint||'')}'">
+        <div class="oilogo" ${logo}>${lg?'':sym.slice(0,2).toUpperCase()}</div>
         <div style="flex:1"><div style="font-size:14px;display:flex;align-items:center;gap:6px">$${sym} ${c.verified?'<span class="vchk">✓</span>':''}</div>
           <div class="ktw">${(c.name||'').slice(0,24)}</div></div>
         <div style="text-align:right"><div class="mono" style="color:var(--gold);font-size:13px">${c.floorBps/100}% ${window.KolI18n?KolI18n.t('floor_word'):'floor'}</div>

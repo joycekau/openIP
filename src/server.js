@@ -33,7 +33,9 @@ const __dir = dirname(fileURLToPath(import.meta.url));
 const ROOT = existsSync(join(process.cwd(), "web", "home.html")) ? process.cwd() : join(__dir, "..");
 const PORT = Number(process.env.PORT) || 8787;
 
-const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "admin";
+// Fail closed: if ADMIN_TOKEN is unset in a deployed env, the admin API is DISABLED entirely
+// (no public "admin" fallback). Set ADMIN_TOKEN to enable /admin. Local dev sets it via .env.
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || "";
 let trendingCache = { ts: 0, data: [] };
 
@@ -69,6 +71,7 @@ function json(res, code, obj) {
 }
 
 function isAdmin(req) {
+  if (!ADMIN_TOKEN) return false; // no token configured → admin API is off (deny all)
   return (req.headers["x-admin-token"] || "") === ADMIN_TOKEN;
 }
 

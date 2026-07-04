@@ -193,7 +193,9 @@ async function buy({ mint: mintB58, creator, solAmount } = {}) {
 
   const tx = new Transaction();
   if (!(await connection.getAccountInfo(buyerToken))) tx.add(createAtaIx(buyer, buyer, mint, buyerToken));
-  const data = Buffer.from(cat(await disc("buy"), borshU64(lamports)));
+  // Anchor handler is buy(lamports_in, min_tokens_out) — serialize BOTH u64s. min_tokens_out=0 =
+  // market order (no slippage floor). Wire a slippage input to raise it later.
+  const data = Buffer.from(cat(await disc("buy"), borshU64(lamports), borshU64(0)));
   tx.add(new TransactionInstruction({ programId: PROGRAM_ID, data, keys: [
     { pubkey: launch, isSigner: false, isWritable: true },
     { pubkey: mint, isSigner: false, isWritable: true },
@@ -228,7 +230,9 @@ async function sellMarket({ mint: mintB58, creator, rawAmount } = {}) {
   if (amount == null) amount = await connection.getTokenAccountBalance(sellerToken).then((r) => r.value.amount).catch(() => "0");
   if (!amount || BigInt(amount) <= 0n) throw new Error("you hold none of this token to sell");
 
-  const data = Buffer.from(cat(await disc("sell_market"), borshU64(amount)));
+  // Anchor handler is sell_market(token_amount, min_lamports_out) — serialize BOTH u64s.
+  // min_lamports_out=0 = market order (no slippage floor).
+  const data = Buffer.from(cat(await disc("sell_market"), borshU64(amount), borshU64(0)));
   const tx = new Transaction().add(new TransactionInstruction({ programId: PROGRAM_ID, data, keys: [
     { pubkey: launch, isSigner: false, isWritable: true },
     { pubkey: mint, isSigner: false, isWritable: true },

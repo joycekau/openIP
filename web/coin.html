@@ -68,6 +68,9 @@ const api=(p,o)=>fetch(p,o).then(r=>r.json());
 const post=(p,b)=>api(p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
 const me=()=>window.KolWallet&&KolWallet.address;
 const esc=s=>(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+// Attribute-safe URL for embedding in a CSS url('...') — only http(s)/data:image, and reject any
+// char that could break out of the quoted attribute (quotes, parens, backslash, whitespace). Else "".
+const safeUrl=u=>{u=String(u||'');return /^(https?:\/\/|data:image\/)/.test(u)&&!/["'()\\\s]/.test(u)?u:'';};
 const ago=ts=>{const m=(Date.now()-ts)/6e4;if(m<1)return'now';if(m<60)return Math.round(m)+'m';if(m<1440)return Math.round(m/60)+'h';return Math.round(m/1440)+'d';};
 const mintShort=m=>m?m.slice(0,4)+'…'+m.slice(-4):'';
 
@@ -83,11 +86,12 @@ async function loadHeader(){
   const c=await api('/api/launch?mint='+mint);
   if(!c||c.error){document.getElementById('header').innerHTML='<div class="muted">Coin not found.</div>';return;}
   const av=(c.symbol||'?').slice(0,2).toUpperCase();
+  const logo=safeUrl(c.logo); // sanitized; unsafe/blank → fall back to the symbol initials
   const socials=Object.keys(c.socials||{}).length;
   const onchain=isOnchainCoin(c);
   COIN_CREATOR=c.creator||''; // on-chain launch.creator — needed as an account for buy/sell
   document.getElementById('header').innerHTML=`
-    <div class="chead"><div class="cav"${c.logo?` style="background:url('${esc(c.logo)}') center/cover"`:''}>${c.logo?'':av}</div>
+    <div class="chead"><div class="cav"${logo?` style="background:url('${logo}') center/cover"`:''}>${logo?'':av}</div>
       <div style="flex:1"><div class="csym">$${esc(c.symbol)} ${c.verified?'<span class="grad"><i class="ti ti-check"></i> Verified</span>':''}</div>
         <div class="cmint">${esc(c.name||'')} · ${mintShort(c.mint)} · by ${mintShort(c.creator)}</div></div></div>
     <div class="cstats">
