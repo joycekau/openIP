@@ -1,32 +1,26 @@
 {
-  "name": "kol-meme-data",
+  "name": "openip-launchpad",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "oneIP.io data layer — pull live Solana meme + KOL/smart-money data (gmgn-style).",
+  "description": "OpenIP — a Solana token launchpad for individual creators (bonding curve, 20% floor, embeds into corax.live channels).",
   "engines": {
     "node": ">=20.12"
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env src/server.js",
+    "serve": "node --env-file-if-exists=.env src/server.js",
     "feed": "node --env-file-if-exists=.env src/feed.js",
     "kol": "node --env-file-if-exists=.env src/kol.js",
-    "serve": "node --env-file-if-exists=.env src/server.js",
     "smoke": "node --env-file-if-exists=.env scripts/smoke.js",
     "launch:smoke": "node --env-file-if-exists=.env scripts/launch-smoke.js",
-    "commerce:smoke": "node --env-file-if-exists=.env scripts/commerce-smoke.js",
     "doctor": "node --env-file-if-exists=.env scripts/check-helius.js",
-    "helius:webhook": "node --env-file-if-exists=.env scripts/register-webhook.js",
     "discover": "node --env-file-if-exists=.env scripts/discover-wallets.js",
-    "sync": "node scripts/sync.js",
     "chain:init": "node scripts/sol/01-initialize.js",
     "chain:create": "node scripts/sol/02-create-token.js",
     "chain:buy": "node scripts/sol/03-buy.js"
   },
-  "//": "Server is zero-dep. AI clone (optional) + the on-chain client scripts (devDeps) are NOT needed to run the server.",
-  "optionalDependencies": {
-    "@anthropic-ai/sdk": "^0.106.0"
-  },
+  "//": "Server is zero-dep. The on-chain client scripts (devDeps) are NOT needed to run the launchpad server.",
   "devDependencies": {
     "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4"

@@ -1,18 +1,16 @@
 // Tracked KOL wallet registry — single source of truth for data/kol-wallets.json.
 // The KOL board reads it, the webhook checks membership, and the admin panel mutates it.
-import { readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { loadJson, saveJson } from "./persist.js";
 
-const __dir = dirname(fileURLToPath(import.meta.url));
-const FILE = join(__dir, "..", "data", "kol-wallets.json");
+const KEY = "kol-wallets";
 
 let list = [];
 let set = new Set();
 let loaded = false;
 
 export async function load() {
-  try { list = JSON.parse(await readFile(FILE, "utf8")); } catch { list = []; }
+  list = await loadJson(KEY, []);
+  if (!Array.isArray(list)) list = [];
   set = new Set(list.map((w) => w.wallet));
   loaded = true;
 }
@@ -47,5 +45,5 @@ export async function remove(addr) {
 }
 
 async function persist() {
-  await writeFile(FILE, JSON.stringify(list, null, 2));
+  saveJson(KEY, list);
 }

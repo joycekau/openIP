@@ -3,34 +3,33 @@
 //   - every launch carries a 20% floor (floorBps 2000) -> can't go to zero
 //   - bind >= 3 social platforms  -> platform verifies + signs attestation -> eligible for the board
 //   - 0 socials (or < 3)          -> launch is tradable but NOT pushed on the board
-import { readFile, writeFile } from "node:fs/promises";
 import { randomBytes } from "node:crypto";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { signAttestation, MIN_SOCIALS } from "./verify.js";
+import { loadJson, saveJson } from "./persist.js";
 
-const __dir = dirname(fileURLToPath(import.meta.url));
-const FILE = join(__dir, "..", "data", "launches.json");
+const KEY = "launches";
 const FLOOR_BPS = 2000;
 const VALID_PLATFORMS = ["twitter", "telegram", "discord", "tiktok", "instagram", "youtube", "website"];
 
 let mem = {};
-let timer = null;
 
 export async function load() {
-  try { mem = JSON.parse(await readFile(FILE, "utf8")); } catch { mem = {}; }
+  mem = await loadJson(KEY, {});
 }
 function persist() {
-  clearTimeout(timer);
-  timer = setTimeout(() => writeFile(FILE, JSON.stringify(mem, null, 2)).catch(() => {}), 200);
+  saveJson(KEY, mem);
 }
 
-export function create({ name, symbol, creator, logo, website, twitter, telegram, description, mint, mintTx, metadataUri, auto, chain }) {
+export function create({ name, symbol, creator, coraxCreatorId, logo, website, twitter, telegram, description, mint, mintTx, metadataUri, auto, chain }) {
   // Real on-chain launches pass the actual Solana mint (minted via Phantom); off-chain demos
-  // and auto-provisioned value pools fall back to a placeholder address until a real mint exists.
+  // fall back to a placeholder address until a real mint exists.
   const addr = mint || "Kol" + randomBytes(16).toString("hex");
   mem[addr] = {
     mint: addr, name, symbol, creator,
+    // Reserved SSO seam: when OpenIP is embedded in a corax.live channel, the launch is attributed
+    // to the corax creator via this id (verified from corax's Supabase Auth JWT). Empty for
+    // standalone wallet-first launches until that integration is wired.
+    coraxCreatorId: coraxCreatorId || "",
     logo: logo || "", website: website || "", twitter: twitter || "", telegram: telegram || "", description: description || "",
     metadataUri: metadataUri || "",
     floorBps: FLOOR_BPS,
@@ -38,7 +37,7 @@ export function create({ name, symbol, creator, logo, website, twitter, telegram
     // "route by coin.chain to its adapter", NOT a rewrite (user directive: don't lock into one chain).
     chain: chain || "sol",
     onchain: Boolean(mint), mintTx: mintTx || "", // true once minted on-chain
-    auto: Boolean(auto), // auto-provisioned on first .ai activity (vs explicitly launched)
+    auto: Boolean(auto),
     socials: {}, verified: false, verifiedAt: null, attestation: null,
     createdAt: Date.now(),
   };
