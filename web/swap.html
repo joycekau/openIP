@@ -150,16 +150,10 @@ document.querySelectorAll(".tabs button").forEach((b) => b.onclick = () => {
 // to the keyless Jumper iframe so the page always works.
 const SOLANA = 1151111081099710, BSC = 56;
 const fail = () => {
+  // Jumper refuses to be iframed (X-Frame-Options), so the fallback is a clean link-out card
+  // (the "Open swap ↗" button opens it in a new tab) — never a broken embedded frame.
   document.getElementById("loading")?.remove();
-  const fb = document.getElementById("fallback");
-  // load the fallback iframe lazily only if needed
-  if (fb && !fb.querySelector("iframe")) {
-    const f = document.createElement("iframe");
-    f.title = "LI.FI swap"; f.src = "https://jumper.exchange/?fromChain=" + SOLANA + "&toChain=" + BSC;
-    f.setAttribute("allow", "clipboard-write; clipboard-read");
-    fb.insertBefore(f, fb.firstChild);
-  }
-  fb?.classList.add("show");
+  document.getElementById("fallback")?.classList.add("show");
 };
 // Preflight the integrator fee: LI.FI rejects EVERY quote if the fee isn't collectable yet (integrator
 // not registered at portal.li.fi). Detect that and drop the fee so swaps keep working — it re-enables
@@ -180,10 +174,12 @@ if (fee > 0) {
   } catch (e) {}
 }
 try {
+  // external=react,react-dom → esm.sh does NOT bundle its own React, so the widget shares the single
+  // React instance we import here. (A bundled second React = "invalid hook call" → blank widget.)
   const [React, ReactDOMClient, W] = await Promise.all([
     import("https://esm.sh/react@18.3.1"),
     import("https://esm.sh/react-dom@18.3.1/client"),
-    import("https://esm.sh/@lifi/widget@3?deps=react@18.3.1,react-dom@18.3.1&bundle"),
+    import("https://esm.sh/@lifi/widget@3?external=react,react-dom&deps=react@18.3.1,react-dom@18.3.1"),
   ]);
   const config = {
     integrator,
