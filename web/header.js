@@ -248,6 +248,22 @@
     syncLang();
   });
 
+  // PWA: inject manifest + iOS/theme meta once, and register the (network-first) service worker so
+  // oneIP is installable on mobile home screens. Done here so every page gets it without editing heads.
+  (function pwa() {
+    if (window.__oneipPwa) return; window.__oneipPwa = true;
+    const head = document.head;
+    const add = (tag, attrs) => { if (document.querySelector(tag + (attrs.rel ? `[rel="${attrs.rel}"]` : attrs.name ? `[name="${attrs.name}"]` : ""))) return; const el = document.createElement(tag); Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v)); head.appendChild(el); };
+    add("link", { rel: "manifest", href: "/manifest.webmanifest" });
+    add("meta", { name: "theme-color", content: "#080510" });
+    add("meta", { name: "apple-mobile-web-app-capable", content: "yes" });
+    add("meta", { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" });
+    add("meta", { name: "apple-mobile-web-app-title", content: "oneIP" });
+    add("link", { rel: "apple-touch-icon", href: "/assets/logo_mark.png" });
+    add("link", { rel: "icon", href: "/assets/logo_mark.png" });
+    if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+  })();
+
   const style = document.createElement("style"); style.textContent = CSS; document.head.appendChild(style);
   // Load public runtime config (publishable keys from Vercel env) then the thirdweb (BSC) connector,
   // once, globally — so every page has window.THIRDWEB_CLIENT_ID + window.KolEvm for the dual-chain

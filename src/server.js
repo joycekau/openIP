@@ -115,10 +115,17 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/terms" || path === "/terms.html")) return servePage(res, "terms.html");
 
     // static scripts + brand assets
-    if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js" || path === "/thirdweb.js")) {
+    if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js" || path === "/thirdweb.js" || path === "/affiliate-networks.js" || path === "/sw.js")) {
       const js = await readFile(join(ROOT, "web", path.slice(1)), "utf8");
-      res.writeHead(200, { "content-type": "application/javascript; charset=utf-8" });
+      // sw.js must be allowed root scope; served from "/" so its scope is the whole origin already
+      res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "service-worker-allowed": "/" });
       return res.end(js);
+    }
+    // PWA manifest
+    if (req.method === "GET" && path === "/manifest.webmanifest") {
+      const mf = await readFile(join(ROOT, "web", "manifest.webmanifest"), "utf8");
+      res.writeHead(200, { "content-type": "application/manifest+json; charset=utf-8", "cache-control": "public, max-age=300" });
+      return res.end(mf);
     }
     // Public runtime config — the PUBLISHABLE keys only, read from env so they're set once in Vercel
     // (open-ip → Settings → Environment Variables), never committed. The SECRET LIFI_API_KEY is NOT
