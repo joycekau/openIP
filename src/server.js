@@ -158,6 +158,31 @@ async function handler(req, res) {
         return json(res, 502, { error: "lifi proxy failed", detail: String(e && e.message || e) });
       }
     }
+    // MoonPay diagnostic — validates MOONPAY_API_KEY and reports whether buy (on-ramp) and sell
+    // (off-ramp) are enabled. Uses the publishable key against MoonPay's ip_address endpoint; no
+    // secret is exposed. Handy to confirm the widget will work before opening it in a browser.
+    if (req.method === "GET" && path === "/api/moonpay/test") {
+      const key = process.env.MOONPAY_API_KEY || "";
+      if (!key) return json(res, 200, { ok: false, error: "MOONPAY_API_KEY not set" });
+      const sandbox = /^pk_test/i.test(key);
+      try {
+        const r = await fetch("https://api.moonpay.com/v3/ip_address?apiKey=" + encodeURIComponent(key));
+        const info = await r.json().catch(() => ({}));
+        return json(res, 200, {
+          ok: r.status === 200,
+          env: sandbox ? "sandbox" : "production",
+          keyPrefix: key.slice(0, 12) + "…",
+          status: r.status,
+          country: info.alpha2 || info.countryCode || info.country || null,
+          isAllowed: info.isAllowed,
+          isBuyAllowed: info.isBuyAllowed,
+          isSellAllowed: info.isSellAllowed,
+          raw: info,
+        });
+      } catch (e) {
+        return json(res, 502, { ok: false, error: String((e && e.message) || e) });
+      }
+    }
     if (req.method === "GET" && path.startsWith("/assets/")) {
       const name = path.slice("/assets/".length);
       if (!/^[A-Za-z0-9._-]+$/.test(name)) return json(res, 400, { error: "bad asset name" });

@@ -6,23 +6,28 @@
 <title>oneIP · Creator Studio</title>
 <style>
   :root{
-    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
-    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
-    --purple:#7C3AED; --purple-bg:#F3EEFF; --green:#0BBF77; --green-bg:#E9FBF3;
-    --pink:#FE2C55;
+    --bg:#080510; --bg-2:#0F0A1C; --panel:#150E26; --panel-2:#1B1232;
+    --line:rgba(255,255,255,.08); --line-grad:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --dim:#766C8E;
+    --purple:#A855F7; --magenta:#EC4899; --purple-bg:rgba(168,85,247,.14); --green:#22D3EE; --green-bg:rgba(34,211,238,.12);
+    --pink:#FE2C55; --grad-btn:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
     --mono:ui-monospace,Consolas,"SF Mono",monospace;
-    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+    --sans:"Plus Jakarta Sans","Noto Sans SC",system-ui,-apple-system,sans-serif;
+    --disp:"Space Grotesk","Plus Jakarta Sans",sans-serif;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.13),transparent 62%),
+      radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.13),transparent 60%)}
   button{font-family:inherit;cursor:pointer}
   a{color:inherit}
-  .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 90px}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 90px;position:relative;z-index:1}
 
   .head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
   .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
     background:linear-gradient(135deg,var(--purple),#4E9CF5)}
-  .head h1{margin:0;font-size:20px;font-weight:800}
+  .head h1{margin:0;font-size:20px;font-weight:800;font-family:var(--disp)}
   .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
 
   /* connect gate */
@@ -43,23 +48,23 @@
   .cols{display:grid;grid-template-columns:1fr 1.15fr;gap:26px;align-items:start}
   @media(max-width:760px){.cols{grid-template-columns:1fr}}
 
-  .panel{border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff}
+  .panel{border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent)}
   .panel h3{margin:0 0 3px;font-size:15px;font-weight:800}
   .panel .sub{margin:0 0 16px;font-size:12px;color:var(--muted)}
 
   label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:13px 0 5px}
-  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13.5px;background:#fff;color:var(--text)}
+  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13.5px;background:rgba(255,255,255,.04);color:var(--text)}
   input:focus,select:focus,textarea:focus{outline:0;border-color:var(--purple)}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:5px}
-  .seg button{flex:1;background:#fff;border:0;padding:9px;font-size:13px;font-weight:600;color:var(--muted)}
+  .seg button{flex:1;background:transparent;border:0;padding:9px;font-size:13px;font-weight:600;color:var(--muted)}
   .seg button.on{background:var(--purple-bg);color:var(--purple)}
   .sync{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding:12px 13px;background:var(--purple-bg);border-radius:10px}
   .sync input{width:auto;margin-top:2px;flex:none;accent-color:var(--purple)}
   .sync .st{font-size:12.5px}
   .sync .st b{color:var(--purple)}
   .sync .st span{color:var(--muted);display:block;margin-top:1px}
-  .add{width:100%;margin-top:18px;background:var(--text);color:#fff;border:0;border-radius:10px;padding:12px;font-size:14px;font-weight:700}
+  .add{width:100%;margin-top:18px;background:var(--grad-btn);color:#fff;border:0;border-radius:10px;padding:12px;font-size:14px;font-weight:700}
   .add:hover{filter:brightness(1.15)}
   .add:disabled{opacity:.5;cursor:default}
 
@@ -75,7 +80,7 @@
   .item .rm{background:none;border:0;color:var(--dim);font-size:18px;padding:4px 6px;line-height:1}
   .item .rm:hover{color:var(--pink)}
   .empty{padding:40px 0;text-align:center;color:var(--dim);font-size:13px}
-  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--panel-2);color:var(--text);border:1px solid var(--line-grad);
     font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
   .toast.show{opacity:1}
 
@@ -94,7 +99,7 @@
   .agrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
   @media(max-width:760px){.agrid{grid-template-columns:1fr}}
   .miss{grid-column:1/-1;border:1px solid var(--line);border-radius:14px;padding:20px 22px;
-    background:linear-gradient(100deg,#FFF3F5,#FFF9F0)}
+    background:linear-gradient(100deg,rgba(254,44,85,.08),rgba(168,85,247,.07))}
   .miss .lead{font-size:13px;color:var(--muted)}
   .miss .big{font-size:34px;font-weight:800;letter-spacing:-.5px;color:var(--pink);margin:4px 0 2px;font-variant-numeric:tabular-nums}
   .miss .exp{font-size:12.5px;color:var(--muted);max-width:640px}
@@ -108,7 +113,7 @@
   .split .b b{display:block;font-family:var(--mono);font-size:15px;font-weight:700}
   .split .pool{background:var(--purple-bg);color:var(--purple)}
   .split .floor{background:var(--green-bg);color:var(--green)}
-  .split .plat{background:#F0F1F4;color:var(--muted)}
+  .split .plat{background:rgba(255,255,255,.05);color:var(--muted)}
   .thist{margin-top:8px;font-size:12.5px;color:var(--muted)}
   .thist .h{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
   .thist .h a{color:var(--purple);text-decoration:none}

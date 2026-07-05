@@ -6,30 +6,35 @@
 <title>oneIP · Creator</title>
 <style>
   :root{
-    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
-    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
+    --bg:#080510; --bg-2:#0F0A1C; --panel:#150E26; --panel-2:#1B1232;
+    --line:rgba(255,255,255,.08); --line-grad:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --dim:#766C8E;
     --pink:#FE2C55; --teal:#25F4EE;
-    --green:#0BBF77; --green-bg:#E9FBF3;
-    --purple:#7C3AED; --purple-bg:#F3EEFF;
+    --green:#22D3EE; --green-bg:rgba(34,211,238,.12);
+    --purple:#A855F7; --magenta:#EC4899; --purple-bg:rgba(168,85,247,.14);
     --mono:ui-monospace,"Cascadia Code",Consolas,"SF Mono",monospace;
-    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+    --sans:"Plus Jakarta Sans","Noto Sans SC",system-ui,-apple-system,sans-serif;
+    --disp:"Space Grotesk","Plus Jakarta Sans",sans-serif;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.13),transparent 62%),
+      radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.13),transparent 60%)}
   button{font-family:inherit;cursor:pointer}
   a{color:inherit}
-  .wrap{max-width:1060px;margin:0 auto;padding:0 20px 80px}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px 80px;position:relative;z-index:1}
 
   .profile{display:flex;gap:26px;padding:34px 0 8px;align-items:flex-start;flex-wrap:wrap}
   .avatar{width:118px;height:118px;border-radius:50%;padding:4px;flex:none;
     background:conic-gradient(var(--teal),var(--purple),var(--pink),var(--teal))}
-  .avatar .inner{width:100%;height:100%;border-radius:50%;border:3px solid #fff;overflow:hidden;
+  .avatar .inner{width:100%;height:100%;border-radius:50%;border:3px solid var(--bg);overflow:hidden;
     background:linear-gradient(135deg,#8A6FB8,#4E5D8C 55%,#2E3A5C);display:grid;place-items:center;
     color:#fff;font-size:34px;font-weight:700;letter-spacing:1px}
   .avatar .inner img{width:100%;height:100%;object-fit:cover}
   .pinfo{flex:1;min-width:300px}
   .nameline{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .nameline h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.3px}
+  .nameline h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.3px;font-family:var(--disp)}
   .nameline .verify{color:var(--teal);font-size:17px;vertical-align:2px}
   .nameline .handle{color:var(--dim);font-size:15px}
   .statline{display:flex;gap:26px;margin:13px 0 15px;flex-wrap:wrap;align-items:center}
@@ -39,7 +44,7 @@
   .follow{background:var(--pink);color:#fff;border:0;border-radius:6px;padding:9px 42px;font-size:15px;font-weight:700}
   .follow:hover{filter:brightness(1.06)}
   .ghost{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 20px;font-size:14px;font-weight:600;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-  .ghost:hover{background:#EFF1F5}
+  .ghost:hover{background:rgba(255,255,255,.06)}
   .corax{background:linear-gradient(100deg,var(--purple),#4E9CF5);color:#fff;border:0;border-radius:6px;padding:9px 18px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
   .corax:hover{filter:brightness(1.06)}
   .bio{color:var(--muted);margin-top:13px;font-size:13.5px}
@@ -47,7 +52,7 @@
 
   .token{margin-top:20px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;
     display:flex;gap:28px;align-items:center;flex-wrap:wrap;
-    background:linear-gradient(100deg,var(--purple-bg),#F0FBF5 70%)}
+    background:linear-gradient(100deg,rgba(168,85,247,.14),rgba(34,211,238,.06) 70%)}
   .token .badge{display:flex;align-items:center;gap:11px}
   .token .coin{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#4E9CF5);overflow:hidden;
     color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;flex:none}
@@ -72,15 +77,15 @@
   .tabs .cnt{font-size:12px;color:var(--dim);margin-left:5px;font-weight:500}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:20px}
-  .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;transition:box-shadow .15s,transform .15s;text-decoration:none;color:inherit}
-  .card:hover{box-shadow:0 8px 28px rgba(20,25,40,.10);transform:translateY(-2px)}
+  .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);transition:box-shadow .15s,transform .15s,border-color .15s;text-decoration:none;color:inherit}
+  .card:hover{box-shadow:0 12px 34px rgba(0,0,0,.45);border-color:var(--line-grad);transform:translateY(-2px)}
   .card .cov{aspect-ratio:1;display:grid;place-items:center;font-size:40px;background:var(--purple-bg);overflow:hidden}
   .card .cov img{width:100%;height:100%;object-fit:cover}
   .card .cb{padding:11px 13px}
   .card .cb .t{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .card .cb .p{font-size:12px;color:var(--muted);margin-top:2px}
   .empty{padding:60px 0;text-align:center;color:var(--dim);font-size:13.5px}
-  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--panel-2);color:var(--text);border:1px solid var(--line-grad);
     font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
   .toast.show{opacity:1}
 </style>

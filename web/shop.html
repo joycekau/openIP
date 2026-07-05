@@ -6,27 +6,32 @@
 <title>oneIP · Shop</title>
 <style>
   :root{
-    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
-    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
-    --purple:#7C3AED; --purple-bg:#F3EEFF; --green:#0BBF77;
+    --bg:#080510; --bg-2:#0F0A1C; --panel:#150E26; --panel-2:#1B1232;
+    --line:rgba(255,255,255,.08); --line-grad:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --dim:#766C8E;
+    --purple:#A855F7; --magenta:#EC4899; --purple-bg:rgba(168,85,247,.14); --green:#22D3EE;
     --mono:ui-monospace,Consolas,"SF Mono",monospace;
-    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+    --sans:"Plus Jakarta Sans","Noto Sans SC",system-ui,-apple-system,sans-serif;
+    --disp:"Space Grotesk","Plus Jakarta Sans",sans-serif;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px}
-  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.13),transparent 62%),
+      radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.13),transparent 60%)}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px;position:relative;z-index:1}
   .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
   .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
     background:linear-gradient(135deg,var(--purple),#4E9CF5)}
-  .head h1{margin:0;font-size:20px;font-weight:800}
+  .head h1{margin:0;font-size:20px;font-weight:800;font-family:var(--disp)}
   .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
   .search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);
     border-radius:99px;padding:9px 16px;margin:16px 0;color:var(--dim);font-size:13.5px}
   .search input{flex:1;border:0;background:none;outline:0;font:inherit;color:var(--text)}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-  .card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;
-    transition:box-shadow .15s,transform .15s;display:block}
-  .card:hover{box-shadow:0 8px 28px rgba(20,25,40,.10);transform:translateY(-2px)}
+  .card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);text-decoration:none;color:inherit;
+    transition:box-shadow .15s,transform .15s,border-color .15s;display:block}
+  .card:hover{box-shadow:0 12px 34px rgba(0,0,0,.45);border-color:var(--line-grad);transform:translateY(-2px)}
   .card .cov{aspect-ratio:1;display:grid;place-items:center;font-size:44px;background:var(--purple-bg);overflow:hidden}
   .card .cov img{width:100%;height:100%;object-fit:cover}
   .card .cb{padding:12px 13px}
