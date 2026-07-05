@@ -81,3 +81,17 @@ export function saveJson(name, value) {
     fileWrite(name, value);
   }
 }
+
+// Awaited write — use for read-after-write flows (ledgers, inventory) where a following request
+// must see this write. In file mode it bypasses the debounce (which otherwise coalesces rapid
+// writes to the same key and drops all but the last = lost update). In Supabase mode it awaits the
+// PostgREST upsert instead of firing-and-forgetting.
+export async function saveJsonNow(name, value) {
+  if (backend === "supabase") {
+    await sbPut(name, value);
+  } else {
+    clearTimeout(fileTimers[name]);
+    await writeFile(join(DATA, `${name}.json`), JSON.stringify(value, null, 2)).catch((e) =>
+      console.error(`[persist] saveNow ${name} failed:`, e.message));
+  }
+}

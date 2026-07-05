@@ -22,7 +22,7 @@ import * as helius from "./sources/helius.js";
 import * as store from "./store.js";
 import * as launchpad from "./launchpad.js";
 import * as oauth from "./oauth.js";
-import { loadJson, saveJson } from "./persist.js";
+import { loadJson, saveJson, saveJsonNow } from "./persist.js";
 import * as walletStore from "./wallets.js";
 import { discoverWallets } from "./discover.js";
 import * as ipfs from "./ipfs.js";
@@ -235,7 +235,7 @@ async function handler(req, res) {
         url: body.url || "", kind: body.kind || "product", syncCorax: !!body.syncCorax,
         active: true, createdAt: Date.now(),
       };
-      list.push(row); saveJson("products", list);
+      list.push(row); await saveJsonNow("products", list);
       return json(res, 200, row);
     }
     if (req.method === "POST" && path === "/api/products/remove") {
@@ -243,8 +243,66 @@ async function handler(req, res) {
       const all = await loadJson("products", []);
       const list = (Array.isArray(all) ? all : []).map((p) =>
         p.id === body.id && p.creatorId === body.creatorId ? { ...p, active: false } : p);
-      saveJson("products", list);
+      await saveJsonNow("products", list);
       return json(res, 200, { ok: true });
+    }
+
+    // ---- affiliate & token-growth ledger ----
+    // Model A is non-custodial: creators earn commission off-platform (Shopee/Lazada/AliExpress…),
+    // so the split can't be auto-withheld. Instead we track what they earned and nudge them to top
+    // up their Solana token pool. Each top-up follows 70% pool / 20% floor / 10% platform.
+    // CONTRIB_RATE is the suggested share of commission to route back — used only to size the
+    // "growth you skipped" nudge, never enforced.
+    const CONTRIB_RATE = 0.20;
+    const TOPUP_SPLIT = { pool: 0.70, floor: 0.20, platform: 0.10 };
+    const affiliateView = (rec) => {
+      const commissionEarned = Number(rec.commissionEarned) || 0;
+      const topups = Array.isArray(rec.topups) ? rec.topups : [];
+      const contributed = topups.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+      const toPool = contributed * TOPUP_SPLIT.pool;
+      const toFloor = contributed * TOPUP_SPLIT.floor;
+      const toPlatform = contributed * TOPUP_SPLIT.platform;
+      const recommended = commissionEarned * CONTRIB_RATE;
+      const missed = Math.max(0, recommended - contributed);
+      return { commissionEarned, contributed, toPool, toFloor, toPlatform, recommended, missed,
+        contributionRate: CONTRIB_RATE, split: TOPUP_SPLIT, topups };
+    };
+    if (req.method === "GET" && path === "/api/creator/affiliate") {
+      const id = url.searchParams.get("id") || "";
+      const all = await loadJson("affiliate", {});
+      return json(res, 200, affiliateView((all && all[id]) || {}));
+    }
+    if (req.method === "POST" && path === "/api/creator/affiliate/earnings") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const id = body.creatorId;
+      if (!id) return json(res, 400, { error: "creatorId required" });
+      const all = await loadJson("affiliate", {});
+      const rec = all[id] || { topups: [] };
+      rec.commissionEarned = Math.max(0, Number(body.commissionEarned) || 0);
+      all[id] = rec; await saveJsonNow("affiliate", all);
+      return json(res, 200, affiliateView(rec));
+    }
+    if (req.method === "POST" && path === "/api/creator/affiliate/topup") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const id = body.creatorId;
+      const amount = Number(body.amount) || 0;
+      if (!id || amount <= 0) return json(res, 400, { error: "creatorId and positive amount required" });
+      const all = await loadJson("affiliate", {});
+      const rec = all[id] || { commissionEarned: 0, topups: [] };
+      if (!Array.isArray(rec.topups)) rec.topups = [];
+      rec.topups.push({
+        amount,
+        pool: amount * TOPUP_SPLIT.pool,
+        floor: amount * TOPUP_SPLIT.floor,
+        platform: amount * TOPUP_SPLIT.platform,
+        currency: body.currency || "USDC",
+        mint: body.mint || "",
+        sig: body.sig || "",              // on-chain signature when paid on Solana
+        onchain: !!body.sig,
+        ts: Date.now(),
+      });
+      all[id] = rec; await saveJsonNow("affiliate", all);
+      return json(res, 200, affiliateView(rec));
     }
     // A creator's own launches (wallet-first: keyed by the launching wallet/creator id).
     if (req.method === "GET" && path === "/api/creator/launches") {

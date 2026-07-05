@@ -78,6 +78,40 @@
   .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;
     font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
   .toast.show{opacity:1}
+
+  /* The studio owns its own wallet UX (gate when out, "who" bar when in), so hide the
+     header's global Connect button here — otherwise the page shows two of them. */
+  #appHeader #oneipConnect{display:none !important}
+  .who .disc{font-size:12px;color:var(--dim);background:none;border:0;padding:4px 6px}
+  .who .disc:hover{color:var(--pink)}
+
+  /* affiliate & token-growth dashboard */
+  .section{margin-top:30px}
+  .section .stitle{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+  .section .stitle h2{margin:0;font-size:17px;font-weight:800}
+  .section .stitle .tag{font-size:11px;font-weight:700;color:var(--purple);background:var(--purple-bg);border-radius:999px;padding:3px 9px}
+  .section .ssub{margin:0 0 16px;font-size:12.5px;color:var(--muted)}
+  .agrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:760px){.agrid{grid-template-columns:1fr}}
+  .miss{grid-column:1/-1;border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    background:linear-gradient(100deg,#FFF3F5,#FFF9F0)}
+  .miss .lead{font-size:13px;color:var(--muted)}
+  .miss .big{font-size:34px;font-weight:800;letter-spacing:-.5px;color:var(--pink);margin:4px 0 2px;font-variant-numeric:tabular-nums}
+  .miss .exp{font-size:12.5px;color:var(--muted);max-width:640px}
+  .miss .exp b{color:var(--text)}
+  .mrow{display:flex;gap:26px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .mrow .m .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .mrow .m .v{font-family:var(--mono);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:1px}
+  .mrow .m .v.g{color:var(--green)} .mrow .m .v.p{color:var(--purple)}
+  .split{display:flex;gap:8px;margin:14px 0 4px}
+  .split .b{flex:1;text-align:center;border-radius:9px;padding:9px 6px;font-size:11.5px}
+  .split .b b{display:block;font-family:var(--mono);font-size:15px;font-weight:700}
+  .split .pool{background:var(--purple-bg);color:var(--purple)}
+  .split .floor{background:var(--green-bg);color:var(--green)}
+  .split .plat{background:#F0F1F4;color:var(--muted)}
+  .thist{margin-top:8px;font-size:12.5px;color:var(--muted)}
+  .thist .h{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
+  .thist .h a{color:var(--purple);text-decoration:none}
 </style>
 </head>
 <body>
@@ -99,8 +133,9 @@
   <div id="studio" style="display:none">
     <div class="who">
       <div class="av" id="whoAv"></div>
-      <div class="m"><b id="whoAddr"></b><span>Connected creator wallet</span></div>
+      <div class="m"><b id="whoAddr"></b><span>Connected Solana wallet</span></div>
       <a class="view" id="whoView" href="#" target="_blank" rel="noopener">View my creator page →</a>
+      <button class="disc" id="whoDisc">Disconnect</button>
     </div>
 
     <div class="cols">
@@ -149,6 +184,64 @@
         <div class="list" id="list"></div>
       </div>
     </div>
+
+    <!-- ===== Affiliate & Token Growth ===== -->
+    <div class="section">
+      <div class="stitle"><h2>Affiliate &amp; Token Growth</h2><span class="tag">Solana</span></div>
+      <p class="ssub">You earn commission on the affiliate links you share. Routing part of it back into
+        your token pool grows your floor and market cap — the more you top up, the stronger your token's base value.</p>
+
+      <div class="agrid">
+        <!-- the nudge -->
+        <div class="miss">
+          <div class="lead">Token growth you've skipped</div>
+          <div class="big" id="missAmt">$0</div>
+          <div class="exp">You've earned <b id="commAmt">$0</b> in affiliate commission but routed only
+            <b id="contAmt">$0</b> back into your token. The suggested <b id="rateLbl">20%</b> would have
+            added real base value your holders keep. <span id="missNote"></span></div>
+          <div class="mrow">
+            <div class="m"><div class="k">Commission earned</div><div class="v" id="mComm">$0</div></div>
+            <div class="m"><div class="k">Routed to token</div><div class="v g" id="mCont">$0</div></div>
+            <div class="m"><div class="k">Suggested (20%)</div><div class="v p" id="mRec">$0</div></div>
+          </div>
+          <div style="margin-top:14px">
+            <label style="margin-top:0">Log your affiliate commission to date (self-reported)</label>
+            <div style="display:flex;gap:9px">
+              <input id="commInput" type="number" min="0" step="0.01" placeholder="e.g. 1250" style="flex:1">
+              <button class="add" id="commBtn" style="width:auto;margin-top:0;padding:11px 18px">Save</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- top up -->
+        <div class="panel">
+          <h3>Top up your token pool</h3>
+          <p class="sub">Every top-up follows <b>70% pool · 20% floor · 10% platform</b>. Pool and floor grow your token; the platform takes 10%.</p>
+          <label for="topAmt">Amount (USDC)</label>
+          <input id="topAmt" type="number" min="0" step="0.01" placeholder="0.00">
+          <div class="split">
+            <div class="b pool"><b id="spPool">$0</b>Pool 70%</div>
+            <div class="b floor"><b id="spFloor">$0</b>Floor 20%</div>
+            <div class="b plat"><b id="spPlat">$0</b>Platform 10%</div>
+          </div>
+          <button class="add" id="topBtn">Top up &amp; grow token</button>
+          <p class="sub" id="topHint" style="margin-top:10px"></p>
+        </div>
+
+        <!-- history -->
+        <div class="panel" style="grid-column:1/-1">
+          <h3>Base value added</h3>
+          <p class="sub">Everything you've routed into your token. Floor is the redeemable base value your holders can always claim.</p>
+          <div class="mrow" style="border-top:0;padding-top:4px;margin-top:0">
+            <div class="m"><div class="k">Total routed</div><div class="v" id="hTotal">$0</div></div>
+            <div class="m"><div class="k">→ Pool</div><div class="v p" id="hPool">$0</div></div>
+            <div class="m"><div class="k">→ Floor (base)</div><div class="v g" id="hFloor">$0</div></div>
+            <div class="m"><div class="k">→ Platform</div><div class="v" id="hPlat">$0</div></div>
+          </div>
+          <div class="thist" id="thist"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -157,6 +250,7 @@
 <script src="i18n.js"></script>
 <script src="wallet.js"></script>
 <script src="header.js"></script>
+<script type="module" src="chain.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const short = (a) => a && a.length > 12 ? a.slice(0,4) + "…" + a.slice(-4) : (a||"");
@@ -164,6 +258,7 @@ const esc = (s) => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700);}
 let kind = "product";
 
+let MY_MINT = "";   // the creator's launch mint, for on-chain top-ups
 function showFor(addr){
   const on = !!addr;
   $("gate").style.display = on ? "none" : "block";
@@ -172,8 +267,101 @@ function showFor(addr){
     $("whoAddr").textContent = short(addr);
     $("whoView").href = "/creator?id=" + encodeURIComponent(addr);
     loadMine(addr);
+    loadAffiliate(addr);
+    loadMint(addr);
   }
 }
+
+async function loadMint(addr){
+  try{
+    const board = await (await fetch("/api/board")).json();
+    const rows = Array.isArray(board) ? board : (board.rows || board.launches || []);
+    const mine = rows.find(r => r.creator === addr || r.coraxCreatorId === addr);
+    MY_MINT = (mine && mine.mint) || "";
+  }catch(e){}
+}
+
+const usd = (n) => "$" + (Number(n)||0).toLocaleString(undefined,{maximumFractionDigits:2});
+let AFF = null;
+
+async function loadAffiliate(addr){
+  try{ AFF = await (await fetch("/api/creator/affiliate?id=" + encodeURIComponent(addr))).json(); }
+  catch(e){ return; }
+  renderAffiliate();
+}
+
+function renderAffiliate(){
+  if(!AFF) return;
+  const a = AFF;
+  $("missAmt").textContent = usd(a.missed);
+  $("commAmt").textContent = usd(a.commissionEarned);
+  $("contAmt").textContent = usd(a.contributed);
+  $("rateLbl").textContent = Math.round((a.contributionRate||0.2)*100) + "%";
+  $("missNote").textContent = a.missed > 0
+    ? "Top up below to close the gap and lift your token's base value."
+    : (a.commissionEarned > 0 ? "You're on track — nice work backing your token." : "Log your commission to see the gap.");
+  $("mComm").textContent = usd(a.commissionEarned);
+  $("mCont").textContent = usd(a.contributed);
+  $("mRec").textContent = usd(a.recommended);
+  // base value added
+  $("hTotal").textContent = usd(a.contributed);
+  $("hPool").textContent = usd(a.toPool);
+  $("hFloor").textContent = usd(a.toFloor);
+  $("hPlat").textContent = usd(a.toPlatform);
+  const tx = (a.topups||[]).slice().reverse();
+  $("thist").innerHTML = tx.length ? tx.map(t => `
+    <div class="h"><span>+${usd(t.amount)} · ${t.currency||"USDC"} ${t.onchain?'· on-chain':''}</span>
+      <span>Pool ${usd(t.pool)} · Floor ${usd(t.floor)}${t.sig?` · <a href="https://explorer.solana.com/tx/${t.sig}?cluster=devnet" target="_blank" rel="noopener">tx ↗</a>`:''}</span></div>`).join("")
+    : '<div style="padding:14px 0;color:var(--dim)">No top-ups yet.</div>';
+}
+
+// live 70/20/10 split preview
+function previewSplit(){
+  const v = Number($("topAmt").value) || 0;
+  $("spPool").textContent = usd(v*0.70);
+  $("spFloor").textContent = usd(v*0.20);
+  $("spPlat").textContent = usd(v*0.10);
+}
+$("topAmt").addEventListener("input", previewSplit);
+
+async function saveCommission(){
+  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
+  const val = Number($("commInput").value);
+  if(!(val >= 0)){ toast("Enter a valid amount"); return; }
+  try{
+    AFF = await (await fetch("/api/creator/affiliate/earnings", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ creatorId: addr, commissionEarned: val })})).json();
+    $("commInput").value = "";
+    renderAffiliate(); toast("Commission updated");
+  }catch(e){ toast("Could not save"); }
+}
+$("commBtn").onclick = saveCommission;
+
+async function topUp(){
+  const addr = window.KolWallet && KolWallet.address; if(!addr){ toast("Connect your wallet first"); return; }
+  const amount = Number($("topAmt").value);
+  if(!(amount > 0)){ toast("Enter an amount"); return; }
+  const btn = $("topBtn"); btn.disabled = true; btn.textContent = "Processing…";
+  let sig = "";
+  // Best-effort real on-chain contribution: a devnet buy grows the curve pool + 20% floor.
+  if(window.OneChain && MY_MINT){
+    try{
+      $("topHint").textContent = "Approve the Solana transaction in your wallet…";
+      const r = await window.OneChain.buy({ mint: MY_MINT, creator: addr, solAmount: amount });
+      sig = r && r.sig || "";
+    }catch(e){ /* fall through to ledger-only record */ }
+  }
+  try{
+    AFF = await (await fetch("/api/creator/affiliate/topup", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ creatorId: addr, amount, currency: "USDC", mint: MY_MINT, sig })})).json();
+    $("topAmt").value = ""; previewSplit(); renderAffiliate();
+    toast(sig ? "Top-up paid on Solana" : "Top-up recorded");
+    $("topHint").textContent = sig ? "Paid on-chain — pool and floor grew." : "Recorded to your token-growth ledger.";
+  }catch(e){ toast("Could not top up"); $("topHint").textContent = ""; }
+  finally{ btn.disabled = false; btn.textContent = "Top up & grow token"; }
+}
+$("topBtn").onclick = topUp;
+$("whoDisc").onclick = () => { if(window.KolWallet) KolWallet.disconnect(); };
 
 async function loadMine(addr){
   let mine = [];
