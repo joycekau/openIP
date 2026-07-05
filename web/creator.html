@@ -143,6 +143,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="i18n.js"></script>
+<script src="affiliate-networks.js"></script>
 <script src="header.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
@@ -228,17 +229,28 @@ async function load(){
       <div class="cb"><div class="t">${l.name||l.symbol||""}</div><div class="p">$${l.symbol||""}</div></div>
     </a>`).join("") : '<div class="empty">No launches yet.</div>';
 
-  // Products/services tab — from the creator's marketplace listings.
-  let products = [];
+  // Shop tab — the creator's marketplace listings + their pasted affiliate links (Model A).
+  let products = [], promoted = [];
   try{ products = await (await fetch("/api/creator/products?id=" + encodeURIComponent(creatorId))).json(); }catch(e){}
+  try{ promoted = await (await fetch("/api/creator/promoted?id=" + encodeURIComponent(creatorId))).json(); }catch(e){}
   products = Array.isArray(products) ? products : (products.products || []);
-  $("stProducts").textContent = products.length;
-  $("cntShop").textContent = products.length;
-  $("tab-shop").innerHTML = products.length ? products.map(p => `
+  promoted = Array.isArray(promoted) ? promoted : [];
+  const netOf = (id) => (window.KolAffiliates && window.KolAffiliates.byId(id)) || { name: id, emoji: "🔗" };
+  const total = products.length + promoted.length;
+  $("stProducts").textContent = total;
+  $("cntShop").textContent = total;
+  const productCards = products.map(p => `
     <a class="card" href="${p.url || '#'}"${p.url ? ' target="_blank" rel="noopener"' : ''}>
       <div class="cov">${p.image ? '<img src="'+p.image+'">' : "🛍️"}</div>
       <div class="cb"><div class="t">${p.title||""}</div><div class="p">${p.price != null ? (p.currency||'USD')+' '+p.price : ''}</div></div>
-    </a>`).join("") : '<div class="empty">No products yet.</div>';
+    </a>`).join("");
+  // affiliate links open through /go?id= so clicks are counted, then forward to the tracked link
+  const promoCards = promoted.map(p => { const n = netOf(p.network); return `
+    <a class="card" href="/go?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">
+      <div class="cov">${p.image ? '<img src="'+p.image+'">' : n.emoji}</div>
+      <div class="cb"><div class="t">${p.title || n.name}</div><div class="p" style="color:var(--purple)">${n.name} ↗</div></div>
+    </a>`; }).join("");
+  $("tab-shop").innerHTML = total ? (productCards + promoCards) : '<div class="empty">No products yet.</div>';
 }
 
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {

@@ -377,6 +377,69 @@ async function handler(req, res) {
       all[id] = rec; await saveJsonNow("affiliate", all);
       return json(res, 200, affiliateView(rec));
     }
+
+    // ---- promoted affiliate links (Model A: paste-your-own tracked links) ----
+    // Creators generate their OWN tracked link on each network (AliExpress Portals, Shopee/Lazada
+    // tool, Amazon SiteStripe, …) and paste it in. oneIP stores/serves it and counts clicks; the
+    // network pays the creator directly (non-custodial — oneIP never touches the money). We only
+    // validate the pasted URL looks like that network's *tracked* link so a raw product URL can't slip in.
+    const AFF_LINK_HOSTS = {
+      aliexpress: ["s.click.aliexpress.com", "a.aliexpress.com", "aliexpress.com"],
+      shopee: ["shope.ee", "shopee."], lazada: ["lazada.", "c.lazada."],
+      amazon: ["amzn.to", "amazon."], tiktok_shop: ["vt.tiktok.com", "shop.tiktok.com", "tiktok.com"],
+      rakuten: ["click.linksynergy.com", "rakuten."],
+      cj: ["anrdoezrs.net", "dpbolvw.net", "jdoqocy.com", "tkqlhce.com", "kqzyfj.com", "cj.com"],
+      impact: ["sjv.io", "imp.i", "impact.com"], awin: ["awin1.com", "tidd.ly", "awin.com"],
+      shareasale: ["shareasale.com", "shrsl.com"], admitad: ["ad.admitad.com", "admitad.com", "tygbg.com"],
+      ebay: ["rover.ebay.com", "ebay.to", "ebay."], clickbank: ["hop.clickbank.net", "clickbank.net"],
+    };
+    const affUrlValid = (network, u) => {
+      const hosts = AFF_LINK_HOSTS[network]; if (!hosts) return true;
+      let host = ""; try { host = new URL(u).host.toLowerCase(); } catch { return false; }
+      return hosts.some((h) => host.includes(h));
+    };
+    if (req.method === "GET" && path === "/api/creator/promoted") {
+      const id = url.searchParams.get("id") || "";
+      const all = await loadJson("promoted", []);
+      const mine = (Array.isArray(all) ? all : []).filter((p) => p && p.active !== false && (p.creatorId === id || p.coraxCreatorId === id));
+      return json(res, 200, mine);
+    }
+    if (req.method === "POST" && path === "/api/promoted") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      if (!body.creatorId || !body.network || !body.url) return json(res, 400, { error: "creatorId, network and url required" });
+      if (!/^https?:\/\//i.test(body.url)) return json(res, 400, { error: "url must start with http(s)://" });
+      if (!affUrlValid(body.network, body.url)) return json(res, 400, { error: "That doesn't look like a tracked " + body.network + " link — paste the affiliate/deep link, not a raw product URL." });
+      const all = await loadJson("promoted", []);
+      const list = Array.isArray(all) ? all : [];
+      const row = {
+        id: "promo_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+        creatorId: body.creatorId, coraxCreatorId: body.coraxCreatorId || "",
+        network: body.network, url: body.url, title: (body.title || "").slice(0, 200), image: body.image || "",
+        clicks: 0, active: true, createdAt: Date.now(),
+      };
+      list.push(row); await saveJsonNow("promoted", list);
+      return json(res, 200, row);
+    }
+    if (req.method === "POST" && path === "/api/promoted/remove") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const all = await loadJson("promoted", []);
+      const list = (Array.isArray(all) ? all : []).map((p) => (p.id === body.id && p.creatorId === body.creatorId ? { ...p, active: false } : p));
+      await saveJsonNow("promoted", list);
+      return json(res, 200, { ok: true });
+    }
+    // Click-tracking redirect: count the click, then forward to the creator's real tracked link.
+    if (req.method === "GET" && path === "/go") {
+      const id = url.searchParams.get("id") || "";
+      const all = await loadJson("promoted", []);
+      const list = Array.isArray(all) ? all : [];
+      const row = list.find((p) => p && p.id === id && p.active !== false);
+      if (!row) { res.writeHead(404, { "content-type": "text/plain" }); return res.end("link not found"); }
+      row.clicks = (row.clicks || 0) + 1;
+      saveJson("promoted", list); // fire-and-forget; the redirect shouldn't wait on the write
+      res.writeHead(302, { location: row.url, "cache-control": "no-store" });
+      return res.end();
+    }
+
     // A creator's own launches (wallet-first: keyed by the launching wallet/creator id).
     if (req.method === "GET" && path === "/api/creator/launches") {
       const w = url.searchParams.get("w");
