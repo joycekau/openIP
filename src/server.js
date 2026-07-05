@@ -130,10 +130,12 @@ async function handler(req, res) {
         THIRDWEB_CLIENT_ID: process.env.THIRDWEB_CLIENT_ID || "",
         LIFI_INTEGRATOR: integrator,
         LIFI_FEE: process.env.LIFI_FEE ? Number(process.env.LIFI_FEE) : 0, // e.g. 0.01 = 1% integrator fee
-        ONRAMPER_API_KEY: process.env.ONRAMPER_API_KEY || "", // publishable pk_ key — fiat on/off ramp
+        // Transak: FREE to integrate (no subscription) — on-ramp AND off-ramp. Publishable API key.
+        TRANSAK_API_KEY: process.env.TRANSAK_API_KEY || "",
+        TRANSAK_ENV: process.env.TRANSAK_ENV || "PRODUCTION", // or STAGING for testing
       };
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "cache-control": "public, max-age=30" });
-      return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};window.ONRAMPER_API_KEY=${JSON.stringify(cfg.ONRAMPER_API_KEY)};`);
+      return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};window.TRANSAK_API_KEY=${JSON.stringify(cfg.TRANSAK_API_KEY)};window.TRANSAK_ENV=${JSON.stringify(cfg.TRANSAK_ENV)};`);
     }
     // LI.FI API proxy — forwards /api/lifi/<path> → https://li.quest/v1/<path>, injecting the SECRET
     // x-lifi-api-key server-side so it's never exposed to the browser. The widget points its apiUrl

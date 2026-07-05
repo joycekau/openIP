@@ -73,17 +73,17 @@
     </div>
   </div>
 
-  <!-- fiat on-ramp + off-ramp (Onramper: buy AND sell in one widget) -->
+  <!-- fiat on-ramp + off-ramp (Transak: free to integrate, buy AND sell) -->
   <div class="panel" id="panel-ramp">
     <iframe id="rampFrame" title="Buy or sell crypto"
-      allow="accelerometer; autoplay; camera; gyroscope; payment; microphone"
+      allow="accelerometer; autoplay; camera; gyroscope; payment; microphone; fullscreen"
       style="display:none"></iframe>
     <div class="rampnote" id="rampnote">
       <div class="big">💳</div>
-      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by Onramper. Add your Onramper key
-      (<code>ONRAMPER_API_KEY</code>) in Vercel to enable it — it aggregates MoonPay, Transak &amp; more,
-      supporting both buying crypto and cashing out to your bank.</p>
-      <a href="https://onramper.com" target="_blank" rel="noopener">Get an Onramper key ↗</a>
+      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by Transak — free to integrate, no
+      subscription. Add your Transak key (<code>TRANSAK_API_KEY</code>) in Vercel to enable it; you earn
+      via the markup you set in the Transak dashboard.</p>
+      <a href="https://transak.com" target="_blank" rel="noopener">Get a free Transak key ↗</a>
     </div>
   </div>
 
@@ -103,13 +103,16 @@ document.querySelectorAll(".tabs button").forEach((b) => b.onclick = () => {
   document.getElementById("panel-swap").classList.toggle("on", b.dataset.tab === "swap");
   document.getElementById("panel-ramp").classList.toggle("on", b.dataset.tab === "ramp");
 });
-// Fiat on-ramp + off-ramp via Onramper (one widget, buy AND sell). Needs a publishable ONRAMPER_API_KEY
-// (set in Vercel env → served by /config.js). Without it, show the setup note.
+// Fiat on-ramp + off-ramp via Transak (free to integrate, buy AND sell in one widget).
+// productsAvailed=BUY,SELL turns on both directions. Needs a publishable TRANSAK_API_KEY
+// (Vercel env → /config.js). Without it, show the setup note.
 (function () {
-  const key = window.ONRAMPER_API_KEY || "";
+  const key = window.TRANSAK_API_KEY || "";
+  const env = (window.TRANSAK_ENV || "PRODUCTION").toUpperCase();
+  const host = env === "STAGING" ? "https://global-stg.transak.com" : "https://global.transak.com";
   const fr = document.getElementById("rampFrame"), note = document.getElementById("rampnote");
   if (key) {
-    fr.src = "https://buy.onramper.com/?apiKey=" + encodeURIComponent(key) + "&mode=buy,sell";
+    fr.src = host + "/?apiKey=" + encodeURIComponent(key) + "&productsAvailed=BUY,SELL&cryptoCurrencyList=SOL,USDC,USDT,BNB";
     fr.style.display = "block"; note.classList.remove("show");
   } else {
     fr.style.display = "none"; note.classList.add("show");
