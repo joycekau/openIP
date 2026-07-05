@@ -157,6 +157,7 @@
         <input id="linkInput" placeholder="Your CoraX channel ID or link (corax.live/channel/…)" style="flex:1">
         <button class="add" id="linkBtn" style="width:auto;margin-top:0;padding:11px 18px">Link</button>
       </div>
+      <div style="margin-top:9px;font-size:12px;color:var(--muted)">or <a id="ssoCorax" style="color:var(--purple);cursor:pointer;font-weight:600">Sign in with CoraX</a> to pick or auto-create your channel — no ID needed.</div>
     </div>
 
     <div class="cols">
@@ -406,10 +407,29 @@ if($("afAdd")) $("afAdd").onclick = addPromoted;
 
 // ---- CoraX channel link (Phase 1) ----
 async function loadLink(addr){
+  // Returning from the CoraX SSO connect flow? Capture the channel id it handed back and save the link.
+  try{
+    const u = new URL(location.href);
+    const returned = u.searchParams.get("coraxChannelId");
+    if(returned){
+      await fetch("/api/creator/link", {method:"POST", headers:{"content-type":"application/json"},
+        body: JSON.stringify({ creatorId: addr, coraxChannelId: returned })});
+      u.searchParams.delete("coraxChannelId"); history.replaceState(null, "", u.toString());
+      toast("CoraX channel connected");
+    }
+  }catch(e){}
   let d = {};
   try{ d = await (await fetch("/api/creator/link?id=" + encodeURIComponent(addr))).json(); }catch(e){}
   renderLink(d.coraxChannelId || "");
 }
+// "Sign in with CoraX" → corax picks/creates the channel and returns its id to us.
+function connectViaCoraX(){
+  const addr = window.KolWallet && KolWallet.address;
+  if(!addr){ toast("Connect your wallet first"); return; }
+  const ret = encodeURIComponent(location.origin + "/studio");
+  location.href = "https://corax.live/oneip/connect?creator=" + encodeURIComponent(addr) + "&return=" + ret;
+}
+document.addEventListener("click", (e) => { if(e.target && e.target.id === "ssoCorax") connectViaCoraX(); });
 function renderLink(ch){
   const st = $("linkStatus"), row = $("linkRow");
   if(ch){
