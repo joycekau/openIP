@@ -328,22 +328,37 @@ async function handler(req, res) {
     // "growth you skipped" nudge, never enforced.
     const CONTRIB_RATE = 0.20;
     const TOPUP_SPLIT = { pool: 0.70, floor: 0.20, platform: 0.10 };
-    const affiliateView = (rec) => {
-      const commissionEarned = Number(rec.commissionEarned) || 0;
+    // Transparent estimate: turn tracked clicks into an indicative commission. Shown WITH the
+    // assumptions so it's honest, not fabricated. Per click ≈ conv × AOV × commission.
+    const AFF_EST = { convRate: 0.04, avgOrderUsd: 40, commissionRate: 0.06 };
+    const estFromClicks = (clicks) => (Number(clicks) || 0) * AFF_EST.convRate * AFF_EST.avgOrderUsd * AFF_EST.commissionRate;
+    const sumClicks = (promoted, id) => (Array.isArray(promoted) ? promoted : [])
+      .filter((p) => p && p.active !== false && (p.creatorId === id || p.coraxCreatorId === id))
+      .reduce((s, p) => s + (Number(p.clicks) || 0), 0);
+    // rec.selfCommission: number = creator's self-reported figure (override); null/undefined = use the
+    // click estimate. (Back-compat: an old rec.commissionEarned is treated as a self-report.)
+    const affiliateView = (rec, clicks) => {
       const topups = Array.isArray(rec.topups) ? rec.topups : [];
       const contributed = topups.reduce((s, t) => s + (Number(t.amount) || 0), 0);
-      const toPool = contributed * TOPUP_SPLIT.pool;
-      const toFloor = contributed * TOPUP_SPLIT.floor;
-      const toPlatform = contributed * TOPUP_SPLIT.platform;
-      const recommended = commissionEarned * CONTRIB_RATE;
+      const estimated = estFromClicks(clicks);
+      const selfCommission = rec.selfCommission != null ? Number(rec.selfCommission)
+        : (rec.commissionEarned != null ? Number(rec.commissionEarned) : null);
+      const usingEstimate = selfCommission == null;
+      const commission = usingEstimate ? estimated : selfCommission;
+      const recommended = commission * CONTRIB_RATE;
       const missed = Math.max(0, recommended - contributed);
-      return { commissionEarned, contributed, toPool, toFloor, toPlatform, recommended, missed,
-        contributionRate: CONTRIB_RATE, split: TOPUP_SPLIT, topups };
+      return {
+        clicks: Number(clicks) || 0, estimated, selfCommission, usingEstimate, commission,
+        contributed, toPool: contributed * TOPUP_SPLIT.pool, toFloor: contributed * TOPUP_SPLIT.floor,
+        toPlatform: contributed * TOPUP_SPLIT.platform, recommended, missed,
+        contributionRate: CONTRIB_RATE, split: TOPUP_SPLIT, estAssumptions: AFF_EST, topups,
+      };
     };
     if (req.method === "GET" && path === "/api/creator/affiliate") {
       const id = url.searchParams.get("id") || "";
       const all = await loadJson("affiliate", {});
-      return json(res, 200, affiliateView((all && all[id]) || {}));
+      const clicks = sumClicks(await loadJson("promoted", []), id);
+      return json(res, 200, affiliateView((all && all[id]) || {}, clicks));
     }
     if (req.method === "POST" && path === "/api/creator/affiliate/earnings") {
       const body = JSON.parse((await readBody(req)) || "{}");
@@ -351,9 +366,11 @@ async function handler(req, res) {
       if (!id) return json(res, 400, { error: "creatorId required" });
       const all = await loadJson("affiliate", {});
       const rec = all[id] || { topups: [] };
-      rec.commissionEarned = Math.max(0, Number(body.commissionEarned) || 0);
+      if (body.reset === true || body.commissionEarned === null) { rec.selfCommission = null; delete rec.commissionEarned; } // revert to estimate
+      else rec.selfCommission = Math.max(0, Number(body.commissionEarned) || 0);
       all[id] = rec; await saveJsonNow("affiliate", all);
-      return json(res, 200, affiliateView(rec));
+      const clicks = sumClicks(await loadJson("promoted", []), id);
+      return json(res, 200, affiliateView(rec, clicks));
     }
     if (req.method === "POST" && path === "/api/creator/affiliate/topup") {
       const body = JSON.parse((await readBody(req)) || "{}");
@@ -361,7 +378,7 @@ async function handler(req, res) {
       const amount = Number(body.amount) || 0;
       if (!id || amount <= 0) return json(res, 400, { error: "creatorId and positive amount required" });
       const all = await loadJson("affiliate", {});
-      const rec = all[id] || { commissionEarned: 0, topups: [] };
+      const rec = all[id] || { topups: [] };
       if (!Array.isArray(rec.topups)) rec.topups = [];
       rec.topups.push({
         amount,
@@ -375,7 +392,8 @@ async function handler(req, res) {
         ts: Date.now(),
       });
       all[id] = rec; await saveJsonNow("affiliate", all);
-      return json(res, 200, affiliateView(rec));
+      const clicks = sumClicks(await loadJson("promoted", []), id);
+      return json(res, 200, affiliateView(rec, clicks));
     }
 
     // ---- promoted affiliate links (Model A: paste-your-own tracked links) ----
@@ -435,7 +453,9 @@ async function handler(req, res) {
       const row = list.find((p) => p && p.id === id && p.active !== false);
       if (!row) { res.writeHead(404, { "content-type": "text/plain" }); return res.end("link not found"); }
       row.clicks = (row.clicks || 0) + 1;
-      saveJson("promoted", list); // fire-and-forget; the redirect shouldn't wait on the write
+      // durable write (not the debounced saveJson) so rapid sequential clicks don't coalesce and lose
+      // increments — a few ms before the redirect is fine.
+      await saveJsonNow("promoted", list);
       res.writeHead(302, { location: row.url, "cache-control": "no-store" });
       return res.end();
     }

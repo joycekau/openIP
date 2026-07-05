@@ -227,16 +227,22 @@
         <div class="miss">
           <div class="lead">Token growth you've skipped</div>
           <div class="big" id="missAmt">$0</div>
-          <div class="exp">You've earned <b id="commAmt">$0</b> in affiliate commission but routed only
-            <b id="contAmt">$0</b> back into your token. The suggested <b id="rateLbl">20%</b> would have
-            added real base value your holders keep. <span id="missNote"></span></div>
+          <div class="exp"><b id="commSrc">Estimated</b> commission of <b id="commAmt">$0</b>, and you've routed only
+            <b id="contAmt">$0</b> back into your token. The suggested <b id="rateLbl">20%</b> would add real base
+            value your holders keep. <span id="missNote"></span></div>
           <div class="mrow">
-            <div class="m"><div class="k">Commission earned</div><div class="v" id="mComm">$0</div></div>
+            <div class="m"><div class="k" id="kComm">Commission (est.)</div><div class="v" id="mComm">$0</div></div>
+            <div class="m"><div class="k">Affiliate clicks</div><div class="v" id="mClicks">0</div></div>
             <div class="m"><div class="k">Routed to token</div><div class="v g" id="mCont">$0</div></div>
             <div class="m"><div class="k">Suggested (20%)</div><div class="v p" id="mRec">$0</div></div>
           </div>
-          <div style="margin-top:14px">
-            <label style="margin-top:0">Log your affiliate commission to date (self-reported)</label>
+          <div id="estNote" style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5"></div>
+          <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <button class="add" id="commEditBtn" style="width:auto;margin-top:0;padding:9px 16px;background:transparent;border:1px solid var(--line);color:var(--text)">✎ Edit — self-report</button>
+            <a id="useEst" style="font-size:12.5px;font-weight:600;color:var(--purple);cursor:pointer;display:none">↺ Use click estimate</a>
+          </div>
+          <div id="commEdit" style="display:none;margin-top:10px">
+            <label style="margin-top:0">Your actual affiliate commission to date — overrides the estimate</label>
             <div style="display:flex;gap:9px">
               <input id="commInput" type="number" min="0" step="0.01" placeholder="e.g. 1250" style="flex:1">
               <button class="add" id="commBtn" style="width:auto;margin-top:0;padding:11px 18px">Save</button>
@@ -392,17 +398,26 @@ async function loadAffiliate(addr){
 
 function renderAffiliate(){
   if(!AFF) return;
-  const a = AFF;
+  const a = AFF, est = a.usingEstimate;
   $("missAmt").textContent = usd(a.missed);
-  $("commAmt").textContent = usd(a.commissionEarned);
+  $("commSrc").textContent = est ? "Estimated" : "Self-reported";
+  $("kComm").textContent = est ? "Commission (est.)" : "Commission (reported)";
+  $("commAmt").textContent = usd(a.commission);
   $("contAmt").textContent = usd(a.contributed);
   $("rateLbl").textContent = Math.round((a.contributionRate||0.2)*100) + "%";
   $("missNote").textContent = a.missed > 0
     ? "Top up below to close the gap and lift your token's base value."
-    : (a.commissionEarned > 0 ? "You're on track — nice work backing your token." : "Log your commission to see the gap.");
-  $("mComm").textContent = usd(a.commissionEarned);
+    : (a.commission > 0 ? "You're on track — nice work backing your token." : "Share your affiliate links to start earning, then route a share into your token.");
+  $("mComm").textContent = usd(a.commission);
+  $("mClicks").textContent = (a.clicks||0).toLocaleString();
   $("mCont").textContent = usd(a.contributed);
   $("mRec").textContent = usd(a.recommended);
+  const es = a.estAssumptions || {};
+  $("estNote").innerHTML = est
+    ? `Estimated from <b>${(a.clicks||0).toLocaleString()}</b> tracked click${a.clicks===1?"":"s"} — assumes ${Math.round((es.convRate||0)*100)}% convert · $${es.avgOrderUsd} avg order · ${Math.round((es.commissionRate||0)*100)}% commission. Hit <b>Edit</b> to enter your real figure.`
+    : `Using your self-reported figure. Your ${(a.clicks||0).toLocaleString()}-click estimate is ${usd(a.estimated)}.`;
+  $("useEst").style.display = est ? "none" : "inline";
+  const editInput = $("commInput"); if(editInput && $("commEdit").style.display==="none") editInput.value = a.commission ? Number(a.commission).toFixed(2) : "";
   // base value added
   $("hTotal").textContent = usd(a.contributed);
   $("hPool").textContent = usd(a.toPool);
@@ -431,11 +446,26 @@ async function saveCommission(){
   try{
     AFF = await (await fetch("/api/creator/affiliate/earnings", {method:"POST", headers:{"content-type":"application/json"},
       body: JSON.stringify({ creatorId: addr, commissionEarned: val })})).json();
-    $("commInput").value = "";
-    renderAffiliate(); toast("Commission updated");
+    $("commEdit").style.display = "none";
+    renderAffiliate(); toast("Self-reported commission saved");
   }catch(e){ toast("Could not save"); }
 }
+async function resetToEstimate(){
+  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
+  try{
+    AFF = await (await fetch("/api/creator/affiliate/earnings", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ creatorId: addr, reset: true })})).json();
+    $("commEdit").style.display = "none";
+    renderAffiliate(); toast("Reverted to click estimate");
+  }catch(e){ toast("Could not update"); }
+}
 $("commBtn").onclick = saveCommission;
+$("useEst").onclick = resetToEstimate;
+$("commEditBtn").onclick = () => {
+  const box = $("commEdit"); const open = box.style.display !== "none";
+  box.style.display = open ? "none" : "block";
+  if(!open && AFF) $("commInput").value = AFF.commission ? Number(AFF.commission).toFixed(2) : "";
+};
 
 async function topUp(){
   const addr = window.KolWallet && KolWallet.address; if(!addr){ toast("Connect your wallet first"); return; }
