@@ -300,9 +300,10 @@ async function handler(req, res) {
       if (!body.creatorId || !body.title) return json(res, 400, { error: "creatorId and title required" });
       const all = await loadJson("products", []);
       const list = Array.isArray(all) ? all : [];
+      const linkedCh = (await loadJson("links", {}))[body.creatorId] || ""; // auto-stamp their CoraX channel
       const row = {
         id: "prod_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
-        creatorId: body.creatorId, coraxCreatorId: body.coraxCreatorId || "",
+        creatorId: body.creatorId, coraxCreatorId: body.coraxCreatorId || linkedCh,
         title: String(body.title).slice(0, 200), image: body.image || "",
         price: body.price != null ? Number(body.price) : null, currency: body.currency || "USD",
         url: body.url || "", kind: body.kind || "product", syncCorax: !!body.syncCorax,
@@ -318,6 +319,62 @@ async function handler(req, res) {
         p.id === body.id && p.creatorId === body.creatorId ? { ...p, active: false } : p);
       await saveJsonNow("products", list);
       return json(res, 200, { ok: true });
+    }
+    // Toggle a single product's CoraX sync (the per-product "Show in CoraX" control, post-create).
+    if (req.method === "POST" && path === "/api/products/sync") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const all = await loadJson("products", []);
+      const list = (Array.isArray(all) ? all : []).map((p) =>
+        p.id === body.id && p.creatorId === body.creatorId ? { ...p, syncCorax: !!body.syncCorax } : p);
+      await saveJsonNow("products", list);
+      return json(res, 200, { ok: true });
+    }
+
+    // ---- CoraX channel link + product-sync feed (Phase 1) ----
+    // A creator links their CoraX channel once; we store creatorId -> coraxChannelId and stamp it onto
+    // their products/links. Their syncCorax products become the "OneIP picks" feed CoraX pulls (Phase 2).
+    if (req.method === "GET" && path === "/api/creator/link") {
+      const id = url.searchParams.get("id") || "";
+      const links = await loadJson("links", {});
+      return json(res, 200, { creatorId: id, coraxChannelId: (links && links[id]) || "" });
+    }
+    if (req.method === "POST" && path === "/api/creator/link") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const id = body.creatorId;
+      if (!id) return json(res, 400, { error: "creatorId required" });
+      // accept a raw channel id or a corax channel/creator URL — extract the id segment
+      let ch = String(body.coraxChannelId || "").trim();
+      const m = ch.match(/\/(?:channel|oneip\/creator|c)\/([^/?#]+)/i);
+      if (m) ch = m[1];
+      ch = ch.replace(/[^A-Za-z0-9._:-]/g, "").slice(0, 120);
+      const links = await loadJson("links", {});
+      if (ch) links[id] = ch; else delete links[id];
+      await saveJsonNow("links", links);
+      // backfill coraxCreatorId onto this creator's products + promoted so the feed resolves immediately
+      for (const store of ["products", "promoted"]) {
+        const arr = await loadJson(store, []);
+        const upd = (Array.isArray(arr) ? arr : []).map((p) => (p && p.creatorId === id ? { ...p, coraxCreatorId: ch } : p));
+        await saveJsonNow(store, upd);
+      }
+      return json(res, 200, { creatorId: id, coraxChannelId: ch });
+    }
+    // Public feed CoraX pulls for a channel: the creator's syncCorax products (their "OneIP picks").
+    if (req.method === "GET" && path === "/api/channel-products") {
+      const ch = url.searchParams.get("corax") || "";
+      if (!ch) return json(res, 400, { error: "corax channel id required" });
+      const products = await loadJson("products", []);
+      const links = await loadJson("links", {});
+      const creatorId = Object.keys(links || {}).find((k) => links[k] === ch) || "";
+      const launch = launchpad.board().find((l) => l.creator === creatorId || l.coraxCreatorId === ch) || null;
+      const items = (Array.isArray(products) ? products : [])
+        .filter((p) => p && p.active !== false && p.coraxCreatorId === ch && p.syncCorax === true)
+        .map((p) => ({ id: p.id, kind: p.kind, title: p.title, image: p.image, price: p.price, currency: p.currency, url: p.url }));
+      return json(res, 200, {
+        coraxChannelId: ch, creatorId,
+        creator: launch ? { name: launch.name, symbol: launch.symbol, mint: launch.mint } : null,
+        products: items,
+        profileUrl: creatorId ? "https://oneip.io/creator?id=" + encodeURIComponent(creatorId) : "https://oneip.io",
+      });
     }
 
     // ---- affiliate & token-growth ledger ----

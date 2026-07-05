@@ -143,6 +143,22 @@
       <button class="disc" id="whoDisc">Disconnect</button>
     </div>
 
+    <!-- CoraX channel link — makes "Show in my CoraX channel" actually flow to corax.live -->
+    <div class="panel" style="margin-bottom:20px;padding:15px 18px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(120deg,#7C3AED,#4E9CF5);display:grid;place-items:center;font-size:17px;flex:none">💬</div>
+        <div style="flex:1;min-width:200px">
+          <div style="font-size:14px;font-weight:800">CoraX channel</div>
+          <div style="font-size:12px;color:var(--muted)" id="linkStatus">Link your CoraX channel so products you mark “Show in CoraX” appear there.</div>
+        </div>
+        <a href="https://corax.live" target="_blank" rel="noopener" style="font-size:12px;color:var(--purple);text-decoration:none;white-space:nowrap">Open CoraX ↗</a>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:11px" id="linkRow">
+        <input id="linkInput" placeholder="Your CoraX channel ID or link (corax.live/channel/…)" style="flex:1">
+        <button class="add" id="linkBtn" style="width:auto;margin-top:0;padding:11px 18px">Link</button>
+      </div>
+    </div>
+
     <div class="cols">
       <!-- add form -->
       <div class="panel">
@@ -308,6 +324,7 @@ function showFor(addr){
     loadMine(addr);
     loadAffiliate(addr);
     loadPromoted(addr);
+    loadLink(addr);
     loadMint(addr);
   }
 }
@@ -386,6 +403,44 @@ async function removePromoted(id){
   }catch(e){ toast("Could not remove"); }
 }
 if($("afAdd")) $("afAdd").onclick = addPromoted;
+
+// ---- CoraX channel link (Phase 1) ----
+async function loadLink(addr){
+  let d = {};
+  try{ d = await (await fetch("/api/creator/link?id=" + encodeURIComponent(addr))).json(); }catch(e){}
+  renderLink(d.coraxChannelId || "");
+}
+function renderLink(ch){
+  const st = $("linkStatus"), row = $("linkRow");
+  if(ch){
+    st.innerHTML = `Linked to <b style="color:var(--green)">${esc(ch)}</b> — products marked “Show in CoraX” now appear in your channel.`;
+    row.innerHTML = `<button class="add" id="linkEdit" style="width:auto;margin-top:0;padding:9px 16px;background:transparent;border:1px solid var(--line);color:var(--text)">Change</button>
+      <button class="add" id="linkUnlink" style="width:auto;margin-top:0;padding:9px 16px;background:transparent;border:1px solid var(--line);color:var(--pink)">Unlink</button>`;
+    $("linkEdit").onclick = () => { row.innerHTML = ""; row.appendChild(mkLinkInput(ch)); };
+    $("linkUnlink").onclick = () => saveLink("");
+  }else{
+    st.innerHTML = "Link your CoraX channel so products you mark “Show in CoraX” appear there.";
+    row.innerHTML = ""; row.appendChild(mkLinkInput(""));
+  }
+}
+function mkLinkInput(val){
+  const wrap = document.createElement("div"); wrap.style.cssText = "display:flex;gap:9px;flex:1;width:100%";
+  wrap.innerHTML = `<input id="linkInput" placeholder="Your CoraX channel ID or link (corax.live/channel/…)" style="flex:1" value="${esc(val)}">
+    <button class="add" id="linkBtn" style="width:auto;margin-top:0;padding:11px 18px">Save</button>`;
+  setTimeout(() => { const b = $("linkBtn"); if(b) b.onclick = () => saveLink($("linkInput").value.trim()); }, 0);
+  return wrap;
+}
+async function saveLink(ch){
+  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
+  try{
+    const d = await (await fetch("/api/creator/link", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ creatorId: addr, coraxChannelId: ch })})).json();
+    renderLink(d.coraxChannelId || "");
+    loadMine(addr); // refresh listings (coraxCreatorId backfilled)
+    toast(d.coraxChannelId ? "CoraX channel linked" : "CoraX channel unlinked");
+  }catch(e){ toast("Could not save link"); }
+}
+if($("linkBtn")) $("linkBtn").onclick = () => saveLink($("linkInput").value.trim());
 
 const usd = (n) => "$" + (Number(n)||0).toLocaleString(undefined,{maximumFractionDigits:2});
 let AFF = null;
