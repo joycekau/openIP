@@ -54,6 +54,7 @@
       <a class="open" href="https://jumper.exchange/" target="_blank" rel="noopener">Open swap ↗</a>
     </div>
   </div>
+  <div class="note" id="feenote" style="display:none;color:#B45309;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 12px;margin-top:12px"></div>
   <div class="note">Non-custodial — swaps run through LI.FI's audited routers in your own wallet. oneIP never holds funds.
     <br><a href="/studio">← Back to Studio</a></div>
 </div>
@@ -78,6 +79,24 @@ const fail = () => {
   }
   fb?.classList.add("show");
 };
+// Preflight the integrator fee: LI.FI rejects EVERY quote if the fee isn't collectable yet (integrator
+// not registered at portal.li.fi). Detect that and drop the fee so swaps keep working — it re-enables
+// automatically once the integrator + fee wallet are set up. A tiny sample quote reaches fee validation.
+const integrator = window.LIFI_INTEGRATOR || "oneip";
+let fee = Number(window.LIFI_FEE) || 0;
+if (fee > 0) {
+  try {
+    const q = await fetch(`/api/lifi/quote?fromChain=${SOLANA}&toChain=${BSC}&fromToken=11111111111111111111111111111111&toToken=0x55d398326f99059fF775485246999027B3197955&fromAmount=1000000000&fromAddress=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&toAddress=0x1111111111111111111111111111111111111111&integrator=${encodeURIComponent(integrator)}&fee=${fee}`);
+    if (!q.ok) {
+      const j = await q.json().catch(() => ({}));
+      if (/fee|integrator|collecting|configured/i.test(j.message || "")) {
+        const n = document.getElementById("feenote");
+        if (n) { n.style.display = "block"; n.innerHTML = `⚠︎ Swap fee inactive — finish your LI.FI integrator setup at <a href="https://portal.li.fi/" target="_blank" rel="noopener" style="color:#B45309;font-weight:700">portal.li.fi</a> (register + add a fee wallet) to start earning ${(fee * 100).toFixed(1)}% on every swap.`; }
+        fee = 0; // keep swaps working until the integrator is fee-configured
+      }
+    }
+  } catch (e) {}
+}
 try {
   const [React, ReactDOMClient, W] = await Promise.all([
     import("https://esm.sh/react@18.3.1"),
@@ -85,8 +104,8 @@ try {
     import("https://esm.sh/@lifi/widget@3?deps=react@18.3.1,react-dom@18.3.1&bundle"),
   ]);
   const config = {
-    integrator: window.LIFI_INTEGRATOR || "oneip",
-    fee: Number(window.LIFI_FEE) || 0,                 // e.g. 0.01 = 1% integrator fee (set in Vercel env)
+    integrator,
+    fee,                                               // 0 until the integrator is registered for fees
     sdkConfig: { apiUrl: location.origin + "/api/lifi" }, // key stays server-side in the proxy
     appearance: "light",
     variant: "wide",

@@ -122,9 +122,13 @@ async function handler(req, res) {
     // (open-ip → Settings → Environment Variables), never committed. The SECRET LIFI_API_KEY is NOT
     // here — it stays server-side in the /api/lifi proxy below.
     if (req.method === "GET" && (path === "/config.js")) {
+      // Sanitize the integrator to LI.FI's rules (alphanumeric + . _ -, max 23 chars): strip any
+      // protocol/path so an accidental "https://oneip.io" becomes "oneip.io" instead of 400-ing.
+      const integrator = (process.env.LIFI_INTEGRATOR || "oneip")
+        .replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/[^A-Za-z0-9._-]/g, "").slice(0, 23) || "oneip";
       const cfg = {
         THIRDWEB_CLIENT_ID: process.env.THIRDWEB_CLIENT_ID || "",
-        LIFI_INTEGRATOR: process.env.LIFI_INTEGRATOR || "oneip",
+        LIFI_INTEGRATOR: integrator,
         LIFI_FEE: process.env.LIFI_FEE ? Number(process.env.LIFI_FEE) : 0, // e.g. 0.01 = 1% integrator fee
       };
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "cache-control": "public, max-age=30" });
