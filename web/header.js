@@ -5,6 +5,9 @@
 // It replaces #appHeader (or prepends to <body>). Active link is derived from the URL.
 (function () {
   const CSS = `
+  /* global mobile safety — applied on every page that loads the header */
+  img,svg,video,iframe{max-width:100%}
+  @media(max-width:860px){html,body{overflow-x:hidden;max-width:100%}}
   .oneip-hdr{position:sticky;top:0;z-index:50;background:rgba(8,5,16,.72);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08);font-family:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif}
   .oneip-hdr__in{max-width:1200px;margin:0 auto;padding:0 20px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:14px}
   .oneip-hdr__logo{display:flex;align-items:center;gap:8px;cursor:pointer;font-family:"Space Grotesk","Plus Jakarta Sans",sans-serif;font-weight:700;font-size:21px;letter-spacing:-.3px;color:#F4EFFC}
@@ -28,7 +31,27 @@
   .oneip-hdr__cta{font-family:inherit;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:10px 16px;border-radius:999px;border:0;color:#fff;
     background:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);box-shadow:0 8px 26px -8px rgba(236,72,153,.6);transition:transform .18s,box-shadow .25s}
   .oneip-hdr__cta:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(236,72,153,.75)}
-  @media(max-width:600px){.oneip-hdr__nav{display:none}}
+  .oneip-hdr__burger{display:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;width:40px;height:40px;color:#F4EFFC;cursor:pointer;align-items:center;justify-content:center;flex:none}
+  .oneip-hdr__burger svg{width:20px;height:20px;display:block}
+  .oneip-mnav{position:fixed;inset:0;z-index:120;background:rgba(6,4,12,.6);backdrop-filter:blur(6px);display:none}
+  .oneip-mnav.open{display:block}
+  .oneip-mnav__panel{position:absolute;top:0;right:0;height:100%;width:min(320px,86vw);background:#0F0A1C;border-left:1px solid rgba(168,85,247,.24);
+    display:flex;flex-direction:column;padding:16px;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:-24px 0 60px -20px rgba(0,0,0,.7)}
+  .oneip-mnav__top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .oneip-mnav__x{background:none;border:0;color:#A99FC0;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px}
+  .oneip-mnav a{color:#C9C2DC;text-decoration:none;font-size:16.5px;font-weight:600;padding:14px 8px;border-radius:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .oneip-mnav a:active,.oneip-mnav a.is-active{color:#F4EFFC;background:rgba(255,255,255,.04)}
+  .oneip-mnav__langs{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
+  .oneip-mnav__langs button{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#C9C2DC;border-radius:999px;padding:8px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+  .oneip-mnav__langs button.sel{background:linear-gradient(120deg,#A855F7,#EC4899);color:#fff;border-color:transparent}
+  @media(max-width:860px){
+    .oneip-hdr__nav{display:none}
+    .oneip-hdr__burger{display:inline-flex}
+    .oneip-hdr__in{padding:0 14px;height:60px}
+    .oneip-lang{display:none}
+    .oneip-hdr__cta{padding:9px 14px;font-size:13.5px}
+  }
+  @media(max-width:380px){ .oneip-hdr__logo{font-size:19px} }
   /* unified dual-chain connect modal */
   .oneip-wm{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(6,4,12,.6);backdrop-filter:blur(4px)}
   .oneip-wm.open{display:flex}
@@ -98,9 +121,35 @@
       <nav class="oneip-hdr__nav">${navHtml}</nav>
       <div class="oneip-hdr__right"><span id="appHeaderExtra" style="display:flex;align-items:center;gap:10px"></span>${langHtml}
         <button class="oneip-hdr__cta" id="oneipConnect">${tr("connect_wallet", "Connect Wallet")}</button>
+        <button class="oneip-hdr__burger" id="oneipBurger" type="button" aria-label="menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
       </div>
     </div>`;
+    renderMobileNav();
     wire();
+  }
+
+  // The header uses backdrop-filter, which would trap a position:fixed drawer inside it — so the
+  // mobile menu is a separate body-level overlay.
+  function renderMobileNav() {
+    let m = document.getElementById("oneipMnav");
+    if (!m) { m = document.createElement("div"); m.id = "oneipMnav"; m.className = "oneip-mnav"; document.body.appendChild(m); m.addEventListener("click", () => m.classList.remove("open")); }
+    const links = NAV.map(([path, key, fb]) =>
+      `<a href="${path}"${path.startsWith("http") ? ' rel="noopener"' : ""} class="${activeFor(path) ? "is-active" : ""}" data-i18n="${key}">${tr(key, fb)}</a>`).join("");
+    const langs = window.KolI18n ? `<div class="oneip-mnav__langs">${KolI18n.LANGS.map(([c, label]) => `<button data-l="${c}" class="${c === KolI18n.lang() ? "sel" : ""}">${label}</button>`).join("")}</div>` : "";
+    m.innerHTML = `<div class="oneip-mnav__panel">
+      <div class="oneip-mnav__top"><div class="oneip-hdr__logo" onclick="location.href='/'">oneIP<span class="io">.io</span></div>
+        <button class="oneip-mnav__x" id="oneipMnavX" type="button" aria-label="close">✕</button></div>
+      ${links}${langs}</div>`;
+    // stop clicks inside the panel from closing; wire close + lang
+    m.querySelector(".oneip-mnav__panel").addEventListener("click", (e) => e.stopPropagation());
+    m.querySelector("#oneipMnavX").onclick = () => m.classList.remove("open");
+    m.querySelectorAll(".oneip-mnav__langs button").forEach((b) => b.onclick = () => {
+      if (window.KolI18n) KolI18n.setLang(b.dataset.l);
+      if (window.onLangChange) try { window.onLangChange(b.dataset.l); } catch (e) {}
+      m.classList.remove("open");
+    });
   }
 
   function wire() {
@@ -125,6 +174,8 @@
       const hookEvm = () => { if (window.KolEvm) { window.KolEvm.onChange(refreshConnectLabel); return true; } return false; };
       if (!hookEvm()) { let n = 0; const iv = setInterval(() => { if (hookEvm() || ++n > 40) clearInterval(iv); }, 100); }
     }
+    const burger = document.getElementById("oneipBurger");
+    if (burger) burger.onclick = () => { const m = document.getElementById("oneipMnav"); if (m) m.classList.add("open"); };
   }
 
   // ---- unified dual-chain connect (Solana · Phantom  +  BSC · thirdweb) ----
@@ -190,9 +241,10 @@
 
   // re-translate header labels when the language changes elsewhere
   window.addEventListener("i18n", () => {
-    document.querySelectorAll(".oneip-hdr__nav a").forEach((a) => { const k = a.getAttribute("data-i18n"); if (k) a.textContent = tr(k, a.textContent); });
+    document.querySelectorAll(".oneip-hdr__nav a, .oneip-mnav a").forEach((a) => { const k = a.getAttribute("data-i18n"); if (k) a.textContent = tr(k, a.textContent); });
     const btn = document.getElementById("oneipConnect");
     if (btn && !(window.KolWallet && KolWallet.address)) btn.textContent = tr("connect_wallet", "Connect Wallet");
+    document.querySelectorAll(".oneip-mnav__langs button").forEach((b) => b.classList.toggle("sel", !!window.KolI18n && b.dataset.l === KolI18n.lang()));
     syncLang();
   });
 
