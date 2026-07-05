@@ -43,6 +43,9 @@
   .rampnote.show{display:flex}
   .rampnote .big{font-size:38px}
   .rampnote a{color:var(--purple);font-weight:700}
+  .subtabs{display:none;gap:8px;margin-bottom:12px}
+  .subtabs button{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 18px;font-size:13.5px;font-weight:700;color:var(--muted)}
+  .subtabs button.on{background:var(--purple-bg);border-color:var(--purple);color:var(--purple)}
 </style>
 </head>
 <body>
@@ -73,17 +76,21 @@
     </div>
   </div>
 
-  <!-- fiat on-ramp + off-ramp (Transak: free to integrate, buy AND sell) -->
+  <!-- fiat on-ramp + off-ramp (MoonPay: free to integrate, separate buy/sell widgets) -->
   <div class="panel" id="panel-ramp">
+    <div class="subtabs" id="mpTabs">
+      <button class="on" data-mp="buy">Buy crypto</button>
+      <button data-mp="sell">Sell crypto</button>
+    </div>
     <iframe id="rampFrame" title="Buy or sell crypto"
-      allow="accelerometer; autoplay; camera; gyroscope; payment; microphone; fullscreen"
+      allow="accelerometer; autoplay; camera; gyroscope; payment; fullscreen"
       style="display:none"></iframe>
     <div class="rampnote" id="rampnote">
       <div class="big">💳</div>
-      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by Transak — free to integrate, no
-      subscription. Add your Transak key (<code>TRANSAK_API_KEY</code>) in Vercel to enable it; you earn
-      via the markup you set in the Transak dashboard.</p>
-      <a href="https://transak.com" target="_blank" rel="noopener">Get a free Transak key ↗</a>
+      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by MoonPay — free to integrate, no
+      subscription. Add your MoonPay key (<code>MOONPAY_API_KEY</code>) in Vercel to enable it
+      (<code>pk_test_…</code> for the sandbox); you earn via the markup you set in the MoonPay dashboard.</p>
+      <a href="https://dashboard.moonpay.com" target="_blank" rel="noopener">Get a free MoonPay key ↗</a>
     </div>
   </div>
 
@@ -103,20 +110,28 @@ document.querySelectorAll(".tabs button").forEach((b) => b.onclick = () => {
   document.getElementById("panel-swap").classList.toggle("on", b.dataset.tab === "swap");
   document.getElementById("panel-ramp").classList.toggle("on", b.dataset.tab === "ramp");
 });
-// Fiat on-ramp + off-ramp via Transak (free to integrate, buy AND sell in one widget).
-// productsAvailed=BUY,SELL turns on both directions. Needs a publishable TRANSAK_API_KEY
-// (Vercel env → /config.js). Without it, show the setup note.
+// Fiat on-ramp + off-ramp via MoonPay (free to integrate). MoonPay splits buy (on-ramp) and sell
+// (off-ramp) into separate widgets, so we sub-toggle between them. Test keys (pk_test_…) use the
+// sandbox hosts and need no URL signing. Needs a publishable MOONPAY_API_KEY (Vercel env → /config.js).
 (function () {
-  const key = window.TRANSAK_API_KEY || "";
-  const env = (window.TRANSAK_ENV || "PRODUCTION").toUpperCase();
-  const host = env === "STAGING" ? "https://global-stg.transak.com" : "https://global.transak.com";
-  const fr = document.getElementById("rampFrame"), note = document.getElementById("rampnote");
-  if (key) {
-    fr.src = host + "/?apiKey=" + encodeURIComponent(key) + "&productsAvailed=BUY,SELL&cryptoCurrencyList=SOL,USDC,USDT,BNB";
-    fr.style.display = "block"; note.classList.remove("show");
-  } else {
-    fr.style.display = "none"; note.classList.add("show");
-  }
+  const key = window.MOONPAY_API_KEY || "";
+  const fr = document.getElementById("rampFrame"), note = document.getElementById("rampnote"), tabs = document.getElementById("mpTabs");
+  if (!key) { fr.style.display = "none"; tabs.style.display = "none"; note.classList.add("show"); return; }
+  const sandbox = /^pk_test/i.test(key);
+  const host = (mode) => (mode === "sell"
+    ? (sandbox ? "https://sell-sandbox.moonpay.com" : "https://sell.moonpay.com")
+    : (sandbox ? "https://buy-sandbox.moonpay.com" : "https://buy.moonpay.com"));
+  const load = (mode) => {
+    const cur = mode === "sell" ? "&defaultBaseCurrencyCode=sol" : "&defaultCurrencyCode=sol";
+    fr.src = host(mode) + "/?apiKey=" + encodeURIComponent(key) + cur;
+    fr.style.display = "block";
+  };
+  note.classList.remove("show"); tabs.style.display = "flex";
+  tabs.querySelectorAll("button").forEach((b) => b.onclick = () => {
+    tabs.querySelectorAll("button").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); load(b.dataset.mp);
+  });
+  load("buy");
 })();
 </script>
 <script type="module">
