@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>oneIP · Swap</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
+    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
+    --purple:#7C3AED; --purple-bg:#F3EEFF; --green:#0BBF77;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px}
+  .wrap{max-width:560px;margin:0 auto;padding:26px 20px 80px}
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+  .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
+    background:linear-gradient(135deg,var(--purple),#4E9CF5)}
+  .head h1{margin:0;font-size:20px;font-weight:800}
+  .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+  .why{background:var(--purple-bg);border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin:16px 0;font-size:12.5px;color:var(--muted)}
+  .why b{color:var(--purple)}
+  .frame{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel);min-height:640px}
+  .frame iframe{width:100%;height:640px;border:0;display:block}
+  .fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:30px;background:var(--panel)}
+  .fallback .big{font-size:38px}
+  .fallback p{margin:0;color:var(--muted);font-size:13px;max-width:340px}
+  .open{background:linear-gradient(120deg,#A855F7,#EC4899);color:#fff;border:0;border-radius:999px;padding:12px 26px;font-size:14px;font-weight:700;text-decoration:none;display:inline-block}
+  .open:hover{filter:brightness(1.06)}
+  .note{text-align:center;font-size:11.5px;color:var(--dim);margin-top:14px}
+  .note a{color:var(--purple)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="ic">🔁</div>
+    <div><h1>Cross-chain Swap</h1><p>Move funds between Solana and BNB Chain — powered by LI.FI.</p></div>
+  </div>
+  <div class="why">oneIP is dual-chain: your creator <b>token</b> lives on Solana, the <b>marketplace</b> settles on BSC.
+    Use this to swap into SOL/USDC to top up your token, or into BSC tokens to pay in the marketplace.</div>
+
+  <div class="frame">
+    <!-- LI.FI's hosted Jumper UI supports Solana + EVM (BSC). If the embed is blocked by the host,
+         the fallback below stays visible with an open-in-new-tab option. -->
+    <iframe id="swapFrame" title="LI.FI cross-chain swap"
+      src="https://jumper.exchange/?fromChain=1151111081099710&toChain=56"
+      allow="clipboard-write; clipboard-read; web3"></iframe>
+    <div class="fallback" id="fallback">
+      <div class="big">🔁</div>
+      <p>Opening the LI.FI swap… if it doesn't load here, open it in a new tab — same swap, all chains.</p>
+      <a class="open" href="https://jumper.exchange/" target="_blank" rel="noopener">Open swap ↗</a>
+    </div>
+  </div>
+  <div class="note">Non-custodial — swaps run through LI.FI's audited routers in your own wallet. oneIP never holds funds.
+    <br><a href="/studio">← Back to Studio</a></div>
+</div>
+
+<script src="i18n.js"></script>
+<script src="header.js"></script>
+<script>
+// If the iframe successfully loads a cross-origin doc, hide the fallback overlay. (A frame-blocked
+// load never fires `load`, so the fallback stays — exactly what we want.)
+const f = document.getElementById("swapFrame");
+f.addEventListener("load", () => { const fb = document.getElementById("fallback"); if (fb) fb.style.display = "none"; });
+</script>
+</body>
+</html>

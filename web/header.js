@@ -29,6 +29,26 @@
     background:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);box-shadow:0 8px 26px -8px rgba(236,72,153,.6);transition:transform .18s,box-shadow .25s}
   .oneip-hdr__cta:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(236,72,153,.75)}
   @media(max-width:600px){.oneip-hdr__nav{display:none}}
+  /* unified dual-chain connect modal */
+  .oneip-wm{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(6,4,12,.6);backdrop-filter:blur(4px)}
+  .oneip-wm.open{display:flex}
+  .oneip-wm__card{width:min(400px,92vw);background:#150E26;border:1px solid rgba(168,85,247,.28);border-radius:18px;padding:22px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:#F4EFFC}
+  .oneip-wm__h{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+  .oneip-wm__h b{font-size:17px;font-weight:800}
+  .oneip-wm__x{background:none;border:0;color:#A99FC0;font-size:20px;cursor:pointer;line-height:1}
+  .oneip-wm__sub{font-size:12.5px;color:#A99FC0;margin-bottom:16px}
+  .oneip-wm__opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:14px;margin-bottom:10px;cursor:pointer;color:inherit;font-family:inherit;transition:.15s}
+  .oneip-wm__opt:hover{border-color:rgba(168,85,247,.5);background:rgba(255,255,255,.06)}
+  .oneip-wm__ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;font-size:19px;flex:none}
+  .oneip-wm__ic.sol{background:linear-gradient(135deg,#9945FF,#14F195)}
+  .oneip-wm__ic.bsc{background:linear-gradient(135deg,#F0B90B,#F8D12F);color:#2A2300}
+  .oneip-wm__t{flex:1;min-width:0}
+  .oneip-wm__t .n{font-size:14.5px;font-weight:700}
+  .oneip-wm__t .m{font-size:11.5px;color:#A99FC0;margin-top:1px}
+  .oneip-wm__t .m.on{color:#25F4EE}
+  .oneip-wm__act{font-size:12px;font-weight:700;color:#A99FC0;white-space:nowrap}
+  .oneip-wm__swap{display:block;text-align:center;margin-top:6px;font-size:12.5px;color:#C9A9FF;text-decoration:none}
+  .oneip-wm__swap:hover{color:#F4EFFC}
   `;
 
   // nav: [path, i18n-key, fallback]. Creators = creator directory/profiles,
@@ -96,12 +116,75 @@
       if (!window.__oneipLangDoc) { window.__oneipLangDoc = true; document.addEventListener("click", () => { const w = document.getElementById("oneipLangWrap"); if (w) w.classList.remove("open"); }); }
     }
     const btn = document.getElementById("oneipConnect");
-    if (btn && window.KolWallet) {
-      const label = () => (KolWallet.address ? KolWallet.short() : tr("connect_wallet", "Connect Wallet"));
-      btn.textContent = label();
-      btn.onclick = () => (KolWallet.address ? KolWallet.disconnect() : KolWallet.connect().catch((e) => alert(e.message)));
-      KolWallet.onChange(() => (btn.textContent = label()));
+    if (btn) {
+      btn.onclick = openWalletModal;
+      refreshConnectLabel();
+      if (window.KolWallet) KolWallet.onChange(refreshConnectLabel);
+      // KolEvm (thirdweb) may load a tick later (module import); subscribe when it's ready.
+      const hookEvm = () => { if (window.KolEvm) { window.KolEvm.onChange(refreshConnectLabel); return true; } return false; };
+      if (!hookEvm()) { let n = 0; const iv = setInterval(() => { if (hookEvm() || ++n > 40) clearInterval(iv); }, 100); }
     }
+  }
+
+  // ---- unified dual-chain connect (Solana · Phantom  +  BSC · thirdweb) ----
+  function connectLabel() {
+    const sol = window.KolWallet && KolWallet.address;
+    const evm = window.KolEvm && KolEvm.address;
+    if (sol && evm) return KolWallet.short() + " +BSC";
+    if (sol) return KolWallet.short();
+    if (evm) return KolEvm.short();
+    return tr("connect_wallet", "Connect Wallet");
+  }
+  function refreshConnectLabel() {
+    const btn = document.getElementById("oneipConnect");
+    if (btn) btn.textContent = connectLabel();
+    renderWalletModal();
+  }
+  function ensureModal() {
+    let m = document.getElementById("oneipWalletModal");
+    if (!m) {
+      m = document.createElement("div");
+      m.id = "oneipWalletModal"; m.className = "oneip-wm";
+      document.body.appendChild(m);
+      m.addEventListener("click", (e) => { if (e.target === m) m.classList.remove("open"); });
+    }
+    return m;
+  }
+  function walletRow(kind) {
+    const isSol = kind === "sol";
+    const w = isSol ? window.KolWallet : window.KolEvm;
+    const on = w && w.address;
+    const name = isSol ? "Solana · Phantom" : "BNB Chain · thirdweb";
+    const meta = isSol ? "Creator tokens · launch, trade, top-up" : "Marketplace payments (BSC)";
+    return `<button class="oneip-wm__opt" data-k="${kind}">
+      <span class="oneip-wm__ic ${isSol ? "sol" : "bsc"}">${isSol ? "◎" : "⬡"}</span>
+      <span class="oneip-wm__t"><span class="n">${name}</span><span class="m ${on ? "on" : ""}">${on ? w.short() : meta}</span></span>
+      <span class="oneip-wm__act">${on ? "Disconnect" : "Connect"}</span>
+    </button>`;
+  }
+  function renderWalletModal() {
+    const m = document.getElementById("oneipWalletModal");
+    if (!m || !m.classList.contains("open")) return;
+    m.innerHTML = `<div class="oneip-wm__card">
+      <div class="oneip-wm__h"><b>Connect wallet</b><button class="oneip-wm__x" id="oneipWmX">✕</button></div>
+      <div class="oneip-wm__sub">oneIP is dual-chain — your token is on Solana, the marketplace settles on BSC.</div>
+      ${walletRow("sol")}${walletRow("bsc")}
+      <a class="oneip-wm__swap" href="/swap">Need to move funds across chains? Swap ↗</a>
+    </div>`;
+    m.querySelector("#oneipWmX").onclick = () => m.classList.remove("open");
+    m.querySelectorAll(".oneip-wm__opt").forEach((b) => b.onclick = async () => {
+      const isSol = b.dataset.k === "sol";
+      const w = isSol ? window.KolWallet : window.KolEvm;
+      if (!w) { alert(isSol ? "Solana wallet unavailable" : "thirdweb not loaded yet — try again in a moment"); return; }
+      try { if (w.address) await w.disconnect(); else await w.connect(); }
+      catch (e) { alert(e.message || "Wallet error"); }
+      refreshConnectLabel();
+    });
+  }
+  function openWalletModal() {
+    const m = ensureModal();
+    m.classList.add("open");
+    renderWalletModal();
   }
 
   // re-translate header labels when the language changes elsewhere
@@ -113,5 +196,8 @@
   });
 
   const style = document.createElement("style"); style.textContent = CSS; document.head.appendChild(style);
+  // Load the thirdweb (BSC) connector once, globally, so every page has window.KolEvm for the
+  // dual-chain connect modal — without each page needing to include it.
+  if (!window.__oneipEvmLoaded) { window.__oneipEvmLoaded = true; const s = document.createElement("script"); s.type = "module"; s.src = "/thirdweb.js"; s.onerror = () => {}; document.head.appendChild(s); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render); else render();
 })();

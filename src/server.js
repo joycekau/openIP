@@ -110,9 +110,10 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/shop" || path === "/shop.html")) return servePage(res, "shop.html");
     if (req.method === "GET" && (path === "/creators" || path === "/creator" || path === "/creator.html")) return servePage(res, "creator.html");
     if (req.method === "GET" && (path === "/studio" || path === "/studio.html")) return servePage(res, "studio.html");
+    if (req.method === "GET" && (path === "/swap" || path === "/swap.html")) return servePage(res, "swap.html");
 
     // static scripts + brand assets
-    if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js")) {
+    if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js" || path === "/thirdweb.js")) {
       const js = await readFile(join(ROOT, "web", path.slice(1)), "utf8");
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8" });
       return res.end(js);
