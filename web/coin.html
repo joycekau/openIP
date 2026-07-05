@@ -149,7 +149,11 @@ async function checkRedeem(){
   if(!window.OneChain){ box.innerHTML='<div class="muted" style="font-size:12px">链上模块加载中,请稍候重试…</div>'; return; }
   box.innerHTML='<div class="muted" style="font-size:12px">读取链上金库与你的持仓…</div>';
   try{
-    let owner=me(); if(!owner && window.KolWallet){ await KolWallet.connect(); owner=me(); }
+    let owner=me();
+    if(!owner && window.KolWallet){
+      if(window.openWalletModal){ window.openWalletModal(); box.innerHTML='<div class="muted" style="font-size:12px">请先连接你的 Solana 钱包,然后重试。</div>'; return; }
+      try{ await KolWallet.connect(); owner=me(); }catch(e){ box.innerHTML='<div class="muted" style="font-size:12px">请先连接你的 Solana 钱包。</div>'; return; }
+    }
     const q=await OneChain.redeemQuote(mint, owner);
     if(!q.holderRaw||BigInt(q.holderRaw)<=0n){ box.innerHTML='<div class="muted" style="font-size:12px">你的钱包里没有这个币,无可赎回。</div>'; return; }
     box.innerHTML=`<div class="cstats" style="margin:0 0 10px">

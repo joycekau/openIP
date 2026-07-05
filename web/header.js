@@ -169,7 +169,7 @@
     if (btn) {
       btn.onclick = openWalletModal;
       refreshConnectLabel();
-      if (window.KolWallet) KolWallet.onChange(refreshConnectLabel);
+      if (window.KolWallet) { KolWallet.onChange(refreshConnectLabel); KolWallet.onList(() => renderWalletModal()); }
       // KolEvm (thirdweb) may load a tick later (module import); subscribe when it's ready.
       const hookEvm = () => { if (window.KolEvm) { window.KolEvm.onChange(refreshConnectLabel); return true; } return false; };
       if (!hookEvm()) { let n = 0; const iv = setInterval(() => { if (hookEvm() || ++n > 40) clearInterval(iv); }, 100); }
@@ -202,15 +202,47 @@
     }
     return m;
   }
-  function walletRow(kind) {
-    const isSol = kind === "sol";
-    const w = isSol ? window.KolWallet : window.KolEvm;
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const walletIcon = (icon, fallback, cls) =>
+    icon && /^data:image\//.test(icon)
+      ? `<span class="oneip-wm__ic ${cls}" style="background:#0d0a18"><img src="${esc(icon)}" alt="" style="width:24px;height:24px;border-radius:6px"></span>`
+      : `<span class="oneip-wm__ic ${cls}">${fallback}</span>`;
+
+  // Solana section: one row per detected Wallet Standard wallet (Phantom, Solflare, Backpack …).
+  // When connected, collapses to a single "connected" row. When none are installed, shows install links.
+  function solanaSection() {
+    const kw = window.KolWallet;
+    if (kw && kw.address) {
+      return `<button class="oneip-wm__opt" data-k="sol-disc">
+        <span class="oneip-wm__ic sol">◎</span>
+        <span class="oneip-wm__t"><span class="n">Solana wallet</span><span class="m on">${esc(kw.short())}</span></span>
+        <span class="oneip-wm__act">Disconnect</span>
+      </button>`;
+    }
+    const wallets = kw ? kw.list() : [];
+    if (wallets.length) {
+      return wallets.map((w) => `<button class="oneip-wm__opt" data-k="sol" data-name="${esc(w.name)}">
+        ${walletIcon(w.icon, "◎", "sol")}
+        <span class="oneip-wm__t"><span class="n">${esc(w.name)}</span><span class="m">Creator tokens · launch, trade, top-up</span></span>
+        <span class="oneip-wm__act">Connect</span>
+      </button>`).join("");
+    }
+    return `<div class="oneip-wm__opt" style="cursor:default">
+      <span class="oneip-wm__ic sol">◎</span>
+      <span class="oneip-wm__t"><span class="n">No Solana wallet detected</span><span class="m">Install one to launch &amp; trade tokens</span></span>
+    </div>
+    <div style="display:flex;gap:8px;margin:-2px 0 10px">
+      <a class="oneip-wm__swap" style="flex:1;text-align:center;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:10px" href="https://phantom.app/" target="_blank" rel="noopener">Phantom ↗</a>
+      <a class="oneip-wm__swap" style="flex:1;text-align:center;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:10px" href="https://solflare.com/" target="_blank" rel="noopener">Solflare ↗</a>
+      <a class="oneip-wm__swap" style="flex:1;text-align:center;padding:8px;border:1px solid rgba(255,255,255,.08);border-radius:10px" href="https://backpack.app/" target="_blank" rel="noopener">Backpack ↗</a>
+    </div>`;
+  }
+  function bscRow() {
+    const w = window.KolEvm;
     const on = w && w.address;
-    const name = isSol ? "Solana · Phantom" : "BNB Chain · thirdweb";
-    const meta = isSol ? "Creator tokens · launch, trade, top-up" : "Marketplace payments (BSC)";
-    return `<button class="oneip-wm__opt" data-k="${kind}">
-      <span class="oneip-wm__ic ${isSol ? "sol" : "bsc"}">${isSol ? "◎" : "⬡"}</span>
-      <span class="oneip-wm__t"><span class="n">${name}</span><span class="m ${on ? "on" : ""}">${on ? w.short() : meta}</span></span>
+    return `<button class="oneip-wm__opt" data-k="bsc">
+      <span class="oneip-wm__ic bsc">⬡</span>
+      <span class="oneip-wm__t"><span class="n">BNB Chain · thirdweb</span><span class="m ${on ? "on" : ""}">${on ? esc(w.short()) : "Marketplace payments (BSC)"}</span></span>
       <span class="oneip-wm__act">${on ? "Disconnect" : "Connect"}</span>
     </button>`;
   }
@@ -220,16 +252,24 @@
     m.innerHTML = `<div class="oneip-wm__card">
       <div class="oneip-wm__h"><b>Connect wallet</b><button class="oneip-wm__x" id="oneipWmX">✕</button></div>
       <div class="oneip-wm__sub">oneIP is dual-chain — your token is on Solana, the marketplace settles on BSC.</div>
-      ${walletRow("sol")}${walletRow("bsc")}
+      ${solanaSection()}${bscRow()}
       <a class="oneip-wm__swap" href="/swap">Need to move funds across chains? Swap ↗</a>
     </div>`;
     m.querySelector("#oneipWmX").onclick = () => m.classList.remove("open");
-    m.querySelectorAll(".oneip-wm__opt").forEach((b) => b.onclick = async () => {
-      const isSol = b.dataset.k === "sol";
-      const w = isSol ? window.KolWallet : window.KolEvm;
-      if (!w) { alert(isSol ? "Solana wallet unavailable" : "thirdweb not loaded yet — try again in a moment"); return; }
-      try { if (w.address) await w.disconnect(); else await w.connect(); }
-      catch (e) { alert(e.message || "Wallet error"); }
+    m.querySelectorAll(".oneip-wm__opt[data-k]").forEach((b) => b.onclick = async () => {
+      const k = b.dataset.k;
+      try {
+        if (k === "sol") { await window.KolWallet.connect(b.dataset.name); }
+        else if (k === "sol-disc") { await window.KolWallet.disconnect(); }
+        else if (k === "bsc") {
+          const w = window.KolEvm;
+          if (!w) { alert("thirdweb not loaded yet — try again in a moment"); return; }
+          if (w.address) await w.disconnect(); else await w.connect();
+        }
+      } catch (e) {
+        if (e && e.message === "PICK_WALLET") { /* list already shown */ }
+        else alert((e && e.message) || "Wallet error");
+      }
       refreshConnectLabel();
     });
   }
@@ -238,6 +278,9 @@
     m.classList.add("open");
     renderWalletModal();
   }
+  // Expose the unified connect modal so any page (e.g. the Studio gate) can trigger it instead of
+  // hard-jumping to a single wallet's site.
+  window.openWalletModal = openWalletModal;
 
   // re-translate header labels when the language changes elsewhere
   window.addEventListener("i18n", () => {
@@ -271,5 +314,8 @@
   // two loading in any order is fine.
   if (!window.__oneipCfgLoaded) { window.__oneipCfgLoaded = true; const c = document.createElement("script"); c.src = "/config.js"; c.onerror = () => {}; document.head.appendChild(c); }
   if (!window.__oneipEvmLoaded) { window.__oneipEvmLoaded = true; const s = document.createElement("script"); s.type = "module"; s.src = "/thirdweb.js"; s.onerror = () => {}; document.head.appendChild(s); }
+  // Load the Solana (Wallet Standard) connector globally so every page's Connect button works — pages
+  // that need signing (studio/launch/coin) still include wallet.js directly; the IIFE self-guards.
+  if (!window.KolWallet && !window.__oneipWalletLoaded) { window.__oneipWalletLoaded = true; const w = document.createElement("script"); w.src = "/wallet.js"; w.onerror = () => {}; document.head.appendChild(w); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render); else render();
 })();

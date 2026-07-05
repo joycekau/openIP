@@ -1,6 +1,7 @@
-// Browser-side kolpad client: mint a REAL token on Solana devnet, signed by the user's Phantom.
-// Ports the exact account ordering proven in scripts/sol/02-create-token.js. Loaded as an ES
-// module (CDN web3.js); exposes window.OneChain. No private keys here — Phantom signs as the
+// Browser-side kolpad client: mint a REAL token on Solana devnet, signed by the user's connected
+// Solana wallet (any Wallet Standard wallet — Phantom, Solflare, Backpack …, via window.KolWallet).
+// Ports the exact account ordering proven in scripts/sol/02-create-token.js. Loaded as an ES module
+// (CDN web3.js); exposes window.OneChain. No private keys here — the user's wallet signs as the
 // creator/fee-payer; a fresh mint keypair co-signs in-memory and is discarded.
 import {
   Connection, PublicKey, Transaction, TransactionInstruction,
@@ -18,10 +19,17 @@ const FEE_RECIPIENT = new PublicKey("4U5Jzb2H6DcmwqaNEMibBDy1zhezWutsjJXE1ByuC17
 const RPC = "https://api.devnet.solana.com";
 const connection = new Connection(RPC, "confirmed");
 
-function provider() {
-  const p = (window.phantom && window.phantom.solana) || window.solana;
-  if (!p || !p.isPhantom) { window.open("https://phantom.app/", "_blank"); throw new Error("Phantom wallet not found — install it to continue"); }
-  return p;
+// The user's Solana wallet is chosen + connected through the shared connect modal (window.KolWallet,
+// Wallet Standard). Signing flows require an already-connected wallet; the UI gates on this first.
+function requireWallet() {
+  const addr = window.KolWallet && window.KolWallet.address;
+  if (!addr) throw new Error("Connect your Solana wallet first");
+  return addr;
+}
+// Sign + broadcast a built transaction via the connected wallet. Returns the base58 signature.
+function signAndSend(tx) {
+  if (!window.KolWallet) throw new Error("Wallet connector not loaded");
+  return window.KolWallet.signAndSend(tx, "solana:devnet", connection);
 }
 
 // Anchor discriminator = sha256("global:<name>")[0..8], via WebCrypto.
@@ -63,10 +71,7 @@ function newMint() { return Keypair.generate(); }
 
 async function createToken({ name, symbol, uri, mint } = {}) {
   if (!name || !symbol) throw new Error("name and symbol required");
-  const p = provider();
-  let creatorStr = (window.KolWallet && window.KolWallet.address) || null;
-  if (!creatorStr) creatorStr = (await p.connect()).publicKey.toString();
-  const creator = new PublicKey(creatorStr);
+  const creator = new PublicKey(requireWallet());
 
   if (!mint || !mint.publicKey) mint = Keypair.generate();
   const mintB58 = mint.publicKey.toBase58();
@@ -96,8 +101,8 @@ async function createToken({ name, symbol, uri, mint } = {}) {
   const tx = new Transaction().add(new TransactionInstruction({ programId: PROGRAM_ID, keys, data }));
   tx.feePayer = creator;
   tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-  tx.partialSign(mint); // the mint co-signs its own creation; Phantom adds the creator signature
-  const { signature } = await provider().signAndSendTransaction(tx);
+  tx.partialSign(mint); // the mint co-signs its own creation; the wallet adds the creator signature
+  const signature = await signAndSend(tx);
   await connection.confirmTransaction(signature, "confirmed");
   return { mint: mintB58, sig: signature, explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet` };
 }
@@ -108,7 +113,7 @@ async function createToken({ name, symbol, uri, mint } = {}) {
  *  (the vault also holds a tiny rent reserve); the on-chain pro-rata math is authoritative. */
 async function redeemQuote(mintB58, ownerStr) {
   const mint = new PublicKey(mintB58);
-  const owner = new PublicKey(ownerStr || ((window.KolWallet && window.KolWallet.address) || (await provider().connect()).publicKey.toString()));
+  const owner = new PublicKey(ownerStr || requireWallet());
   const vault = pda([seed("vault"), mint.toBytes()]);
   const ata = ataFor(owner, mint);
   const [vaultLamports, supply, holder] = await Promise.all([
@@ -128,9 +133,7 @@ async function redeemQuote(mintB58, ownerStr) {
  *  + fee-payer. Ports the RedeemFloor account order from lib.rs. Returns { sig, explorer, redeemedRaw }. */
 async function redeemFloor({ mint: mintB58, rawAmount } = {}) {
   if (!mintB58) throw new Error("mint required");
-  const p = provider();
-  const ownerStr = (window.KolWallet && window.KolWallet.address) || (await p.connect()).publicKey.toString();
-  const holder = new PublicKey(ownerStr);
+  const holder = new PublicKey(requireWallet());
   const mint = new PublicKey(mintB58);
   const launch = pda([seed("launch"), mint.toBytes()]);
   const vault = pda([seed("vault"), mint.toBytes()]);
@@ -155,7 +158,7 @@ async function redeemFloor({ mint: mintB58, rawAmount } = {}) {
   const tx = new Transaction().add(new TransactionInstruction({ programId: PROGRAM_ID, keys, data }));
   tx.feePayer = holder;
   tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-  const { signature } = await p.signAndSendTransaction(tx);
+  const signature = await signAndSend(tx);
   await connection.confirmTransaction(signature, "confirmed");
   return { sig: signature, explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet`, redeemedRaw: String(amount) };
 }
@@ -182,9 +185,7 @@ function createAtaIx(payer, owner, mint, ata) {
 async function buy({ mint: mintB58, creator, solAmount } = {}) {
   if (!mintB58 || !creator) throw new Error("mint and creator required");
   if (!(solAmount > 0)) throw new Error("SOL amount must be > 0");
-  const p = provider();
-  const buyerStr = (window.KolWallet && window.KolWallet.address) || (await p.connect()).publicKey.toString();
-  const buyer = new PublicKey(buyerStr);
+  const buyer = new PublicKey(requireWallet());
   const mint = new PublicKey(mintB58);
   const launch = pda([seed("launch"), mint.toBytes()]);
   const vault = pda([seed("vault"), mint.toBytes()]);
@@ -209,7 +210,7 @@ async function buy({ mint: mintB58, creator, solAmount } = {}) {
   ] }));
   tx.feePayer = buyer;
   tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-  const { signature } = await p.signAndSendTransaction(tx);
+  const signature = await signAndSend(tx);
   await connection.confirmTransaction(signature, "confirmed");
   return { sig: signature, explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet` };
 }
@@ -219,9 +220,7 @@ async function buy({ mint: mintB58, creator, solAmount } = {}) {
  *  the SellMarket account order from lib.rs. Returns { sig, explorer, soldRaw }. */
 async function sellMarket({ mint: mintB58, creator, rawAmount } = {}) {
   if (!mintB58 || !creator) throw new Error("mint and creator required");
-  const p = provider();
-  const sellerStr = (window.KolWallet && window.KolWallet.address) || (await p.connect()).publicKey.toString();
-  const seller = new PublicKey(sellerStr);
+  const seller = new PublicKey(requireWallet());
   const mint = new PublicKey(mintB58);
   const launch = pda([seed("launch"), mint.toBytes()]);
   const vault = pda([seed("vault"), mint.toBytes()]);
@@ -245,7 +244,7 @@ async function sellMarket({ mint: mintB58, creator, rawAmount } = {}) {
   ] }));
   tx.feePayer = seller;
   tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-  const { signature } = await p.signAndSendTransaction(tx);
+  const signature = await signAndSend(tx);
   await connection.confirmTransaction(signature, "confirmed");
   return { sig: signature, explorer: `https://explorer.solana.com/tx/${signature}?cluster=devnet`, soldRaw: String(amount) };
 }

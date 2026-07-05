@@ -632,7 +632,11 @@ $("kindSeg").querySelectorAll("button").forEach(b => b.onclick = () => {
   b.classList.add("on"); kind = b.dataset.kind;
 });
 $("addBtn").onclick = addItem;
-$("gateConnect").onclick = () => { if(window.KolWallet) KolWallet.connect().catch(e => alert(e.message)); };
+// Open the shared multi-wallet picker (Phantom/Solflare/Backpack…) instead of one hardcoded wallet.
+$("gateConnect").onclick = () => {
+  if (window.openWalletModal) return window.openWalletModal();
+  if (window.KolWallet) KolWallet.connect().catch(e => { if (e.message !== "PICK_WALLET") alert(e.message); });
+};
 
 // react to wallet connect/disconnect
 if(window.KolWallet){

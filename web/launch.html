@@ -116,7 +116,10 @@ window.addEventListener('i18n',()=>{ if(lastLaunch){renderSocials(lastLaunch);re
 
 document.getElementById('createBtn').onclick=async()=>{
   let creator=KolWallet.address;
-  if(!creator){ try{ creator=await KolWallet.connect(); }catch(e){ alert('Connect your Phantom wallet first'); return; } }
+  if(!creator){
+    if(window.openWalletModal){ window.openWalletModal(); alert('Connect your Solana wallet, then tap Launch again'); return; }
+    try{ creator=await KolWallet.connect(); }catch(e){ alert(e.message==='PICK_WALLET'?'Choose a Solana wallet to continue':(e.message||'Connect your Solana wallet first')); return; }
+  }
   const name=f_name.value.trim(),symbol=f_sym.value.trim();
   if(!name||!symbol){alert('name + symbol required');return;}
   if(!window.OneChain){alert('On-chain module still loading — try again in a second.');return;}
