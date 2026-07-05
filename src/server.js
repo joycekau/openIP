@@ -118,6 +118,37 @@ async function handler(req, res) {
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8" });
       return res.end(js);
     }
+    // Public runtime config — the PUBLISHABLE keys only, read from env so they're set once in Vercel
+    // (open-ip → Settings → Environment Variables), never committed. The SECRET LIFI_API_KEY is NOT
+    // here — it stays server-side in the /api/lifi proxy below.
+    if (req.method === "GET" && (path === "/config.js")) {
+      const cfg = {
+        THIRDWEB_CLIENT_ID: process.env.THIRDWEB_CLIENT_ID || "",
+        LIFI_INTEGRATOR: process.env.LIFI_INTEGRATOR || "oneip",
+        LIFI_FEE: process.env.LIFI_FEE ? Number(process.env.LIFI_FEE) : 0, // e.g. 0.01 = 1% integrator fee
+      };
+      res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "cache-control": "public, max-age=30" });
+      return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};`);
+    }
+    // LI.FI API proxy — forwards /api/lifi/<path> → https://li.quest/v1/<path>, injecting the SECRET
+    // x-lifi-api-key server-side so it's never exposed to the browser. The widget points its apiUrl
+    // here. Higher rate limits + integrator fee attribution ride on the key without leaking it.
+    if (path.startsWith("/api/lifi/")) {
+      const rest = path.slice("/api/lifi/".length);
+      const target = "https://li.quest/v1/" + rest + (url.search || "");
+      const headers = { "content-type": "application/json", accept: "application/json" };
+      if (process.env.LIFI_API_KEY) headers["x-lifi-api-key"] = process.env.LIFI_API_KEY;
+      const init = { method: req.method, headers };
+      if (req.method === "POST" || req.method === "PUT") init.body = await readBody(req);
+      try {
+        const r = await fetch(target, init);
+        const body = await r.text();
+        res.writeHead(r.status, { "content-type": "application/json", "access-control-allow-origin": "*" });
+        return res.end(body);
+      } catch (e) {
+        return json(res, 502, { error: "lifi proxy failed", detail: String(e && e.message || e) });
+      }
+    }
     if (req.method === "GET" && path.startsWith("/assets/")) {
       const name = path.slice("/assets/".length);
       if (!/^[A-Za-z0-9._-]+$/.test(name)) return json(res, 400, { error: "bad asset name" });

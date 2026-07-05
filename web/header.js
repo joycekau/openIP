@@ -196,8 +196,11 @@
   });
 
   const style = document.createElement("style"); style.textContent = CSS; document.head.appendChild(style);
-  // Load the thirdweb (BSC) connector once, globally, so every page has window.KolEvm for the
-  // dual-chain connect modal — without each page needing to include it.
+  // Load public runtime config (publishable keys from Vercel env) then the thirdweb (BSC) connector,
+  // once, globally — so every page has window.THIRDWEB_CLIENT_ID + window.KolEvm for the dual-chain
+  // connect modal without each page including them. thirdweb.js reads the client ID lazily, so the
+  // two loading in any order is fine.
+  if (!window.__oneipCfgLoaded) { window.__oneipCfgLoaded = true; const c = document.createElement("script"); c.src = "/config.js"; c.onerror = () => {}; document.head.appendChild(c); }
   if (!window.__oneipEvmLoaded) { window.__oneipEvmLoaded = true; const s = document.createElement("script"); s.type = "module"; s.src = "/thirdweb.js"; s.onerror = () => {}; document.head.appendChild(s); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", render); else render();
 })();

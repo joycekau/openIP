@@ -4,13 +4,16 @@
 // handles Solana. This module mirrors KolWallet's shape (address / connect / disconnect / short /
 // onChange) so header.js can treat both chains through one UI.
 //
-// SETUP: thirdweb needs a free, publishable client ID (thirdweb.com → dashboard → Settings → API
-// Keys). It's safe to expose in the frontend. Set it either by editing CLIENT_ID below, or by
-// defining window.THIRDWEB_CLIENT_ID before this script loads.
+// SETUP: thirdweb needs a free, publishable client ID (thirdweb.com → dashboard → your project →
+// Settings → API Keys). It's safe to expose in the frontend. Set THIRDWEB_CLIENT_ID as a Vercel env
+// var on the open-ip project — /config.js serves it to the browser as window.THIRDWEB_CLIENT_ID,
+// which this module reads lazily at connect time. Add oneip.io to the key's allowed domains.
 import { createThirdwebClient, defineChain } from "https://esm.sh/thirdweb@5?bundle";
 import { createWallet, injectedProvider } from "https://esm.sh/thirdweb@5/wallets?bundle";
 
-const CLIENT_ID = (typeof window !== "undefined" && window.THIRDWEB_CLIENT_ID) || "REPLACE_WITH_THIRDWEB_CLIENT_ID";
+// Read the publishable client ID lazily (at connect time), so it works no matter whether
+// /config.js (which sets window.THIRDWEB_CLIENT_ID from the Vercel env) loaded before or after this.
+const clientId = () => ((typeof window !== "undefined" && window.THIRDWEB_CLIENT_ID) || "").trim();
 const BSC = 56; // BNB Smart Chain mainnet
 
 const KolEvm = {
@@ -18,13 +21,13 @@ const KolEvm = {
   address: null,
   _wallet: null,
   _subs: [],
-  ready() { return CLIENT_ID && CLIENT_ID !== "REPLACE_WITH_THIRDWEB_CLIENT_ID"; },
+  ready() { return !!clientId(); },
 
   // Connect a BSC wallet via thirdweb. `rdns` picks the injected wallet (default MetaMask).
   async connect(rdns = "io.metamask") {
-    if (!this.ready()) throw new Error("thirdweb client ID not set — add it in thirdweb.js (see SETUP)");
+    if (!this.ready()) throw new Error("thirdweb client ID not set — add THIRDWEB_CLIENT_ID in Vercel env (open-ip project)");
     if (!injectedProvider(rdns)) { window.open("https://metamask.io/download/", "_blank"); throw new Error("No EVM wallet found — install MetaMask to pay on BSC"); }
-    const client = createThirdwebClient({ clientId: CLIENT_ID });
+    const client = createThirdwebClient({ clientId: clientId() });
     const wallet = createWallet(rdns);
     const account = await wallet.connect({ client, chain: defineChain(BSC) });
     this._wallet = wallet;
