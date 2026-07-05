@@ -129,9 +129,11 @@
   <!-- connect gate (shown until wallet connects) -->
   <div class="gate" id="gate">
     <div class="big">🔑</div>
-    <h2>Connect your wallet</h2>
+    <h2>Connect your <b>Solana</b> wallet</h2>
     <p>Sign in with the wallet you launch tokens from. Your listings are tied to it, so buyers on Shop and your creator page can find them.</p>
     <button class="cbtn" id="gateConnect">Connect Wallet</button>
+    <!-- shown only when a BSC wallet is connected but no Solana one — clears up "I did connect!" -->
+    <p id="gateBscHint" style="display:none;margin-top:14px;color:#F0B90B;font-size:12.5px">You're connected on <b>BNB Chain</b>. Your creator Studio (listings, affiliate links, token) lives on <b>Solana</b> — connect a Solana wallet above to open it. BSC stays connected for marketplace payments.</p>
   </div>
 
   <!-- studio (shown once connected) -->
@@ -638,11 +640,23 @@ $("gateConnect").onclick = () => {
   if (window.KolWallet) KolWallet.connect().catch(e => { if (e.message !== "PICK_WALLET") alert(e.message); });
 };
 
+// The gate hint appears when a BSC wallet is connected but no Solana one — so a creator who taps
+// "BNB Chain" isn't left thinking the (Solana-gated) Studio is broken.
+function syncGateHint(){
+  const hint=$("gateBscHint"); if(!hint) return;
+  const sol=window.KolWallet&&KolWallet.address, bsc=window.KolEvm&&KolEvm.address;
+  hint.style.display=(!sol&&bsc)?"block":"none";
+}
 // react to wallet connect/disconnect
 if(window.KolWallet){
-  KolWallet.onChange(showFor);
+  KolWallet.onChange((a)=>{ showFor(a); syncGateHint(); });
   showFor(KolWallet.address);
 }
+// KolEvm (thirdweb/BSC) loads a tick later via header.js — subscribe once it's ready.
+(function hookEvm(n){
+  if(window.KolEvm){ KolEvm.onChange(syncGateHint); syncGateHint(); return; }
+  if(n<40) setTimeout(()=>hookEvm(n+1),100);
+})(0);
 </script>
 </body>
 </html>
