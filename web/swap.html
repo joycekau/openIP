@@ -187,8 +187,11 @@ try {
     fee,                                               // 0 until the integrator is registered for fees
     sdkConfig: { apiUrl: location.origin + "/api/lifi" }, // key stays server-side in the proxy
     appearance: "dark",
-    theme: { palette: { background: { paper: "#150E26", default: "#080510" }, primary: { main: "#A855F7" } } },
-    variant: "wide",
+    theme: {
+      container: { borderRadius: "18px", maxWidth: "100%", boxShadow: "none" },
+      palette: { background: { paper: "#150E26", default: "#080510" }, primary: { main: "#A855F7" } },
+    },
+    variant: "compact", // single-column, fits mobile + the page container (wide = overflowing side panel)
     fromChain: SOLANA, toChain: BSC,
   };
   document.getElementById("loading")?.remove();
