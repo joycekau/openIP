@@ -174,12 +174,13 @@ if (fee > 0) {
   } catch (e) {}
 }
 try {
-  // external=react,react-dom → esm.sh does NOT bundle its own React, so the widget shares the single
-  // React instance we import here. (A bundled second React = "invalid hook call" → blank widget.)
+  // ?deps pins the widget's react/react-dom to the SAME esm.sh URLs we import here. esm.sh serves one
+  // module per URL and the browser caches ES modules by URL, so both resolve to a single React instance
+  // (no import map needed, no bundled 2nd React). This is the correct esm.sh pattern for the widget.
   const [React, ReactDOMClient, W] = await Promise.all([
     import("https://esm.sh/react@18.3.1"),
     import("https://esm.sh/react-dom@18.3.1/client"),
-    import("https://esm.sh/@lifi/widget@3?external=react,react-dom&deps=react@18.3.1,react-dom@18.3.1"),
+    import("https://esm.sh/@lifi/widget@3?deps=react@18.3.1,react-dom@18.3.1"),
   ]);
   const config = {
     integrator,
@@ -194,8 +195,9 @@ try {
   ReactDOMClient.createRoot(document.getElementById("widget"))
     .render(React.createElement(W.LiFiWidget, { integrator: config.integrator, config }));
   // if nothing rendered within 6s, fall back
-  setTimeout(() => { if (!document.getElementById("widget").childElementCount) fail(); }, 6000);
+  setTimeout(() => { if (!document.getElementById("widget").childElementCount) { console.error("[oneIP swap] widget mounted no DOM within 8s"); fail(); } }, 8000);
 } catch (e) {
+  console.error("[oneIP swap] LI.FI widget failed to load:", e);
   fail();
 }
 </script>
