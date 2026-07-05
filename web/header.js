@@ -31,15 +31,14 @@
   @media(max-width:600px){.oneip-hdr__nav{display:none}}
   `;
 
-  const IO = location.hostname.endsWith("oneip.io") ? "" : ""; // same-origin in dev
-  const AI = location.hostname.endsWith("oneip.io") ? "https://www.oneip.ai" : "/ai";
-  // nav: [path, i18n-key, fallback]. Shop jumps to the .ai face.
+  // nav: [path, i18n-key, fallback]. Creators = creator directory/profiles,
+  // Shop = the on-oneIP marketplace (all creators' products & services).
   const NAV = [
     ["/", "nav_home", "Home"],
     ["/terminal", "nav_terminal", "Terminal"],
     ["/launch", "nav_launch", "Launch"],
-    ["/feed", "nav_creators", "Creators"],
-    [AI, "nav_shop", "Shop"],
+    ["/creators", "nav_creators", "Creators"],
+    ["/shop", "nav_shop", "Shop"],
   ];
   const tr = (key, fb) => (window.KolI18n ? KolI18n.t(key) : fb) || fb;
   const curLangLabel = () => { const f = window.KolI18n && KolI18n.LANGS.find((x) => x[0] === KolI18n.lang()); return f ? f[1] : "EN"; };

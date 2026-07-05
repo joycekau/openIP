@@ -22,6 +22,7 @@ import * as helius from "./sources/helius.js";
 import * as store from "./store.js";
 import * as launchpad from "./launchpad.js";
 import * as oauth from "./oauth.js";
+import { loadJson, saveJson } from "./persist.js";
 import * as walletStore from "./wallets.js";
 import { discoverWallets } from "./discover.js";
 import * as ipfs from "./ipfs.js";
@@ -106,6 +107,8 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/launch" || path === "/launch.html")) return servePage(res, "launch.html");
     if (req.method === "GET" && (path === "/admin" || path === "/admin.html")) return servePage(res, "admin.html");
     if (req.method === "GET" && (path === "/coin" || path === "/coin.html")) return servePage(res, "coin.html");
+    if (req.method === "GET" && (path === "/shop" || path === "/shop.html")) return servePage(res, "shop.html");
+    if (req.method === "GET" && (path === "/creators" || path === "/creator" || path === "/creator.html")) return servePage(res, "creator.html");
 
     // static scripts + brand assets
     if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js")) {
@@ -187,6 +190,37 @@ async function handler(req, res) {
 
     // ---- launchpad ----
     if (req.method === "GET" && path === "/api/board") return json(res, 200, launchpad.board());
+
+    // ---- marketplace products/services (creators list these in the studio) ----
+    // Stored in openip_kv key "products": [{ id, creatorId, coraxCreatorId, title,
+    // image, price, currency, url, kind, syncCorax }]. syncCorax = discoverable in
+    // the creator's corax.live channel (creator's opt-in per product).
+    if (req.method === "GET" && path === "/api/shop/products") {
+      const all = await loadJson("products", []);
+      return json(res, 200, Array.isArray(all) ? all.filter((p) => p && p.active !== false) : []);
+    }
+    if (req.method === "GET" && path === "/api/creator/products") {
+      const id = url.searchParams.get("id") || "";
+      const all = await loadJson("products", []);
+      const mine = (Array.isArray(all) ? all : []).filter((p) => p && p.active !== false && (p.creatorId === id || p.coraxCreatorId === id));
+      return json(res, 200, mine);
+    }
+    if (req.method === "POST" && path === "/api/products") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      if (!body.creatorId || !body.title) return json(res, 400, { error: "creatorId and title required" });
+      const all = await loadJson("products", []);
+      const list = Array.isArray(all) ? all : [];
+      const row = {
+        id: "prod_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36),
+        creatorId: body.creatorId, coraxCreatorId: body.coraxCreatorId || "",
+        title: String(body.title).slice(0, 200), image: body.image || "",
+        price: body.price != null ? Number(body.price) : null, currency: body.currency || "USD",
+        url: body.url || "", kind: body.kind || "product", syncCorax: !!body.syncCorax,
+        active: true, createdAt: Date.now(),
+      };
+      list.push(row); saveJson("products", list);
+      return json(res, 200, row);
+    }
     // A creator's own launches (wallet-first: keyed by the launching wallet/creator id).
     if (req.method === "GET" && path === "/api/creator/launches") {
       const w = url.searchParams.get("w");

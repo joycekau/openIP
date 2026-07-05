@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>oneIP · Shop</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
+    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
+    --purple:#7C3AED; --purple-bg:#F3EEFF; --green:#0BBF77;
+    --mono:ui-monospace,Consolas,"SF Mono",monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px}
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
+    background:linear-gradient(135deg,var(--purple),#4E9CF5)}
+  .head h1{margin:0;font-size:20px;font-weight:800}
+  .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+  .search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);
+    border-radius:99px;padding:9px 16px;margin:16px 0;color:var(--dim);font-size:13.5px}
+  .search input{flex:1;border:0;background:none;outline:0;font:inherit;color:var(--text)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+  .card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;
+    transition:box-shadow .15s,transform .15s;display:block}
+  .card:hover{box-shadow:0 8px 28px rgba(20,25,40,.10);transform:translateY(-2px)}
+  .card .cov{aspect-ratio:1;display:grid;place-items:center;font-size:44px;background:var(--purple-bg);overflow:hidden}
+  .card .cov img{width:100%;height:100%;object-fit:cover}
+  .card .cb{padding:12px 13px}
+  .card .creator{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-bottom:4px}
+  .card .creator .cav{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#8A6FB8,#2E3A5C);overflow:hidden;flex:none}
+  .card .creator .cav img{width:100%;height:100%;object-fit:cover}
+  .card .creator b{color:var(--purple);font-weight:600;cursor:pointer}
+  .card .t{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .p{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:3px}
+  .card .p b{color:var(--green)}
+  .empty{padding:70px 0;text-align:center;color:var(--dim)}
+  .seg{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .seg button{background:none;border:0;padding:10px 20px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .seg button.on{color:var(--text);border-color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="ic">🛍️</div>
+    <div><h1>oneIP Marketplace</h1><p>Discover products, drops, and creator tokens across oneIP.</p></div>
+  </div>
+  <div class="search">🔍 <input id="q" placeholder="Search creators, products, tokens…"></div>
+
+  <div class="seg">
+    <button class="on" data-seg="products">Products</button>
+    <button data-seg="creators">Creators</button>
+  </div>
+
+  <div id="grid" class="grid"></div>
+</div>
+
+<script src="i18n.js"></script>
+<script src="header.js"></script>
+<script>
+const $ = (id)=>document.getElementById(id);
+const short=(a)=>a&&a.length>12?a.slice(0,4)+"…"+a.slice(-4):(a||"");
+let PRODUCTS=[], CREATORS=[], seg="products", q="";
+
+async function boot(){
+  try{
+    const board = await (await fetch("/api/board")).json();
+    const rows = Array.isArray(board)?board:(board.rows||board.launches||[]);
+    // Creators = unique launchers; each card links to their creator page.
+    const seen = new Map();
+    for(const r of rows){
+      const id = r.creator || r.coraxCreatorId;
+      if(!id) continue;
+      if(!seen.has(id)) seen.set(id,{id,name:r.creatorName||r.name||short(id),logo:r.logo||"",symbol:r.symbol||"",launches:0});
+      seen.get(id).launches++;
+    }
+    CREATORS=[...seen.values()];
+  }catch(e){}
+  try{ const p = await (await fetch("/api/shop/products")).json(); PRODUCTS = Array.isArray(p)?p:(p.products||[]); }catch(e){}
+  render();
+}
+
+function creatorTag(c){
+  return `<a class="creator" href="/creator?id=${encodeURIComponent(c.id)}">
+    <span class="cav">${c.logo?'<img src="'+c.logo+'">':''}</span><b>${c.name}</b></a>`;
+}
+
+function render(){
+  const g=$("grid");
+  if(seg==="creators"){
+    const list=CREATORS.filter(c=>!q||c.name.toLowerCase().includes(q));
+    g.innerHTML=list.length?list.map(c=>`
+      <a class="card" href="/creator?id=${encodeURIComponent(c.id)}">
+        <div class="cov">${c.logo?'<img src="'+c.logo+'">':"🎨"}</div>
+        <div class="cb"><div class="t">${c.name}</div><div class="p">${c.launches} launch${c.launches>1?'es':''}${c.symbol?' · $'+c.symbol:''}</div></div>
+      </a>`).join(""):'<div class="empty">No creators yet.</div>';
+  }else{
+    const list=PRODUCTS.filter(p=>!q||(p.title||"").toLowerCase().includes(q));
+    if(!list.length){
+      g.innerHTML='<div class="empty">No products listed yet — creators add them in the studio.<br>Browse <b style="cursor:pointer;color:var(--purple)" onclick="document.querySelector(\'.seg button:nth-child(2)\').click()">Creators</b> for now.</div>';
+      return;
+    }
+    g.innerHTML=list.map(p=>{
+      const c=CREATORS.find(c=>c.id===p.creatorId)||{id:p.creatorId,name:short(p.creatorId),logo:""};
+      return `<div class="card" style="cursor:default">
+        <a href="${p.url||'#'}"${p.url?' target="_blank" rel="noopener"':''}><div class="cov">${p.image?'<img src="'+p.image+'">':"🛍️"}</div></a>
+        <div class="cb">${creatorTag(c)}<div class="t">${p.title||""}</div>
+        <div class="p">${p.price!=null?(p.currency||'USD')+' <b>'+p.price+'</b>':''}</div></div>
+      </div>`;
+    }).join("");
+  }
+}
+
+document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".seg button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); seg=b.dataset.seg; render();
+}));
+$("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render();});
+boot();
+</script>
+</body>
+</html>

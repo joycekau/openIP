@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>oneIP · Creator</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
+    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
+    --pink:#FE2C55; --teal:#25F4EE;
+    --green:#0BBF77; --green-bg:#E9FBF3;
+    --purple:#7C3AED; --purple-bg:#F3EEFF;
+    --mono:ui-monospace,"Cascadia Code",Consolas,"SF Mono",monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px 80px}
+
+  .profile{display:flex;gap:26px;padding:34px 0 8px;align-items:flex-start;flex-wrap:wrap}
+  .avatar{width:118px;height:118px;border-radius:50%;padding:4px;flex:none;
+    background:conic-gradient(var(--teal),var(--purple),var(--pink),var(--teal))}
+  .avatar .inner{width:100%;height:100%;border-radius:50%;border:3px solid #fff;overflow:hidden;
+    background:linear-gradient(135deg,#8A6FB8,#4E5D8C 55%,#2E3A5C);display:grid;place-items:center;
+    color:#fff;font-size:34px;font-weight:700;letter-spacing:1px}
+  .avatar .inner img{width:100%;height:100%;object-fit:cover}
+  .pinfo{flex:1;min-width:300px}
+  .nameline{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .nameline h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.3px}
+  .nameline .verify{color:var(--teal);font-size:17px;vertical-align:2px}
+  .nameline .handle{color:var(--dim);font-size:15px}
+  .statline{display:flex;gap:26px;margin:13px 0 15px;flex-wrap:wrap;align-items:center}
+  .statline .st b{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+  .statline .st span{color:var(--muted);margin-left:5px}
+  .actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+  .follow{background:var(--pink);color:#fff;border:0;border-radius:6px;padding:9px 42px;font-size:15px;font-weight:700}
+  .follow:hover{filter:brightness(1.06)}
+  .ghost{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 20px;font-size:14px;font-weight:600;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .ghost:hover{background:#EFF1F5}
+  .corax{background:linear-gradient(100deg,var(--purple),#4E9CF5);color:#fff;border:0;border-radius:6px;padding:9px 18px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .corax:hover{filter:brightness(1.06)}
+  .bio{color:var(--muted);margin-top:13px;font-size:13.5px}
+  .bio b{color:var(--text)}
+
+  .token{margin-top:20px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;
+    display:flex;gap:28px;align-items:center;flex-wrap:wrap;
+    background:linear-gradient(100deg,var(--purple-bg),#F0FBF5 70%)}
+  .token .badge{display:flex;align-items:center;gap:11px}
+  .token .coin{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#4E9CF5);overflow:hidden;
+    color:#fff;display:grid;place-items:center;font-family:var(--mono);font-size:11px;font-weight:700;flex:none}
+  .token .coin img{width:100%;height:100%;object-fit:cover}
+  .token .badge .n{font-weight:800;font-size:15px}
+  .token .badge .s{font-size:11.5px;color:var(--muted)}
+  .tk{min-width:86px}
+  .tk .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .tk .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:17px;font-weight:700;margin-top:1px}
+  .tk .v.up{color:var(--green)}
+  .trade{margin-left:auto;background:var(--purple);color:#fff;border:0;border-radius:8px;
+    padding:10px 22px;font-weight:700;font-size:13.5px;text-decoration:none;display:inline-block}
+  .trade:hover{filter:brightness(1.1)}
+  .token .note{flex-basis:100%;font-size:11.5px;color:var(--muted);margin-top:-2px}
+  .token .note b{color:var(--purple)}
+
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin-top:26px}
+  .tabs button{background:none;border:0;padding:12px 26px;font-size:14.5px;font-weight:600;color:var(--muted);
+    border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabs button.on{color:var(--text);border-color:var(--text)}
+  .tabs .cnt{font-size:12px;color:var(--dim);margin-left:5px;font-weight:500}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:20px}
+  .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;transition:box-shadow .15s,transform .15s;text-decoration:none;color:inherit}
+  .card:hover{box-shadow:0 8px 28px rgba(20,25,40,.10);transform:translateY(-2px)}
+  .card .cov{aspect-ratio:1;display:grid;place-items:center;font-size:40px;background:var(--purple-bg);overflow:hidden}
+  .card .cov img{width:100%;height:100%;object-fit:cover}
+  .card .cb{padding:11px 13px}
+  .card .cb .t{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .cb .p{font-size:12px;color:var(--muted);margin-top:2px}
+  .empty{padding:60px 0;text-align:center;color:var(--dim);font-size:13.5px}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;
+    font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="profile">
+    <div class="avatar"><div class="inner" id="avatar">··</div></div>
+    <div class="pinfo">
+      <div class="nameline">
+        <h1 id="cname">Creator</h1>
+        <span class="verify" id="verify" style="display:none">✔</span>
+        <span class="handle" id="handle"></span>
+      </div>
+      <div class="statline">
+        <div class="st"><b id="stLaunches">0</b><span>Launches</span></div>
+        <div class="st"><b id="stProducts">0</b><span>Products</span></div>
+        <div class="st"><b id="stHolders">—</b><span>Holders</span></div>
+      </div>
+      <div class="actions">
+        <button class="follow" onclick="toast('Following')">Follow</button>
+        <button class="ghost" onclick="share()">↗ Share</button>
+        <a class="corax" id="coraxLink" href="https://corax.live" target="_blank" rel="noopener">💬 Connect on CoraX</a>
+      </div>
+      <div class="bio" id="bio"></div>
+    </div>
+  </div>
+
+  <!-- creator token strip -->
+  <div class="token" id="tokenStrip" style="display:none">
+    <div class="badge">
+      <div class="coin" id="tCoin">$</div>
+      <div><div class="n" id="tName">—</div><div class="s">oneIP creator token · Solana</div></div>
+    </div>
+    <div class="tk"><div class="k">Market cap</div><div class="v" id="tMcap">—</div></div>
+    <div class="tk"><div class="k">Price</div><div class="v" id="tPrice">—</div></div>
+    <div class="tk"><div class="k">24h</div><div class="v" id="tChg">—</div></div>
+    <div class="tk"><div class="k">Holders</div><div class="v" id="tHolders">—</div></div>
+    <a class="trade" id="tradeLink" href="#">Trade</a>
+    <div class="note">Sales commission auto-buys back the creator token — the more fans buy, the stronger the bid. Market cap tracks real sales cash flow.</div>
+  </div>
+
+  <div class="tabs">
+    <button class="on" data-tab="shop">Shop<span class="cnt" id="cntShop">0</span></button>
+    <button data-tab="launches">Launches<span class="cnt" id="cntLaunch">0</span></button>
+    <button data-tab="holders">Holders</button>
+  </div>
+
+  <div id="tab-shop" class="grid"></div>
+  <div id="tab-launches" class="grid" style="display:none"></div>
+  <div id="tab-holders" class="empty" style="display:none">Top holders leaderboard coming soon.</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="i18n.js"></script>
+<script src="header.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const creatorId = params.get("id") || params.get("creator") || "";
+const short = (a) => a && a.length > 12 ? a.slice(0,4) + "…" + a.slice(-4) : (a||"");
+const initials = (n) => (n||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600);}
+function share(){try{navigator.clipboard.writeText(location.href);}catch(e){} toast("Profile link copied");}
+
+async function load(){
+  let launches = [];
+  try{
+    const board = await (await fetch("/api/board")).json();
+    const rows = Array.isArray(board) ? board : (board.rows || board.launches || []);
+    launches = rows.filter(r => r.creator === creatorId || r.coraxCreatorId === creatorId);
+  }catch(e){}
+
+  const first = launches[0];
+  const name = (first && first.creatorName) || (first && first.name) || short(creatorId) || "Creator";
+  $("cname").textContent = first && first.creatorName ? first.creatorName : name;
+  $("handle").textContent = "@" + (short(creatorId) || "creator");
+  $("avatar").textContent = initials(name);
+  if (first && first.logo){ $("avatar").innerHTML = '<img src="'+first.logo+'" alt="">'; }
+  $("stLaunches").textContent = launches.length;
+
+  // CoraX channel connect: if the creator is linked to a CoraX account, deep-link there.
+  if (first && first.coraxCreatorId){
+    $("coraxLink").href = "https://corax.live/oneip/creator/" + first.coraxCreatorId;
+    $("verify").style.display = "";
+  }
+
+  // Creator token strip — from their launch (real symbol/name/mint; market data —).
+  if (first){
+    $("tokenStrip").style.display = "flex";
+    $("tCoin").textContent = "$" + (first.symbol||"");
+    if (first.logo) $("tCoin").innerHTML = '<img src="'+first.logo+'" alt="">';
+    $("tName").textContent = first.name || first.symbol || "—";
+    $("tradeLink").href = "/coin?mint=" + encodeURIComponent(first.mint);
+    $("tradeLink").textContent = "Trade $" + (first.symbol||"");
+    $("bio").innerHTML = first.description ? first.description : "";
+  }
+
+  // Launches tab (their tokens).
+  $("cntLaunch").textContent = launches.length;
+  $("tab-launches").innerHTML = launches.length ? launches.map(l => `
+    <a class="card" href="/coin?mint=${encodeURIComponent(l.mint)}">
+      <div class="cov">${l.logo ? '<img src="'+l.logo+'">' : "🪙"}</div>
+      <div class="cb"><div class="t">${l.name||l.symbol||""}</div><div class="p">$${l.symbol||""}</div></div>
+    </a>`).join("") : '<div class="empty">No launches yet.</div>';
+
+  // Products/services tab — from the creator's marketplace listings.
+  let products = [];
+  try{ products = await (await fetch("/api/creator/products?id=" + encodeURIComponent(creatorId))).json(); }catch(e){}
+  products = Array.isArray(products) ? products : (products.products || []);
+  $("stProducts").textContent = products.length;
+  $("cntShop").textContent = products.length;
+  $("tab-shop").innerHTML = products.length ? products.map(p => `
+    <a class="card" href="${p.url || '#'}"${p.url ? ' target="_blank" rel="noopener"' : ''}>
+      <div class="cov">${p.image ? '<img src="'+p.image+'">' : "🛍️"}</div>
+      <div class="cb"><div class="t">${p.title||""}</div><div class="p">${p.price != null ? (p.currency||'USD')+' '+p.price : ''}</div></div>
+    </a>`).join("") : '<div class="empty">No products yet.</div>';
+}
+
+document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.remove("on"));
+  b.classList.add("on");
+  ["shop","launches","holders"].forEach(t => {
+    const el = $("tab-"+t);
+    el.style.display = (t === b.dataset.tab) ? (t === "holders" ? "block" : "grid") : "none";
+  });
+}));
+
+load();
+</script>
+</body>
+</html>
