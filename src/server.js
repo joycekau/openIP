@@ -109,6 +109,7 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/coin" || path === "/coin.html")) return servePage(res, "coin.html");
     if (req.method === "GET" && (path === "/shop" || path === "/shop.html")) return servePage(res, "shop.html");
     if (req.method === "GET" && (path === "/creators" || path === "/creator" || path === "/creator.html")) return servePage(res, "creator.html");
+    if (req.method === "GET" && (path === "/studio" || path === "/studio.html")) return servePage(res, "studio.html");
 
     // static scripts + brand assets
     if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js")) {
@@ -187,6 +188,22 @@ async function handler(req, res) {
       if (!mint) return json(res, 400, { error: "mint required" });
       return json(res, 200, await getSecurity(mint));
     }
+    // Live market data for a creator token (deepest-liquidity Solana pair).
+    if (req.method === "GET" && path === "/api/token/price") {
+      const mint = url.searchParams.get("mint");
+      if (!mint) return json(res, 400, { error: "mint required" });
+      let pairs = [];
+      try { pairs = await getPairsForTokens([mint]); } catch (e) { pairs = []; }
+      if (!pairs.length) return json(res, 200, { priceUsd: null, marketCap: null, change24h: null, volume24h: null });
+      pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0));
+      const p = pairs[0];
+      return json(res, 200, {
+        priceUsd: Number(p.priceUsd) || null,
+        marketCap: p.marketCap || p.fdv || null,
+        change24h: typeof p.priceChange?.h24 === "number" ? p.priceChange.h24 : null,
+        volume24h: p.volume?.h24 ?? null,
+      });
+    }
 
     // ---- launchpad ----
     if (req.method === "GET" && path === "/api/board") return json(res, 200, launchpad.board());
@@ -220,6 +237,14 @@ async function handler(req, res) {
       };
       list.push(row); saveJson("products", list);
       return json(res, 200, row);
+    }
+    if (req.method === "POST" && path === "/api/products/remove") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const all = await loadJson("products", []);
+      const list = (Array.isArray(all) ? all : []).map((p) =>
+        p.id === body.id && p.creatorId === body.creatorId ? { ...p, active: false } : p);
+      saveJson("products", list);
+      return json(res, 200, { ok: true });
     }
     // A creator's own launches (wallet-first: keyed by the launching wallet/creator id).
     if (req.method === "GET" && path === "/api/creator/launches") {

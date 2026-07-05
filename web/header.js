@@ -39,6 +39,7 @@
     ["/launch", "nav_launch", "Launch"],
     ["/creators", "nav_creators", "Creators"],
     ["/shop", "nav_shop", "Shop"],
+    ["/studio", "nav_studio", "Studio"],
   ];
   const tr = (key, fb) => (window.KolI18n ? KolI18n.t(key) : fb) || fb;
   const curLangLabel = () => { const f = window.KolI18n && KolI18n.LANGS.find((x) => x[0] === KolI18n.lang()); return f ? f[1] : "EN"; };

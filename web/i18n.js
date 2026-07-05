@@ -129,7 +129,7 @@
   // ---- Landing page strings (merged into DICT) ----
   const LAND = {
     en: {
-      nav_home: "Home", nav_terminal: "Terminal", nav_creators: "Creators", nav_shop: "Shop", nav_back: "Back",
+      nav_home: "Home", nav_terminal: "Terminal", nav_creators: "Creators", nav_shop: "Shop", nav_studio: "Studio", nav_back: "Back",
       ln_hero_title: "Turn your influence into a coin that can't go to zero",
       ln_hero_sub: "Launch your creator coin in one click. Every coin locks a 20% floor on-chain — your fans are protected, and so is your name.",
       ln_cta_launch: "Launch your coin", ln_cta_terminal: "Explore the terminal",
@@ -146,7 +146,7 @@
       ln_f6_t: "Your AI clone & assistant", ln_f6_d: "Pro's AI replies to fans in your voice and drafts your posts for you — a 24/7 assistant.",
     },
     zh: {
-      nav_home: "首页", nav_terminal: "终端", nav_creators: "创作者", nav_shop: "逛世界", nav_back: "返回",
+      nav_home: "首页", nav_terminal: "终端", nav_creators: "创作者", nav_shop: "逛世界", nav_studio: "工作室", nav_back: "返回",
       ln_hero_title: "把你的影响力，变成一个不会归零的币",
       ln_hero_sub: "一键发行你的创作者币。每个币都在链上锁定 20% 底池——保护你的粉丝，也保护你的名声。",
       ln_cta_launch: "发行你的币", ln_cta_terminal: "进入交易终端",
@@ -163,7 +163,7 @@
       ln_f6_t: "AI 分身助理", ln_f6_d: "Pro 的 AI 用你的口吻自动回复粉丝,还帮你起草帖子——你的 24 小时助理。",
     },
     id: {
-      nav_home: "Beranda", nav_terminal: "Terminal", nav_creators: "Kreator",
+      nav_home: "Beranda", nav_terminal: "Terminal", nav_creators: "Kreator", nav_shop: "Toko", nav_studio: "Studio",
       ln_hero_title: "Ubah pengaruh Anda menjadi koin yang tak bisa jadi nol",
       ln_hero_sub: "Luncurkan koin kreator Anda dalam satu klik. Setiap koin mengunci floor 20% on-chain — fans Anda terlindungi, begitu juga nama Anda.",
       ln_cta_launch: "Luncurkan koin Anda", ln_cta_terminal: "Jelajahi terminal",
@@ -180,7 +180,7 @@
       ln_f6_t: "AI clone & asisten Anda", ln_f6_d: "AI Pro membalas fans dengan gaya Anda dan membuat draf postingan — asisten 24/7.",
     },
     vi: {
-      nav_home: "Trang chủ", nav_terminal: "Terminal", nav_creators: "Nhà sáng tạo",
+      nav_home: "Trang chủ", nav_terminal: "Terminal", nav_creators: "Nhà sáng tạo", nav_shop: "Cửa hàng", nav_studio: "Studio",
       ln_hero_title: "Biến tầm ảnh hưởng của bạn thành coin không thể về 0",
       ln_hero_sub: "Phát hành coin của bạn chỉ với một cú nhấp. Mỗi coin khóa sàn 20% on-chain — bảo vệ người hâm mộ và cả danh tiếng của bạn.",
       ln_cta_launch: "Phát hành coin", ln_cta_terminal: "Khám phá terminal",
@@ -197,7 +197,7 @@
       ln_f6_t: "Bản sao AI & trợ lý của bạn", ln_f6_d: "AI của Pro trả lời fan bằng giọng của bạn và soạn bài đăng cho bạn — trợ lý 24/7.",
     },
     th: {
-      nav_home: "หน้าแรก", nav_terminal: "เทอร์มินัล", nav_creators: "ครีเอเตอร์",
+      nav_home: "หน้าแรก", nav_terminal: "เทอร์มินัล", nav_creators: "ครีเอเตอร์", nav_shop: "ร้านค้า", nav_studio: "สตูดิโอ",
       ln_hero_title: "เปลี่ยนอิทธิพลของคุณให้เป็นเหรียญที่ไม่มีวันเหลือศูนย์",
       ln_hero_sub: "เปิดตัวเหรียญครีเอเตอร์ของคุณในคลิกเดียว ทุกเหรียญล็อกพื้นราคา 20% บนเชน — ปกป้องแฟนๆ และชื่อเสียงของคุณ",
       ln_cta_launch: "เปิดตัวเหรียญ", ln_cta_terminal: "สำรวจเทอร์มินัล",
@@ -214,7 +214,7 @@
       ln_f6_t: "AI โคลน & ผู้ช่วยของคุณ", ln_f6_d: "AI ของ Pro ตอบแฟนด้วยน้ำเสียงของคุณและร่างโพสต์ให้ — ผู้ช่วย 24/7",
     },
     ja: {
-      nav_home: "ホーム", nav_terminal: "ターミナル", nav_creators: "クリエイター",
+      nav_home: "ホーム", nav_terminal: "ターミナル", nav_creators: "クリエイター", nav_shop: "ショップ", nav_studio: "スタジオ",
       ln_hero_title: "あなたの影響力を、ゼロにならないコインに",
       ln_hero_sub: "ワンクリックでクリエイターコインをローンチ。すべてのコインは20%のフロアをオンチェーンでロック — ファンとあなたの名前を守ります。",
       ln_cta_launch: "コインをローンチ", ln_cta_terminal: "ターミナルを見る",
@@ -231,7 +231,7 @@
       ln_f6_t: "あなたのAIクローン＆アシスタント", ln_f6_d: "ProのAIがあなたの口調でファンに返信し、投稿も下書き — 24時間アシスタント。",
     },
     ko: {
-      nav_home: "홈", nav_terminal: "터미널", nav_creators: "크리에이터",
+      nav_home: "홈", nav_terminal: "터미널", nav_creators: "크리에이터", nav_shop: "샵", nav_studio: "스튜디오",
       ln_hero_title: "당신의 영향력을 0이 되지 않는 코인으로",
       ln_hero_sub: "원클릭으로 크리에이터 코인을 발행하세요. 모든 코인은 20% 바닥값을 온체인에 잠급니다 — 팬과 당신의 이름을 보호합니다.",
       ln_cta_launch: "코인 발행하기", ln_cta_terminal: "터미널 둘러보기",

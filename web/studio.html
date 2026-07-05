@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>oneIP · Creator Studio</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --panel:#F7F8FA; --line:#E6E8EE;
+    --text:#16181C; --muted:#75808F; --dim:#A3ABB8;
+    --purple:#7C3AED; --purple-bg:#F3EEFF; --green:#0BBF77; --green-bg:#E9FBF3;
+    --pink:#FE2C55;
+    --mono:ui-monospace,Consolas,"SF Mono",monospace;
+    --sans:"Segoe UI",system-ui,-apple-system,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5}
+  button{font-family:inherit;cursor:pointer}
+  a{color:inherit}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 90px}
+
+  .head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+  .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
+    background:linear-gradient(135deg,var(--purple),#4E9CF5)}
+  .head h1{margin:0;font-size:20px;font-weight:800}
+  .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+
+  /* connect gate */
+  .gate{margin-top:60px;text-align:center;color:var(--muted)}
+  .gate .big{font-size:44px}
+  .gate h2{margin:14px 0 6px;font-size:18px;color:var(--text)}
+  .gate p{margin:0 auto 20px;max-width:380px;font-size:13.5px}
+  .cbtn{background:linear-gradient(120deg,#A855F7,#EC4899);color:#fff;border:0;border-radius:999px;padding:12px 30px;font-size:15px;font-weight:700}
+  .cbtn:hover{filter:brightness(1.06)}
+
+  .who{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 15px;margin:18px 0 26px}
+  .who .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#8A6FB8,#2E3A5C);flex:none}
+  .who .m{flex:1;min-width:0}
+  .who .m b{font-family:var(--mono);font-size:13.5px}
+  .who .m span{display:block;font-size:11.5px;color:var(--muted)}
+  .who a.view{font-size:12.5px;font-weight:600;color:var(--purple);text-decoration:none;white-space:nowrap}
+
+  .cols{display:grid;grid-template-columns:1fr 1.15fr;gap:26px;align-items:start}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+
+  .panel{border:1px solid var(--line);border-radius:14px;padding:20px;background:#fff}
+  .panel h3{margin:0 0 3px;font-size:15px;font-weight:800}
+  .panel .sub{margin:0 0 16px;font-size:12px;color:var(--muted)}
+
+  label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:13px 0 5px}
+  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13.5px;background:#fff;color:var(--text)}
+  input:focus,select:focus,textarea:focus{outline:0;border-color:var(--purple)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:5px}
+  .seg button{flex:1;background:#fff;border:0;padding:9px;font-size:13px;font-weight:600;color:var(--muted)}
+  .seg button.on{background:var(--purple-bg);color:var(--purple)}
+  .sync{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding:12px 13px;background:var(--purple-bg);border-radius:10px}
+  .sync input{width:auto;margin-top:2px;flex:none;accent-color:var(--purple)}
+  .sync .st{font-size:12.5px}
+  .sync .st b{color:var(--purple)}
+  .sync .st span{color:var(--muted);display:block;margin-top:1px}
+  .add{width:100%;margin-top:18px;background:var(--text);color:#fff;border:0;border-radius:10px;padding:12px;font-size:14px;font-weight:700}
+  .add:hover{filter:brightness(1.15)}
+  .add:disabled{opacity:.5;cursor:default}
+
+  .list{display:flex;flex-direction:column;gap:11px;margin-top:16px}
+  .item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .item .th{width:48px;height:48px;border-radius:9px;background:var(--purple-bg);display:grid;place-items:center;font-size:22px;overflow:hidden;flex:none}
+  .item .th img{width:100%;height:100%;object-fit:cover}
+  .item .meta{flex:1;min-width:0}
+  .item .meta .t{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .meta .p{font-size:12px;color:var(--muted);margin-top:1px}
+  .item .meta .p .sy{color:var(--purple);font-weight:600}
+  .item .meta .p .ns{color:var(--dim)}
+  .item .rm{background:none;border:0;color:var(--dim);font-size:18px;padding:4px 6px;line-height:1}
+  .item .rm:hover{color:var(--pink)}
+  .empty{padding:40px 0;text-align:center;color:var(--dim);font-size:13px}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;
+    font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="ic">🎬</div>
+    <div><h1>Creator Studio</h1><p>List products &amp; services, and choose what syncs to your CoraX channel.</p></div>
+  </div>
+
+  <!-- connect gate (shown until wallet connects) -->
+  <div class="gate" id="gate">
+    <div class="big">🔑</div>
+    <h2>Connect your wallet</h2>
+    <p>Sign in with the wallet you launch tokens from. Your listings are tied to it, so buyers on Shop and your creator page can find them.</p>
+    <button class="cbtn" id="gateConnect">Connect Wallet</button>
+  </div>
+
+  <!-- studio (shown once connected) -->
+  <div id="studio" style="display:none">
+    <div class="who">
+      <div class="av" id="whoAv"></div>
+      <div class="m"><b id="whoAddr"></b><span>Connected creator wallet</span></div>
+      <a class="view" id="whoView" href="#" target="_blank" rel="noopener">View my creator page →</a>
+    </div>
+
+    <div class="cols">
+      <!-- add form -->
+      <div class="panel">
+        <h3>Add a listing</h3>
+        <p class="sub">A product (physical/digital) or a service you offer.</p>
+
+        <label>Type</label>
+        <div class="seg" id="kindSeg">
+          <button type="button" class="on" data-kind="product">🛍️ Product</button>
+          <button type="button" data-kind="service">🧰 Service</button>
+        </div>
+
+        <label for="fTitle">Title</label>
+        <input id="fTitle" placeholder="e.g. Signed vinyl · 1:1 coaching call">
+
+        <div class="row2">
+          <div><label for="fPrice">Price</label><input id="fPrice" type="number" min="0" step="0.01" placeholder="0.00"></div>
+          <div><label for="fCur">Currency</label>
+            <select id="fCur"><option>USD</option><option>USDC</option><option>SOL</option><option>EUR</option><option>MYR</option></select>
+          </div>
+        </div>
+
+        <label for="fUrl">Link (checkout / affiliate URL)</label>
+        <input id="fUrl" placeholder="https://…">
+
+        <label for="fImg">Image URL <span style="font-weight:400;color:var(--dim)">(optional)</span></label>
+        <input id="fImg" placeholder="https://…/photo.jpg">
+
+        <div class="sync">
+          <input type="checkbox" id="fSync">
+          <label for="fSync" style="margin:0;cursor:pointer">
+            <span class="st"><b>Show in my CoraX channel</b>
+            <span>Discoverable to your CoraX followers. Leave off to keep it oneIP-only.</span></span>
+          </label>
+        </div>
+
+        <button class="add" id="addBtn">Add listing</button>
+      </div>
+
+      <!-- current listings -->
+      <div class="panel">
+        <h3>My listings <span id="cnt" style="color:var(--dim);font-weight:600;font-size:13px"></span></h3>
+        <p class="sub">Everything you've listed. Remove hides it from Shop, your page, and CoraX.</p>
+        <div class="list" id="list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="i18n.js"></script>
+<script src="wallet.js"></script>
+<script src="header.js"></script>
+<script>
+const $ = (id) => document.getElementById(id);
+const short = (a) => a && a.length > 12 ? a.slice(0,4) + "…" + a.slice(-4) : (a||"");
+const esc = (s) => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700);}
+let kind = "product";
+
+function showFor(addr){
+  const on = !!addr;
+  $("gate").style.display = on ? "none" : "block";
+  $("studio").style.display = on ? "block" : "none";
+  if(on){
+    $("whoAddr").textContent = short(addr);
+    $("whoView").href = "/creator?id=" + encodeURIComponent(addr);
+    loadMine(addr);
+  }
+}
+
+async function loadMine(addr){
+  let mine = [];
+  try{ mine = await (await fetch("/api/creator/products?id=" + encodeURIComponent(addr))).json(); }catch(e){}
+  mine = Array.isArray(mine) ? mine : (mine.products || []);
+  $("cnt").textContent = mine.length ? "· " + mine.length : "";
+  const l = $("list");
+  if(!mine.length){ l.innerHTML = '<div class="empty">No listings yet — add your first on the left.</div>'; return; }
+  l.innerHTML = mine.map(p => `
+    <div class="item">
+      <div class="th">${p.image ? '<img src="'+esc(p.image)+'" alt="">' : (p.kind==="service"?"🧰":"🛍️")}</div>
+      <div class="meta">
+        <div class="t">${esc(p.title)}</div>
+        <div class="p">${p.price != null ? esc(p.currency||"USD")+" "+esc(p.price)+" · " : ""}${p.syncCorax ? '<span class="sy">✓ on CoraX</span>' : '<span class="ns">oneIP only</span>'}</div>
+      </div>
+      <button class="rm" title="Remove" data-id="${esc(p.id)}">✕</button>
+    </div>`).join("");
+  l.querySelectorAll(".rm").forEach(b => b.onclick = () => removeItem(b.dataset.id));
+}
+
+async function removeItem(id){
+  const addr = window.KolWallet && KolWallet.address;
+  if(!addr) return;
+  try{
+    await fetch("/api/products/remove", {method:"POST", headers:{"content-type":"application/json"},
+      body: JSON.stringify({ id, creatorId: addr })});
+    toast("Listing removed");
+    loadMine(addr);
+  }catch(e){ toast("Could not remove"); }
+}
+
+async function addItem(){
+  const addr = window.KolWallet && KolWallet.address;
+  if(!addr){ toast("Connect your wallet first"); return; }
+  const title = $("fTitle").value.trim();
+  if(!title){ toast("Add a title"); return; }
+  const priceRaw = $("fPrice").value.trim();
+  const payload = {
+    creatorId: addr,
+    title,
+    kind,
+    price: priceRaw === "" ? null : Number(priceRaw),
+    currency: $("fCur").value,
+    url: $("fUrl").value.trim(),
+    image: $("fImg").value.trim(),
+    syncCorax: $("fSync").checked,
+  };
+  const btn = $("addBtn"); btn.disabled = true; btn.textContent = "Adding…";
+  try{
+    const r = await fetch("/api/products", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify(payload)});
+    if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.error||"failed"); }
+    toast("Listing added");
+    ["fTitle","fPrice","fUrl","fImg"].forEach(id => $(id).value = "");
+    $("fSync").checked = false;
+    loadMine(addr);
+  }catch(e){ toast("Could not add listing"); }
+  finally{ btn.disabled = false; btn.textContent = "Add listing"; }
+}
+
+// type toggle
+$("kindSeg").querySelectorAll("button").forEach(b => b.onclick = () => {
+  $("kindSeg").querySelectorAll("button").forEach(x => x.classList.remove("on"));
+  b.classList.add("on"); kind = b.dataset.kind;
+});
+$("addBtn").onclick = addItem;
+$("gateConnect").onclick = () => { if(window.KolWallet) KolWallet.connect().catch(e => alert(e.message)); };
+
+// react to wallet connect/disconnect
+if(window.KolWallet){
+  KolWallet.onChange(showFor);
+  showFor(KolWallet.address);
+}
+</script>
+</body>
+</html>

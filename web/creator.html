@@ -58,6 +58,7 @@
   .tk .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
   .tk .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:17px;font-weight:700;margin-top:1px}
   .tk .v.up{color:var(--green)}
+  .tk .v.down{color:var(--pink)}
   .trade{margin-left:auto;background:var(--purple);color:#fff;border:0;border-radius:8px;
     padding:10px 22px;font-weight:700;font-size:13.5px;text-decoration:none;display:inline-block}
   .trade:hover{filter:brightness(1.1)}
@@ -147,6 +148,39 @@ const initials = (n) => (n||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).joi
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600);}
 function share(){try{navigator.clipboard.writeText(location.href);}catch(e){} toast("Profile link copied");}
 
+// compact market formatting: $1.2M, $34.5K, $0.0000123, +4.2%
+function fmtUsd(n){
+  if(n==null||!isFinite(n)) return "—";
+  if(n>=1e9) return "$"+(n/1e9).toFixed(2)+"B";
+  if(n>=1e6) return "$"+(n/1e6).toFixed(2)+"M";
+  if(n>=1e3) return "$"+(n/1e3).toFixed(1)+"K";
+  return "$"+n.toLocaleString(undefined,{maximumFractionDigits:2});
+}
+function fmtPrice(n){
+  if(n==null||!isFinite(n)) return "—";
+  if(n>=1) return "$"+n.toFixed(4);
+  if(n>=0.0001) return "$"+n.toFixed(6);
+  return "$"+n.toPrecision(3);
+}
+function fmtChg(n){
+  if(n==null||!isFinite(n)) return "—";
+  return (n>=0?"+":"")+n.toFixed(1)+"%";
+}
+// Live market data for the creator token (deepest-liquidity Solana pair).
+async function loadPrice(mint){
+  let d;
+  try{ d = await (await fetch("/api/token/price?mint=" + encodeURIComponent(mint))).json(); }catch(e){ return; }
+  if(!d) return;
+  $("tMcap").textContent = fmtUsd(d.marketCap);
+  $("tPrice").textContent = fmtPrice(d.priceUsd);
+  const chg = $("tChg");
+  chg.textContent = fmtChg(d.change24h);
+  if(typeof d.change24h === "number"){
+    chg.classList.toggle("up", d.change24h >= 0);
+    chg.classList.toggle("down", d.change24h < 0);
+  }
+}
+
 async function load(){
   let launches = [];
   try{
@@ -169,7 +203,7 @@ async function load(){
     $("verify").style.display = "";
   }
 
-  // Creator token strip — from their launch (real symbol/name/mint; market data —).
+  // Creator token strip — from their launch (real symbol/name/mint).
   if (first){
     $("tokenStrip").style.display = "flex";
     $("tCoin").textContent = "$" + (first.symbol||"");
@@ -178,6 +212,7 @@ async function load(){
     $("tradeLink").href = "/coin?mint=" + encodeURIComponent(first.mint);
     $("tradeLink").textContent = "Trade $" + (first.symbol||"");
     $("bio").innerHTML = first.description ? first.description : "";
+    if (first.mint) loadPrice(first.mint);
   }
 
   // Launches tab (their tokens).
