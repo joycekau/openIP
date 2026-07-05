@@ -33,6 +33,16 @@
   .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:13px}
   .note{text-align:center;font-size:11.5px;color:var(--dim);margin-top:14px}
   .note a{color:var(--purple)}
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--line);margin:6px 0 16px}
+  .tabs button{background:none;border:0;padding:11px 20px;font-size:14px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabs button.on{color:var(--text);border-color:var(--purple)}
+  .panel{display:none} .panel.on{display:block}
+  #rampFrame{width:100%;height:660px;border:0;border-radius:18px;background:var(--panel)}
+  .rampnote{display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;
+    min-height:400px;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:30px;color:var(--muted)}
+  .rampnote.show{display:flex}
+  .rampnote .big{font-size:38px}
+  .rampnote a{color:var(--purple);font-weight:700}
 </style>
 </head>
 <body>
@@ -42,18 +52,41 @@
     <div><h1>Cross-chain Swap</h1><p>Move funds between Solana and BNB Chain — powered by LI.FI.</p></div>
   </div>
   <div class="why">oneIP is dual-chain: your creator <b>token</b> lives on Solana, the <b>marketplace</b> settles on BSC.
-    Swap into SOL/USDC to top up your token, or into BSC tokens to pay in the marketplace.</div>
+    <b>Swap</b> across chains, or <b>Buy / Sell</b> crypto with your bank card.</div>
 
-  <div class="frame">
-    <div class="loading" id="loading">Loading swap…</div>
-    <div id="widget"></div>
-    <!-- Fallback: LI.FI's hosted Jumper (keyless) if the embedded widget can't load. -->
-    <div class="fallback" id="fallback">
-      <div class="big">🔁</div>
-      <p>The embedded swap couldn't load here — open LI.FI in a new tab (same swap, all chains).</p>
-      <a class="open" href="https://jumper.exchange/" target="_blank" rel="noopener">Open swap ↗</a>
+  <div class="tabs">
+    <button class="on" data-tab="swap">🔁 Swap</button>
+    <button data-tab="ramp">💳 Buy / Sell</button>
+  </div>
+
+  <!-- cross-chain swap (LI.FI) -->
+  <div class="panel on" id="panel-swap">
+    <div class="frame">
+      <div class="loading" id="loading">Loading swap…</div>
+      <div id="widget"></div>
+      <!-- Fallback: LI.FI's hosted Jumper (keyless) if the embedded widget can't load. -->
+      <div class="fallback" id="fallback">
+        <div class="big">🔁</div>
+        <p>The embedded swap couldn't load here — open LI.FI in a new tab (same swap, all chains).</p>
+        <a class="open" href="https://jumper.exchange/" target="_blank" rel="noopener">Open swap ↗</a>
+      </div>
     </div>
   </div>
+
+  <!-- fiat on-ramp + off-ramp (Onramper: buy AND sell in one widget) -->
+  <div class="panel" id="panel-ramp">
+    <iframe id="rampFrame" title="Buy or sell crypto"
+      allow="accelerometer; autoplay; camera; gyroscope; payment; microphone"
+      style="display:none"></iframe>
+    <div class="rampnote" id="rampnote">
+      <div class="big">💳</div>
+      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by Onramper. Add your Onramper key
+      (<code>ONRAMPER_API_KEY</code>) in Vercel to enable it — it aggregates MoonPay, Transak &amp; more,
+      supporting both buying crypto and cashing out to your bank.</p>
+      <a href="https://onramper.com" target="_blank" rel="noopener">Get an Onramper key ↗</a>
+    </div>
+  </div>
+
   <div class="note" id="feenote" style="display:none;color:#B45309;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:10px 12px;margin-top:12px"></div>
   <div class="note">Non-custodial — swaps run through LI.FI's audited routers in your own wallet. oneIP never holds funds.
     <br><a href="/studio">← Back to Studio</a></div>
@@ -62,6 +95,27 @@
 <script src="config.js"></script>
 <script src="i18n.js"></script>
 <script src="header.js"></script>
+<script>
+// Tab switching (Swap ↔ Buy/Sell)
+document.querySelectorAll(".tabs button").forEach((b) => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach((x) => x.classList.remove("on"));
+  b.classList.add("on");
+  document.getElementById("panel-swap").classList.toggle("on", b.dataset.tab === "swap");
+  document.getElementById("panel-ramp").classList.toggle("on", b.dataset.tab === "ramp");
+});
+// Fiat on-ramp + off-ramp via Onramper (one widget, buy AND sell). Needs a publishable ONRAMPER_API_KEY
+// (set in Vercel env → served by /config.js). Without it, show the setup note.
+(function () {
+  const key = window.ONRAMPER_API_KEY || "";
+  const fr = document.getElementById("rampFrame"), note = document.getElementById("rampnote");
+  if (key) {
+    fr.src = "https://buy.onramper.com/?apiKey=" + encodeURIComponent(key) + "&mode=buy,sell";
+    fr.style.display = "block"; note.classList.remove("show");
+  } else {
+    fr.style.display = "none"; note.classList.add("show");
+  }
+})();
+</script>
 <script type="module">
 // Mount the LI.FI Widget wired to our integrator + fee, with the API key proxied server-side
 // (apiUrl → /api/lifi, which injects x-lifi-api-key). If the widget bundle fails to load, fall back
