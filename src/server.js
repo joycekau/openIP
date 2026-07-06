@@ -189,10 +189,14 @@ async function handler(req, res) {
       // Transak dashboard). Falls back to oneip.io.
       const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
       const widgetParams = { apiKey, referrerDomain, productsAvailed: inBody.productsAvailed === "SELL" ? "SELL" : "BUY" };
-      for (const k of ["network", "cryptoCurrencyCode", "walletAddress", "fiatCurrency", "defaultFiatAmount", "cryptoCurrencyList", "themeColor", "defaultPaymentMethod"]) {
+      for (const k of ["network", "defaultNetwork", "cryptoCurrencyCode", "walletAddress", "fiatCurrency", "defaultFiatAmount", "cryptoCurrencyList", "themeColor", "colorMode", "hideMenu", "disableWalletAddressForm", "defaultPaymentMethod"]) {
         if (inBody[k] != null && inBody[k] !== "") widgetParams[k] = inBody[k];
       }
       if (!widgetParams.themeColor) widgetParams.themeColor = "A855F7";
+      if (!widgetParams.colorMode) widgetParams.colorMode = "DARK";           // oneip.io is a dark UI
+      if (widgetParams.hideMenu == null) widgetParams.hideMenu = true;        // cleaner embedded widget
+      // Prefilled a wallet? Lock the destination so funds can only reach the user's own address.
+      if (widgetParams.walletAddress && widgetParams.disableWalletAddressForm == null) widgetParams.disableWalletAddressForm = true;
       try {
         const token = await transakAccessToken(env, apiKey, apiSecret);
         const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
