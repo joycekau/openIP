@@ -72,6 +72,10 @@
   .oneip-wm__act{font-size:12px;font-weight:700;color:#A99FC0;white-space:nowrap}
   .oneip-wm__swap{display:block;text-align:center;margin-top:6px;font-size:12.5px;color:#C9A9FF;text-decoration:none}
   .oneip-wm__swap:hover{color:#F4EFFC}
+  .oneip-wm__more{width:100%;background:none;border:1px dashed rgba(255,255,255,.14);border-radius:12px;padding:11px;margin-top:2px;color:#A99FC0;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s}
+  .oneip-wm__more:hover{border-color:rgba(240,185,11,.5);color:#F0B90B}
+  .oneip-wm__div{display:flex;align-items:center;gap:10px;margin:12px 2px 8px;color:#6E6684;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .oneip-wm__div::before,.oneip-wm__div::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.08)}
   `;
 
   // nav: [path, i18n-key, fallback]. Creators = creator directory/profiles,
@@ -246,16 +250,27 @@
       <span class="oneip-wm__act">${on ? "Disconnect" : "Connect"}</span>
     </button>`;
   }
+  // Solana-first, contextual connect: the modal leads with Solana (the creator's identity + token)
+  // and keeps BSC — which is payments-only — behind a small expander, so pages like the Studio never
+  // offer the wrong chain. BSC auto-expands once connected (or when a page asks for it via scope).
+  let wmShowBsc = false;
   function renderWalletModal() {
     const m = document.getElementById("oneipWalletModal");
     if (!m || !m.classList.contains("open")) return;
+    const bscOn = !!(window.KolEvm && window.KolEvm.address);
+    const showBsc = wmShowBsc || bscOn;
+    const bscBlock = showBsc
+      ? `<div class="oneip-wm__div">BNB Chain · payments</div>${bscRow()}`
+      : `<button class="oneip-wm__more" id="oneipWmMore">＋ Paying on the marketplace? Connect BNB Chain</button>`;
     m.innerHTML = `<div class="oneip-wm__card">
-      <div class="oneip-wm__h"><b>Connect wallet</b><button class="oneip-wm__x" id="oneipWmX">✕</button></div>
-      <div class="oneip-wm__sub">oneIP is dual-chain — your token is on Solana, the marketplace settles on BSC.</div>
-      ${solanaSection()}${bscRow()}
-      <a class="oneip-wm__swap" href="/swap">Need to move funds across chains? Swap ↗</a>
+      <div class="oneip-wm__h"><b>Connect your wallet</b><button class="oneip-wm__x" id="oneipWmX">✕</button></div>
+      <div class="oneip-wm__sub">Your creator token &amp; identity live on <b>Solana</b> — connect a Solana wallet to launch, trade and manage your Studio.</div>
+      ${solanaSection()}
+      ${bscBlock}
     </div>`;
     m.querySelector("#oneipWmX").onclick = () => m.classList.remove("open");
+    const more = m.querySelector("#oneipWmMore");
+    if (more) more.onclick = () => { wmShowBsc = true; renderWalletModal(); };
     m.querySelectorAll(".oneip-wm__opt[data-k]").forEach((b) => b.onclick = async () => {
       const k = b.dataset.k;
       try {
@@ -273,7 +288,11 @@
       refreshConnectLabel();
     });
   }
-  function openWalletModal() {
+  // scope: "sol" (default, Solana-first with BSC tucked away) or "bsc"/"both" (start with BSC shown,
+  // e.g. from the Swap page or a checkout). Pages can also set window.ONEIP_WALLET_SCOPE.
+  function openWalletModal(scope) {
+    const s = scope || window.ONEIP_WALLET_SCOPE || "sol";
+    wmShowBsc = (s === "bsc" || s === "both");
     const m = ensureModal();
     m.classList.add("open");
     renderWalletModal();
