@@ -121,7 +121,7 @@
       </div>` : "";
     host.className = "oneip-hdr";
     host.innerHTML = `<div class="oneip-hdr__in">
-      <div class="oneip-hdr__logo" onclick="location.href='/'">oneIP<span class="io">.io</span></div>
+      <div class="oneip-hdr__logo" onclick="location.href='/'"><span class="oneip-hdr__word">oneIP<span class="io">.io</span></span></div>
       <nav class="oneip-hdr__nav">${navHtml}</nav>
       <div class="oneip-hdr__right"><span id="appHeaderExtra" style="display:flex;align-items:center;gap:10px"></span>${langHtml}
         <button class="oneip-hdr__cta" id="oneipConnect">${tr("connect_wallet", "Connect Wallet")}</button>
@@ -143,7 +143,7 @@
       `<a href="${path}"${path.startsWith("http") ? ' rel="noopener"' : ""} class="${activeFor(path) ? "is-active" : ""}" data-i18n="${key}">${tr(key, fb)}</a>`).join("");
     const langs = window.KolI18n ? `<div class="oneip-mnav__langs">${KolI18n.LANGS.map(([c, label]) => `<button data-l="${c}" class="${c === KolI18n.lang() ? "sel" : ""}">${label}</button>`).join("")}</div>` : "";
     m.innerHTML = `<div class="oneip-mnav__panel">
-      <div class="oneip-mnav__top"><div class="oneip-hdr__logo" onclick="location.href='/'">oneIP<span class="io">.io</span></div>
+      <div class="oneip-mnav__top"><div class="oneip-hdr__logo" onclick="location.href='/'"><span class="oneip-hdr__word">oneIP<span class="io">.io</span></span></div>
         <button class="oneip-mnav__x" id="oneipMnavX" type="button" aria-label="close">✕</button></div>
       ${links}${langs}</div>`;
     // stop clicks inside the panel from closing; wire close + lang
