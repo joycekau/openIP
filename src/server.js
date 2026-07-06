@@ -95,6 +95,26 @@ async function servePage(res, file) {
   return res.end(html);
 }
 
+// Transak partner access token — exchanged from apiKey + api-secret, valid 7 days (only the latest is
+// valid). Cached in memory and refreshed proactively so we don't re-auth on every widget-url request.
+let _transakTok = { token: null, exp: 0 };
+async function transakAccessToken(env, apiKey, apiSecret) {
+  const now = Date.now();
+  if (_transakTok.token && now < _transakTok.exp) return _transakTok.token;
+  const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
+  const r = await fetch(base + "/partners/api/v2/refresh-token", {
+    method: "POST",
+    headers: { "content-type": "application/json", "api-secret": apiSecret },
+    body: JSON.stringify({ apiKey }),
+  });
+  const j = await r.json().catch(() => ({}));
+  const token = j && (j.data?.accessToken || j.accessToken);
+  if (!r.ok || !token) throw new Error((j && (j.error?.message || j.message)) || `Transak access token failed (${r.status})`);
+  // Token lives 7 days; cache for 6 to stay clear of the boundary.
+  _transakTok = { token, exp: now + 6 * 24 * 3600 * 1000 };
+  return token;
+}
+
 async function handler(req, res) {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const path = url.pathname;
@@ -115,7 +135,7 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/terms" || path === "/terms.html")) return servePage(res, "terms.html");
 
     // static scripts + brand assets
-    if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js" || path === "/thirdweb.js" || path === "/affiliate-networks.js" || path === "/sw.js")) {
+    if (req.method === "GET" && (path === "/wallet.js" || path === "/i18n.js" || path === "/chain.js" || path === "/header.js" || path === "/thirdweb.js" || path === "/transak.js" || path === "/affiliate-networks.js" || path === "/sw.js")) {
       const js = await readFile(join(ROOT, "web", path.slice(1)), "utf8");
       // sw.js must be allowed root scope; served from "/" so its scope is the whole origin already
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "service-worker-allowed": "/" });
@@ -142,9 +162,57 @@ async function handler(req, res) {
         // MoonPay: FREE to integrate (no subscription) — on-ramp AND off-ramp. Publishable key
         // (pk_test_… = sandbox, pk_live_… = production). Sandbox needs no URL signing.
         MOONPAY_API_KEY: process.env.MOONPAY_API_KEY || "",
+        // Transak: fiat on-ramp + off-ramp. Per Transak's mandatory migration, the widget URL is
+        // generated server-side (POST /api/transak/widget-url) — the API key + SECRET stay on the
+        // server, never in the browser. We only expose an "enabled" flag + the environment so the UI
+        // knows whether to show the widget and the staging badge.
+        TRANSAK_ENABLED: !!(process.env.TRANSAK_API_KEY && process.env.TRANSAK_API_SECRET),
+        TRANSAK_ENVIRONMENT: (process.env.TRANSAK_ENVIRONMENT || "STAGING").toUpperCase() === "PRODUCTION" ? "PRODUCTION" : "STAGING",
       };
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "cache-control": "public, max-age=30" });
-      return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};window.MOONPAY_API_KEY=${JSON.stringify(cfg.MOONPAY_API_KEY)};`);
+      return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};window.MOONPAY_API_KEY=${JSON.stringify(cfg.MOONPAY_API_KEY)};window.TRANSAK_ENABLED=${JSON.stringify(cfg.TRANSAK_ENABLED)};window.TRANSAK_ENVIRONMENT=${JSON.stringify(cfg.TRANSAK_ENVIRONMENT)};`);
+    }
+    // Transak fiat on-ramp/off-ramp — server-side widget-URL generation (Transak's MANDATORY
+    // migration: query-param widget URLs are deprecated). Flow: apiKey+secret → short-lived partner
+    // access token (cached) → POST create-widget-url with widgetParams → return the 5-min widgetUrl.
+    // The API key + SECRET never reach the browser; the client only iframes the returned URL.
+    if (req.method === "POST" && path === "/api/transak/widget-url") {
+      const apiKey = process.env.TRANSAK_API_KEY, apiSecret = process.env.TRANSAK_API_SECRET;
+      const env = (process.env.TRANSAK_ENVIRONMENT || "STAGING").toUpperCase() === "PRODUCTION" ? "PRODUCTION" : "STAGING";
+      if (!apiKey || !apiSecret) {
+        res.writeHead(400, { "content-type": "application/json" });
+        return res.end(JSON.stringify({ error: "Transak not configured — set TRANSAK_API_KEY and TRANSAK_API_SECRET in Vercel env (open-ip project)" }));
+      }
+      let inBody = {};
+      try { inBody = JSON.parse((await readBody(req)) || "{}"); } catch (_) {}
+      // referrerDomain is mandatory; use the calling host (must match a domain whitelisted in the
+      // Transak dashboard). Falls back to oneip.io.
+      const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
+      const widgetParams = { apiKey, referrerDomain, productsAvailed: inBody.productsAvailed === "SELL" ? "SELL" : "BUY" };
+      for (const k of ["network", "cryptoCurrencyCode", "walletAddress", "fiatCurrency", "defaultFiatAmount", "cryptoCurrencyList", "themeColor", "defaultPaymentMethod"]) {
+        if (inBody[k] != null && inBody[k] !== "") widgetParams[k] = inBody[k];
+      }
+      if (!widgetParams.themeColor) widgetParams.themeColor = "A855F7";
+      try {
+        const token = await transakAccessToken(env, apiKey, apiSecret);
+        const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
+        const r = await fetch(gw + "/api/v2/auth/session", {
+          method: "POST",
+          headers: { accept: "application/json", "content-type": "application/json", "access-token": token },
+          body: JSON.stringify({ widgetParams }),
+        });
+        const j = await r.json().catch(() => ({}));
+        const widgetUrl = j && (j.widgetUrl || (j.data && j.data.widgetUrl));
+        if (!r.ok || !widgetUrl) {
+          res.writeHead(r.status && r.status >= 400 ? r.status : 502, { "content-type": "application/json" });
+          return res.end(JSON.stringify({ error: (j && (j.error?.message || j.message)) || "Could not create Transak widget URL" }));
+        }
+        res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+        return res.end(JSON.stringify({ widgetUrl }));
+      } catch (e) {
+        res.writeHead(502, { "content-type": "application/json" });
+        return res.end(JSON.stringify({ error: (e && e.message) || "Transak request failed" }));
+      }
     }
     // LI.FI API proxy — forwards /api/lifi/<path> → https://li.quest/v1/<path>, injecting the SECRET
     // x-lifi-api-key server-side so it's never exposed to the browser. The widget points its apiUrl

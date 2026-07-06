@@ -84,22 +84,26 @@
     </div>
   </div>
 
-  <!-- fiat on-ramp + off-ramp (MoonPay: free to integrate, separate buy/sell widgets) -->
+  <!-- fiat on-ramp (BUY) + off-ramp (SELL) via Transak's hosted widget -->
   <div class="panel" id="panel-ramp">
-    <div class="sandbadge" id="mpSandbox">🧪 Sandbox demo — test mode only. Use MoonPay's test cards; no real money moves.</div>
-    <div class="subtabs" id="mpTabs">
-      <button class="on" data-mp="buy">Buy crypto</button>
-      <button data-mp="sell">Sell crypto</button>
+    <div class="sandbadge" id="tkSandbox">🧪 Staging mode — test only. Use Transak's test cards; no real money moves.</div>
+    <div class="subtabs" id="tkTabs">
+      <button class="on" data-tk="BUY">Buy crypto</button>
+      <button data-tk="SELL">Sell crypto</button>
+    </div>
+    <div class="subtabs" id="tkChain">
+      <button class="on" data-chain="bsc">BNB Chain · USDT</button>
+      <button data-chain="solana">Solana · SOL</button>
     </div>
     <iframe id="rampFrame" title="Buy or sell crypto"
       allow="accelerometer; autoplay; camera; gyroscope; payment; fullscreen"
       style="display:none"></iframe>
     <div class="rampnote" id="rampnote">
       <div class="big">💳</div>
-      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by MoonPay — free to integrate, no
-      subscription. Add your MoonPay key (<code>MOONPAY_API_KEY</code>) in Vercel to enable it
-      (<code>pk_test_…</code> for the sandbox); you earn via the markup you set in the MoonPay dashboard.</p>
-      <a href="https://dashboard.moonpay.com" target="_blank" rel="noopener">Get a free MoonPay key ↗</a>
+      <p>Fiat <b>buy &amp; sell</b> (on-ramp + off-ramp) is powered by Transak. Add your Transak key
+      (<code>TRANSAK_API_KEY</code>) in Vercel to enable it, with <code>TRANSAK_ENVIRONMENT=STAGING</code>
+      for test cards. Crypto settles straight to your connected wallet — oneIP never holds funds.</p>
+      <a href="https://dashboard.transak.com" target="_blank" rel="noopener">Get a Transak key ↗</a>
     </div>
   </div>
 
@@ -109,6 +113,7 @@
 </div>
 
 <script src="config.js"></script>
+<script src="transak.js"></script>
 <script src="i18n.js"></script>
 <script src="header.js"></script>
 <script>
@@ -119,29 +124,33 @@ document.querySelectorAll(".tabs button").forEach((b) => b.onclick = () => {
   document.getElementById("panel-swap").classList.toggle("on", b.dataset.tab === "swap");
   document.getElementById("panel-ramp").classList.toggle("on", b.dataset.tab === "ramp");
 });
-// Fiat on-ramp + off-ramp via MoonPay (free to integrate). MoonPay splits buy (on-ramp) and sell
-// (off-ramp) into separate widgets, so we sub-toggle between them. Test keys (pk_test_…) use the
-// sandbox hosts and need no URL signing. Needs a publishable MOONPAY_API_KEY (Vercel env → /config.js).
+// Fiat on-ramp (BUY) + off-ramp (SELL) via Transak's hosted widget (window.KolTransak). Toggle
+// product (buy/sell) and chain (BNB Chain-USDT / Solana-SOL); the wallet address is prefilled from
+// the matching connector so crypto settles to the user's own wallet. Needs TRANSAK_API_KEY in Vercel
+// env (served via /config.js); until then, a setup note is shown.
 (function () {
-  const key = window.MOONPAY_API_KEY || "";
-  const fr = document.getElementById("rampFrame"), note = document.getElementById("rampnote"), tabs = document.getElementById("mpTabs");
-  if (!key) { fr.style.display = "none"; tabs.style.display = "none"; note.classList.add("show"); return; }
-  const sandbox = /^pk_test/i.test(key);
-  if (sandbox) document.getElementById("mpSandbox").classList.add("show");
-  const host = (mode) => (mode === "sell"
-    ? (sandbox ? "https://sell-sandbox.moonpay.com" : "https://sell.moonpay.com")
-    : (sandbox ? "https://buy-sandbox.moonpay.com" : "https://buy.moonpay.com"));
-  const load = (mode) => {
-    const cur = mode === "sell" ? "&defaultBaseCurrencyCode=sol" : "&defaultCurrencyCode=sol";
-    fr.src = host(mode) + "/?apiKey=" + encodeURIComponent(key) + cur;
-    fr.style.display = "block";
+  const fr = document.getElementById("rampFrame"), note = document.getElementById("rampnote");
+  const tabs = document.getElementById("tkTabs"), chains = document.getElementById("tkChain");
+  if (!window.KolTransak || !KolTransak.ready()) { fr.style.display = "none"; tabs.style.display = "none"; chains.style.display = "none"; note.classList.add("show"); return; }
+  if (KolTransak.env() === "STAGING") document.getElementById("tkSandbox").classList.add("show");
+  let product = "BUY";
+  // default chain = the wallet the user already connected (Solana identity, else BSC marketplace)
+  let chain = (window.KolWallet && window.KolWallet.address) ? "solana" : "bsc";
+  const setActive = (grp, key, val) => grp.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset[key] === val));
+  const showErr = (msg) => { note.classList.add("show"); note.innerHTML = '<div class="big">⚠️</div><p>Couldn\'t open Transak: ' + msg + '</p>'; fr.style.display = "none"; };
+  let reqId = 0;
+  const load = async () => {
+    const mine = ++reqId;                 // guard against out-of-order responses when toggling fast
+    note.classList.remove("show"); tabs.style.display = "flex"; chains.style.display = "flex";
+    fr.style.display = "none"; fr.removeAttribute("src");
+    const r = await KolTransak.mount(fr, { product, chain });
+    if (mine !== reqId) return;           // a newer toggle superseded this one
+    if (r && r.ok) { fr.style.display = "block"; } else { showErr((r && r.error) || "unknown error"); }
   };
-  note.classList.remove("show"); tabs.style.display = "flex";
-  tabs.querySelectorAll("button").forEach((b) => b.onclick = () => {
-    tabs.querySelectorAll("button").forEach((x) => x.classList.remove("on"));
-    b.classList.add("on"); load(b.dataset.mp);
-  });
-  load("buy");
+  tabs.querySelectorAll("button").forEach((b) => b.onclick = () => { product = b.dataset.tk; setActive(tabs, "tk", product); load(); });
+  chains.querySelectorAll("button").forEach((b) => b.onclick = () => { chain = b.dataset.chain; setActive(chains, "chain", chain); load(); });
+  setActive(chains, "chain", chain);
+  load();
 })();
 </script>
 <script type="module">
