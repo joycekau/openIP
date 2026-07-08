@@ -4,10 +4,38 @@
 //   <div id="appHeader"></div> ... <script src="i18n.js"></script><script src="wallet.js"></script><script src="header.js"></script>
 // It replaces #appHeader (or prepends to <body>). Active link is derived from the URL.
 (function () {
+  // ---- corax embed detection ---------------------------------------------------------------
+  // When oneIP runs embedded inside corax.live (mini-app iframe / in-app webview), Swap + Buy/Sell
+  // are hidden: Corax Pay already ships the same two features (LI.FI swap + Transak on/off-ramp),
+  // so duplicating them inside the embed is confusing. Detection: an explicit ?embed=corax param
+  // (the corax shell can always set this), a corax parent origin, or an iframe parent we can't
+  // identify (oneIP is only legitimately embedded by corax). Sticky per tab via sessionStorage so
+  // internal navigation keeps embed mode; ?embed=0 clears it (for debugging).
+  function coraxEmbedded() {
+    try {
+      const q = (new URLSearchParams(location.search).get("embed") || "").toLowerCase();
+      if (q === "corax" || q === "1" || q === "true") { sessionStorage.setItem("oneip_embed", "corax"); return true; }
+      if (q === "0" || q === "false") { sessionStorage.removeItem("oneip_embed"); return false; }
+      if (sessionStorage.getItem("oneip_embed") === "corax") return true;
+      if (window.self !== window.top) {
+        const corax = /corax\.live|repo-smooch-sync/i;
+        const anc = location.ancestorOrigins;
+        const known = anc && anc.length ? corax.test(anc[anc.length - 1]) : corax.test(document.referrer || "");
+        const unknownParent = !(anc && anc.length) && !document.referrer;
+        if (known || unknownParent) { sessionStorage.setItem("oneip_embed", "corax"); return true; }
+      }
+    } catch (_) { /* cross-origin quirks — treat as not embedded */ }
+    return false;
+  }
+  window.OneipEmbedded = coraxEmbedded();
+  if (window.OneipEmbedded) document.documentElement.classList.add("oneip-embed");
+
   const CSS = `
   /* global mobile safety — applied on every page that loads the header */
   img,svg,video,iframe{max-width:100%}
   @media(max-width:860px){html,body{overflow-x:hidden;max-width:100%}}
+  /* corax embed: hide every Swap entry point (nav, mobile menu, in-page links) — Corax Pay has it */
+  .oneip-embed a[href="/swap"]{display:none!important}
   .oneip-hdr{position:sticky;top:0;z-index:50;background:rgba(8,5,16,.72);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08);font-family:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif}
   .oneip-hdr__in{max-width:1200px;margin:0 auto;padding:0 20px;height:68px;display:flex;align-items:center;justify-content:space-between;gap:14px}
   .oneip-hdr__logo{display:flex;align-items:center;gap:8px;cursor:pointer;font-family:"Space Grotesk","Plus Jakarta Sans",sans-serif;font-weight:700;font-size:21px;letter-spacing:-.3px;color:#F4EFFC}
