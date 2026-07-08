@@ -278,6 +278,12 @@ async function handler(req, res) {
       // Transak support.
       const sleep = (ms) => new Promise((rs) => setTimeout(rs, ms));
       out.attempts = [];
+      // Report the function's current egress IP — the IP Transak's gateway actually sees. Vercel
+      // serverless egress is dynamic, so this is evidence for the whitelisting conversation.
+      try {
+        const ipr = await fetch("https://api.ipify.org?format=json");
+        out.egressIp = (await ipr.json().catch(() => ({})))?.ip || null;
+      } catch (e) { out.egressIp = "lookup failed: " + ((e && e.message) || String(e)); }
       try {
         const r1 = await fetch("https://api.transak.com/partners/api/v2/refresh-token", {
           method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
