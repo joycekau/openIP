@@ -28,6 +28,17 @@ import * as walletStore from "./wallets.js";
 import { discoverWallets } from "./discover.js";
 import * as ipfs from "./ipfs.js";
 import * as markets from "./sources/markets.js";
+import * as social from "./social.js";
+import * as ai from "./ai.js";
+import * as publish from "./publish.js";
+import * as accounts from "./accounts.js";
+import * as shopSource from "./commerce/source.js";
+import * as orders from "./commerce/orders.js";
+import * as treasury from "./commerce/treasury.js";
+import * as buyback from "./commerce/buyback.js";
+import * as payments from "./commerce/payments.js";
+import * as reactions from "./commerce/reactions.js";
+import * as agents from "./commerce/agents.js";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 // On a persistent host / locally, web/ + data/ sit one level up from src/. On Vercel the function
@@ -77,6 +88,50 @@ function isAdmin(req) {
   return (req.headers["x-admin-token"] || "") === ADMIN_TOKEN;
 }
 
+// Session token for creator-owned writes: "Authorization: Bearer <t>", "x-oneip-token", or body.token.
+function actorToken(req, body) {
+  const a = req.headers["authorization"] || "";
+  if (a.startsWith("Bearer ")) return a.slice(7).trim();
+  return req.headers["x-oneip-token"] || (body && body.token) || "";
+}
+// Returns true if the request may act AS `claimedHandle` (registered accounts require their token;
+// unregistered handles/wallets stay open for legacy flows). Use to gate creator-authored writes.
+function mayActAs(req, claimedHandle, body) {
+  return accounts.verifyActor(actorToken(req, body), claimedHandle).ok;
+}
+
+const deriveSymbol = (account) => {
+  const s = String(account || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase().slice(0, 8);
+  return s.length >= 2 ? s : "IP" + s;
+};
+
+// Auto-provision a creator's value-pool token the FIRST time they do anything productive (list a
+// product, post, or one-click forward to the platforms). Creates the pool under the SAME account id
+// and links it on the creator profile. The pool is off-chain (placeholder mint) until they mint it
+// for real via Phantom on /launch; pre-launch revenue escrows to it (see buyback.js). Idempotent.
+function ensureValuePool(account) {
+  if (!account) return null;
+  const c = social.getCreator(account);
+  if (c.coin) return c.coin;
+  const l = launchpad.create({ name: c.displayName || account, symbol: deriveSymbol(account), creator: account, auto: true });
+  social.setCreator(account, { coin: l.mint });
+  return l.mint;
+}
+
+// When an account mints its value-pool token FOR REAL (Phantom on /launch), migrate everything off
+// the auto-provisioned placeholder: relink the account's coin → real mint, re-point its products,
+// and flush the escrowed pre-launch 20% into the real coin.
+function activateRealToken(account, realMint) {
+  if (!account || !realMint) return null;
+  const old = social.getCreator(account).coin;
+  if (!old || !old.startsWith("Kol") || old === realMint) return null;
+  social.setCreator(account, { coin: realMint });
+  const repointed = shopSource.repointCreatorCoin(account, old, realMint);
+  const flush = buyback.flushEscrow(old, realMint);
+  try { launchpad.setMeta(old, { superseded: realMint }); } catch (e) {}
+  return { migratedFrom: old, repointed, ...flush };
+}
+
 function readBody(req) {
   // Vercel's Node runtime may pre-parse the body onto req.body (draining the stream). Prefer it when
   // present; otherwise read the raw stream (local / Render / plain Node).
@@ -121,7 +176,7 @@ async function handler(req, res) {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const path = url.pathname;
   try {
-    if (req.method === "OPTIONS") { res.writeHead(204, { "access-control-allow-origin": "*", "access-control-allow-methods": "GET,POST,OPTIONS", "access-control-allow-headers": "content-type,x-admin-token,authorization" }); return res.end(); }
+    if (req.method === "OPTIONS") { res.writeHead(204, { "access-control-allow-origin": "*", "access-control-allow-methods": "GET,POST,OPTIONS", "access-control-allow-headers": "content-type,x-admin-token,authorization,x-oneip-token" }); return res.end(); }
 
     // ---- pages (OpenIP is one brand; every host serves the launchpad) ----
     if (req.method === "GET" && (path === "/" || path === "/home" || path === "/home.html")) return servePage(res, "home.html");
@@ -358,11 +413,333 @@ async function handler(req, res) {
     // ---- launchpad ----
     if (req.method === "GET" && path === "/api/board") return json(res, 200, launchpad.board());
 
-    // ---- marketplace products/services (creators list these in the studio) ----
-    // Stored in openip_kv key "products": [{ id, creatorId, coraxCreatorId, title,
-    // image, price, currency, url, kind, syncCorax }]. syncCorax = discoverable in
-    // the creator's corax.live channel (creator's opt-in per product).
+    // ---- creator social layer (posts / follows / comments / likes / profiles) ----
+    if (req.method === "GET" && path === "/api/feed") {
+      return json(res, 200, social.feed({
+        creator: url.searchParams.get("creator") || undefined,
+        following: url.searchParams.get("following") || undefined,
+        viewer: url.searchParams.get("viewer") || undefined,
+        coin: url.searchParams.get("coin") || undefined,
+      }));
+    }
+    if (req.method === "POST" && path === "/api/posts") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try {
+        if (!mayActAs(req, b.creator, b)) return json(res, 401, { error: "sign in as this creator to post" });
+        // Validate FIRST (content gate throws on a sub-threshold post) so a rejected post never
+        // mints a value pool. Only a valid post makes you a creator + auto-provisions the token.
+        const post = social.createPost(b);
+        if (b.creator) ensureValuePool(b.creator);
+        return json(res, 200, post);
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "GET" && path === "/api/creator") {
+      const w = url.searchParams.get("w");
+      const viewer = url.searchParams.get("viewer") || undefined;
+      if (!w) return json(res, 400, { error: "w required" });
+      return json(res, 200, {
+        ...social.getCreator(w),
+        followers: social.followerCount(w),
+        subscribers: social.subscriberCount(w),
+        following: viewer ? social.isFollowing(viewer, w) : false,
+        subscribed: viewer ? social.isSubscribed(viewer, w) : false,
+        posts: social.feed({ creator: w, viewer }),
+      });
+    }
+    if (req.method === "POST" && path === "/api/creator") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      if (!b.wallet) return json(res, 400, { error: "wallet required" });
+      if (!mayActAs(req, b.wallet, b)) return json(res, 401, { error: "sign in as this creator to edit" });
+      const patch = {};
+      if (b.displayName !== undefined) patch.displayName = b.displayName;
+      if (b.bio !== undefined) patch.bio = b.bio;
+      if (b.avatar !== undefined) patch.avatar = String(b.avatar).slice(0, 500);
+      if (Array.isArray(b.autoReplies)) patch.autoReplies = b.autoReplies;
+      if (b.aiEnabled !== undefined) patch.aiEnabled = Boolean(b.aiEnabled);
+      if (b.aiPersona !== undefined) patch.aiPersona = String(b.aiPersona).slice(0, 2000);
+      return json(res, 200, social.setCreator(b.wallet, patch));
+    }
+    if (req.method === "POST" && path === "/api/follow") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, social.follow(b.fan, b.creator)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "POST" && path === "/api/unfollow") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, social.unfollow(b.fan, b.creator)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "GET" && path === "/api/comments") {
+      return json(res, 200, social.getComments(url.searchParams.get("post")));
+    }
+    if (req.method === "POST" && path === "/api/comments") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, await social.addComment(b)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "POST" && path === "/api/like") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, social.like(b.postId, b.fan)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "POST" && path === "/api/subscribe") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, social.subscribe(b.fan, b.creator)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "POST" && path === "/api/unsubscribe") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, social.unsubscribe(b.fan, b.creator)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "POST" && path === "/api/posts/delete") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try {
+        if (!mayActAs(req, b.creator, b)) return json(res, 401, { error: "sign in as this creator" });
+        return json(res, 200, social.deletePost(b.postId, b.creator));
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "GET" && path === "/api/notifications") {
+      const w = url.searchParams.get("w");
+      return json(res, 200, { items: social.getNotifications(w), unread: social.unreadCount(w) });
+    }
+    if (req.method === "POST" && path === "/api/notifications/read") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      social.markRead(b.wallet);
+      return json(res, 200, { ok: true });
+    }
+    // AI drafts a post in the creator's voice (free creator tool). Claude when keyed, mock otherwise.
+    if (req.method === "POST" && path === "/api/ai/draft") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      if (!b.prompt) return json(res, 400, { error: "prompt required" });
+      const text = b.wallet && ai.hasKey() ? await ai.generatePost(social.getCreator(b.wallet), b.prompt) : null;
+      return json(res, 200, { text: text || `✨ ${String(b.prompt).slice(0, 140)} — new drop on my oneIP page, come take a look!`, mock: !text });
+    }
+
+    // ---- outbound multi-platform publishing (AiToEarn hidden behind these; free creator tool).
+    // Identity = `account` (the oneIP handle) or legacy `wallet`. Connect → returns OAuth URL.
+    if (req.method === "POST" && path === "/api/publish/connect") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const acct = b.account || b.wallet;
+      if (!acct || !b.platform) return json(res, 400, { error: "account and platform required" });
+      try { return json(res, 200, await publish.connectStart(b.platform, acct)); }
+      catch (e) { return json(res, 502, { error: e.message }); }
+    }
+    // Poll OAuth completion; on success persist the bound accountId onto the creator.
+    if (req.method === "GET" && path === "/api/publish/connect/status") {
+      const acct = url.searchParams.get("account") || url.searchParams.get("wallet");
+      const platform = url.searchParams.get("platform");
+      const sessionId = url.searchParams.get("sessionId");
+      if (!acct || !platform || !sessionId) return json(res, 400, { error: "account, platform, sessionId required" });
+      try {
+        const r = await publish.connectStatus(platform, sessionId);
+        if (r.status === "authorized" && r.accountId) {
+          const bound = { ...(social.getCreator(acct).publishAccounts || {}), [platform]: r.accountId };
+          social.setCreator(acct, { publishAccounts: bound });
+        }
+        return json(res, 200, r);
+      } catch (e) { return json(res, 502, { error: e.message }); }
+    }
+    // Which platforms this creator has connected (+ their public @handles for fan-facing links).
+    if (req.method === "GET" && path === "/api/publish/accounts") {
+      const acct = url.searchParams.get("account") || url.searchParams.get("wallet");
+      if (!acct) return json(res, 400, { error: "account required" });
+      const c = social.getCreator(acct);
+      return json(res, 200, { accounts: c.publishAccounts || {}, socials: c.socials || {} });
+    }
+    // Disconnect a platform (creator-owned write).
+    if (req.method === "POST" && path === "/api/publish/disconnect") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const acct = b.account || b.wallet;
+      if (!acct || !b.platform) return json(res, 400, { error: "account and platform required" });
+      if (!mayActAs(req, acct, b)) return json(res, 401, { error: "sign in as this creator" });
+      const bound = { ...(social.getCreator(acct).publishAccounts || {}) };
+      delete bound[b.platform];
+      social.setCreator(acct, { publishAccounts: bound });
+      return json(res, 200, { accounts: bound });
+    }
+    // Set/clear the creator's PUBLIC @handle on a platform → fans can jump to their profile.
+    if (req.method === "POST" && path === "/api/publish/handle") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const acct = b.account || b.wallet;
+      if (!acct || !b.platform) return json(res, 400, { error: "account and platform required" });
+      if (!mayActAs(req, acct, b)) return json(res, 401, { error: "sign in as this creator" });
+      const socials = { ...(social.getCreator(acct).socials || {}) };
+      const h = String(b.handle || "").trim();
+      if (h) socials[b.platform] = h; else delete socials[b.platform];
+      social.setCreator(acct, { socials });
+      return json(res, 200, { socials });
+    }
+    // One-click publish to all (or chosen) connected platforms.
+    if (req.method === "POST" && path === "/api/publish/now") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const acct = b.account || b.wallet;
+      if (!acct || !b.text) return json(res, 400, { error: "account and text required" });
+      if (!mayActAs(req, acct, b)) return json(res, 401, { error: "sign in as this creator to publish" });
+      const creator = social.getCreator(acct);
+      const bound = creator.publishAccounts || {};
+      const targets = (b.platforms && b.platforms.length ? b.platforms : Object.keys(bound)).filter((p) => bound[p]);
+      if (!targets.length) return json(res, 400, { error: "no connected platforms" });
+      const items = targets.map((platform) => ({ platform, accountId: bound[platform] }));
+      ensureValuePool(acct); // forwarding to the platforms → auto-create the account's value pool
+      try { return json(res, 200, await publish.publish({ text: b.text, mediaUrls: b.mediaUrls || [], items })); }
+      catch (e) { return json(res, 502, { error: e.message }); }
+    }
+    // Status of a publish flow.
+    if (req.method === "GET" && path === "/api/publish/status") {
+      const flowId = url.searchParams.get("flowId");
+      if (!flowId) return json(res, 400, { error: "flowId required" });
+      try { return json(res, 200, await publish.publishStatus(flowId)); }
+      catch (e) { return json(res, 502, { error: e.message }); }
+    }
+
+    // ---- commerce closed-loop: fiat storefront -> settle -> floor buyback ----
+    // Public: browse + buy (FIAT). Creators curate in the Studio.
     if (req.method === "GET" && path === "/api/shop/products") {
+      // activeOnly=false (a creator's own Studio view) includes hidden listings; default hides them.
+      const activeOnly = url.searchParams.get("activeOnly") !== "false";
+      const list = shopSource.listProducts({ creator: url.searchParams.get("creator") || undefined, coin: url.searchParams.get("coin") || undefined, activeOnly });
+      // Attach the creator's display name so the storefront shows a real name, not a raw handle/wallet.
+      return json(res, 200, list.map((p) => ({ ...p, creatorName: social.getCreator(p.creator).displayName || p.creator })));
+    }
+    if (req.method === "GET" && path === "/api/shop/product") {
+      const p = shopSource.getProduct(url.searchParams.get("id"));
+      return p ? json(res, 200, shopSource.publicProduct(p)) : json(res, 404, { error: "not found" });
+    }
+    if (req.method === "POST" && path === "/api/shop/product") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      if (!mayActAs(req, b.creator, b)) return json(res, 401, { error: "sign in as this creator to list products" });
+      try {
+        if (!b.coin && b.creator) b.coin = ensureValuePool(b.creator); // first product → auto-create the account's value pool
+        return json(res, 200, shopSource.addProduct(b));
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    // Owner-guarded update (activate/deactivate).
+    if (req.method === "POST" && path === "/api/shop/product/active") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const p = shopSource.getProduct(b.id);
+      if (!p) return json(res, 404, { error: "product not found" });
+      if (p.creator !== b.creator) return json(res, 403, { error: "not your product" });
+      if (!mayActAs(req, b.creator, b)) return json(res, 401, { error: "sign in as this creator" });
+      try { return json(res, 200, shopSource.publicProduct(shopSource.setProduct(b.id, { active: !!b.active }))); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "GET" && path === "/api/shop/order") {
+      const o = orders.get(url.searchParams.get("id"));
+      return o ? json(res, 200, orders.publicOrder(o)) : json(res, 404, { error: "not found" });
+    }
+    // Tip (打赏): ad-hoc fiat payment to a creator. 20% of net funds their floor like any sale.
+    if (req.method === "POST" && path === "/api/tip") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try {
+        const coin = b.coin || ensureValuePool(b.creator);
+        const order = orders.createTip({ creator: b.creator, coin, amountCents: b.amountCents, fan: b.fan, currency: b.currency });
+        const origin = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
+        const checkout = await payments.createCheckout(order, origin);
+        return json(res, 200, { order: orders.publicOrder(order), checkout });
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    // ---- paid emoji reactions ("web4 likes") — fan pays per reaction; 5% platform + 20% floor ----
+    if (req.method === "GET" && path === "/api/reactions/config") return json(res, 200, reactions.REACTIONS);
+    if (req.method === "GET" && path === "/api/reactions") {
+      const target = url.searchParams.get("target");
+      if (!target) return json(res, 400, { error: "target required" });
+      return json(res, 200, { target, counts: reactions.getCounts(target) });
+    }
+    // React: a fixed-price emoji reaction to a target (product/post/creator). Stripe → checkout
+    // (count bumps on webhook); dev → instant settle + bump now.
+    if (req.method === "POST" && path === "/api/react") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const r = reactions.byKey(b.key);
+      if (!r) return json(res, 400, { error: "unknown reaction" });
+      if (!b.target || !b.creator) return json(res, 400, { error: "target and creator required" });
+      try {
+        const coin = b.coin || ensureValuePool(b.creator); // auto-provision the creator's value pool
+        const order = orders.createReaction({ creator: b.creator, coin, amountCents: r.priceCents, emoji: r.emoji, target: b.target, reactionKey: b.key, fan: b.fan });
+        if (payments.hasStripe()) {
+          const origin = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
+          const checkout = await payments.createCheckout(order, origin);
+          return json(res, 200, { order: orders.publicOrder(order), checkout, pending: true, counts: reactions.getCounts(b.target) });
+        }
+        await orders.markPaid(order.id);          // dev: instant settle (tip-like) → 5%/20% applied
+        const counts = reactions.bump(b.target, b.key);
+        return json(res, 200, { order: orders.publicOrder(orders.get(order.id)), counts });
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    // Public proof for a coin page: total floor added by real sales + each verifiable tx.
+    if (req.method === "GET" && path === "/api/shop/proof") {
+      const coin = url.searchParams.get("coin");
+      if (!coin) return json(res, 400, { error: "coin required" });
+      return json(res, 200, buyback.proof(coin));
+    }
+    // Buy: create the order + a FIAT checkout session (Stripe live, or devMode when unkeyed).
+    if (req.method === "POST" && path === "/api/shop/order") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try {
+        const order = orders.create({ productId: b.productId, fan: b.fan, address: b.address });
+        const origin = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
+        const checkout = await payments.createCheckout(order, origin);
+        return json(res, 200, { order: orders.publicOrder(order), checkout });
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    // Fiat payment cleared (Stripe webhook) -> mark paid -> hand to supplier / instant settle.
+    if (req.method === "POST" && path === "/webhooks/shop") {
+      const raw = await readBody(req);
+      if (!payments.verifyWebhook(raw, req.headers["stripe-signature"])) return json(res, 401, { error: "bad signature" });
+      const r = payments.parseWebhook(raw);
+      if (r?.paid) {
+        try {
+          const o = await orders.markPaid(r.orderId);
+          if (o && o.type === "reaction" && o.target && o.reactionKey) reactions.bump(o.target, o.reactionKey);
+        } catch (e) { console.error("markPaid:", e.message); }
+      }
+      return json(res, 200, { received: true });
+    }
+    // Dev-only: simulate a cleared payment when Stripe isn't configured.
+    if (req.method === "POST" && path === "/api/shop/dev-paid") {
+      if (payments.hasStripe()) return json(res, 400, { error: "use Stripe checkout in production" });
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, orders.publicOrder(await orders.markPaid(b.orderId))); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+
+    // ---- email-first accounts (register with email → handle is your account; bind wallet later) ----
+    if (req.method === "POST" && path === "/api/account/register") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try {
+        const a = accounts.register(b);
+        social.setCreator(a.handle, { email: a.email }); // seed the creator profile under the same handle
+        return json(res, 200, a);
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "POST" && path === "/api/account/login") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, accounts.login(b)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    // Forgot password: request a reset link (dev returns devToken; prod emails it). Always 200 (anti-enum).
+    if (req.method === "POST" && path === "/api/account/forgot") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      return json(res, 200, accounts.requestReset({ id: b.id }));
+    }
+    // Complete a reset with the token + new password → returns a fresh session (logged in).
+    if (req.method === "POST" && path === "/api/account/reset") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, accounts.resetPassword({ token: b.token, password: b.password })); }
+      catch (e) { return json(res, 400, { error: e.message }); }
+    }
+    if (req.method === "GET" && path === "/api/account/me") {
+      const a = accounts.me(url.searchParams.get("token"));
+      return a ? json(res, 200, a) : json(res, 401, { error: "not signed in" });
+    }
+    // Resolve a connected wallet → its account handle (the handle↔wallet identity link).
+    if (req.method === "GET" && path === "/api/account/by-wallet") {
+      const a = accounts.byWallet(url.searchParams.get("wallet"));
+      return a ? json(res, 200, a) : json(res, 404, { error: "no account bound to this wallet" });
+    }
+    if (req.method === "POST" && path === "/api/account/logout") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      return json(res, 200, accounts.logout(b.token));
+    }
+    // Bind a Phantom wallet to the account later (ties the on-chain value-pool launch to it).
+    if (req.method === "POST" && path === "/api/account/bind-wallet") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      try { return json(res, 200, accounts.bindWallet(b.token, b.wallet)); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+
+    // ---- legacy link-out marketplace (kept for CoraX channel feeds / older records) ----
+    if (req.method === "GET" && path === "/api/shop/link-products") {
       const all = await loadJson("products", []);
       return json(res, 200, Array.isArray(all) ? all.filter((p) => p && p.active !== false) : []);
     }
@@ -504,6 +881,12 @@ async function handler(req, res) {
       const items = (Array.isArray(products) ? products : [])
         .filter((p) => p && p.active !== false && p.coraxCreatorId === ch && p.syncCorax === true)
         .map((p) => ({ id: p.id, kind: p.kind, title: p.title, image: p.image, price: p.price, currency: p.currency, url: p.url }));
+      // Also surface the creator's on-platform commerce listings (fiat checkout on oneIP).
+      if (creatorId) {
+        for (const p of shopSource.listProducts({ creator: creatorId })) {
+          items.push({ id: p.id, kind: p.type, title: p.title, image: p.image, price: p.priceCents / 100, currency: p.currency, url: "https://oneip.io/shop?p=" + encodeURIComponent(p.id) });
+        }
+      }
       return json(res, 200, {
         coraxChannelId: ch, creatorId,
         creator: launch ? { name: launch.name, symbol: launch.symbol, mint: launch.mint } : null,
@@ -667,6 +1050,8 @@ async function handler(req, res) {
       if (!b.name || !b.symbol || !b.creator) return json(res, 400, { error: "name, symbol, creator required" });
       // coraxCreatorId is the reserved SSO seam — set when launched from inside a corax.live channel.
       const l = launchpad.create(b);
+      // If this real mint belongs to an account that had an auto-pool, migrate + flush escrow.
+      if (b.account && b.mint) { const m = activateRealToken(b.account, b.mint); if (m) l.migrated = m; }
       return json(res, 200, l);
     }
     if (req.method === "GET" && path === "/api/coin/metadata") {
@@ -751,6 +1136,49 @@ async function handler(req, res) {
         const b = JSON.parse((await readBody(req)) || "{}");
         try { return json(res, 200, launchpad.setVerified(b.mint, b.verified)); } catch (e) { return json(res, 400, { error: e.message }); }
       }
+      // ---- commerce: order fulfillment + settle + treasury (admin / ops) ----
+      if (req.method === "GET" && path === "/api/admin/shop/orders") {
+        return json(res, 200, orders.list({ creator: url.searchParams.get("creator") || undefined, coin: url.searchParams.get("coin") || undefined, status: url.searchParams.get("status") || undefined }));
+      }
+      if (req.method === "POST" && path === "/api/admin/shop/ship") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, orders.markShipped(b.orderId, b.tracking)); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      if (req.method === "POST" && path === "/api/admin/shop/deliver") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, orders.markDelivered(b.orderId)); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      if (req.method === "POST" && path === "/api/admin/shop/refund") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, orders.refund(b.orderId, b.reason)); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      // Settle -> 20% of net profit funds the floor. `force` skips the refund-window wait.
+      if (req.method === "POST" && path === "/api/admin/shop/settle") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, await orders.settle(b.orderId, { force: !!b.force })); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      // SOL float pool: view balance/history, top up (records a batch fiat->SOL conversion).
+      if (req.method === "GET" && path === "/api/admin/shop/treasury") return json(res, 200, treasury.snapshot());
+      if (req.method === "POST" && path === "/api/admin/shop/treasury/topup") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, { lamports: treasury.topUp(Number(b.lamports), b.note), sol: treasury.balanceSol() }); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      // Channel-payout ledger + authorized regional partners (2-tier country->local).
+      if (req.method === "GET" && path === "/api/admin/payouts") return json(res, 200, orders.payouts());
+      if (req.method === "GET" && path === "/api/admin/agents") return json(res, 200, agents.list());
+      if (req.method === "POST" && path === "/api/admin/agents") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, agents.register(b)); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      if (req.method === "POST" && path === "/api/admin/agents/active") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, agents.setActive(b.id, b.active)); } catch (e) { return json(res, 400, { error: e.message }); }
+      }
+      if (req.method === "POST" && path === "/api/admin/agents/assign") {
+        const b = JSON.parse((await readBody(req)) || "{}");
+        try { return json(res, 200, accounts.assignAgents(b.handle, agents.resolveAssignment(b.localAgentId))); }
+        catch (e) { return json(res, 400, { error: e.message }); }
+      }
       return json(res, 404, { error: "not found" });
     }
 
@@ -788,6 +1216,14 @@ export function ensureReady() {
       await walletStore.ensureLoaded();
       await store.load();
       await launchpad.load();
+      await accounts.load();
+      await social.load();
+      await shopSource.load();
+      await orders.load();
+      await treasury.load();
+      await buyback.load();
+      await reactions.load();
+      await agents.load();
     })();
   }
   return _ready;

@@ -1,662 +1,497 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>oneIP · Creator Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#080510; --bg-2:#0F0A1C; --panel:#150E26; --panel-2:#1B1232;
-    --line:rgba(255,255,255,.08); --line-grad:rgba(168,85,247,.28);
-    --text:#F4EFFC; --muted:#A99FC0; --dim:#766C8E;
-    --purple:#A855F7; --magenta:#EC4899; --purple-bg:rgba(168,85,247,.14); --green:#22D3EE; --green-bg:rgba(34,211,238,.12);
-    --pink:#FE2C55; --grad-btn:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
-    --mono:ui-monospace,Consolas,"SF Mono",monospace;
-    --sans:"Plus Jakarta Sans","Noto Sans SC",system-ui,-apple-system,sans-serif;
-    --disp:"Space Grotesk","Plus Jakarta Sans",sans-serif;
+    --bg:#080510;--bg-2:#0F0A1C;--panel:#150E26;--panel-2:#1B1232;
+    --line:rgba(255,255,255,.08);--line-grad:rgba(168,85,247,.28);
+    --violet:#8B5CF6;--purple:#A855F7;--magenta:#EC4899;--coral:#FB7185;--cyan:#22D3EE;
+    --text:#F4EFFC;--muted:#A99FC0;--muted-2:#766C8E;--ok:#34D399;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --r:18px;--wrap:880px;
+    --ff:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif;
+    --ff-disp:"Space Grotesk","Plus Jakarta Sans","Noto Sans SC",sans-serif;
   }
+  html[data-lang="zh"]{--ff:"Noto Sans SC","Plus Jakarta Sans",system-ui,sans-serif;--ff-disp:"Noto Sans SC","Space Grotesk",sans-serif}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5}
-  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.13),transparent 62%),
-      radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.13),transparent 60%)}
-  button{font-family:inherit;cursor:pointer}
-  a{color:inherit}
-  .wrap{max-width:1000px;margin:0 auto;padding:24px 20px 90px;position:relative;z-index:1}
-
-  .head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
-  .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
-    background:linear-gradient(135deg,var(--purple),#4E9CF5)}
-  .head h1{margin:0;font-size:20px;font-weight:800;font-family:var(--disp)}
-  .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
-
-  /* connect gate */
-  .gate{margin-top:60px;text-align:center;color:var(--muted)}
-  .gate .big{font-size:44px}
-  .gate h2{margin:14px 0 6px;font-size:18px;color:var(--text)}
-  .gate p{margin:0 auto 20px;max-width:380px;font-size:13.5px}
-  .cbtn{background:linear-gradient(120deg,#A855F7,#EC4899);color:#fff;border:0;border-radius:999px;padding:12px 30px;font-size:15px;font-weight:700}
-  .cbtn:hover{filter:brightness(1.06)}
-
-  .who{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 15px;margin:18px 0 26px}
-  .who .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#8A6FB8,#2E3A5C);flex:none}
-  .who .m{flex:1;min-width:0}
-  .who .m b{font-family:var(--mono);font-size:13.5px}
-  .who .m span{display:block;font-size:11.5px;color:var(--muted)}
-  .who a.view{font-size:12.5px;font-weight:600;color:var(--purple);text-decoration:none;white-space:nowrap}
-
-  .cols{display:grid;grid-template-columns:1fr 1.15fr;gap:26px;align-items:start}
-  @media(max-width:760px){.cols{grid-template-columns:1fr}}
-
-  .panel{border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent)}
-  .panel h3{margin:0 0 3px;font-size:15px;font-weight:800}
-  .panel .sub{margin:0 0 16px;font-size:12px;color:var(--muted)}
-
-  label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin:13px 0 5px}
-  input,select,textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:13.5px;background:rgba(255,255,255,.04);color:var(--text)}
-  input:focus,select:focus,textarea:focus{outline:0;border-color:var(--purple)}
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .seg{display:flex;gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:5px}
-  .seg button{flex:1;background:transparent;border:0;padding:9px;font-size:13px;font-weight:600;color:var(--muted)}
-  .seg button.on{background:var(--purple-bg);color:var(--purple)}
-  .sync{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding:12px 13px;background:var(--purple-bg);border-radius:10px}
-  .sync input{width:auto;margin-top:2px;flex:none;accent-color:var(--purple)}
-  .sync .st{font-size:12.5px}
-  .sync .st b{color:var(--purple)}
-  .sync .st span{color:var(--muted);display:block;margin-top:1px}
-  .add{width:100%;margin-top:18px;background:var(--grad-btn);color:#fff;border:0;border-radius:10px;padding:12px;font-size:14px;font-weight:700}
-  .add:hover{filter:brightness(1.15)}
-  .add:disabled{opacity:.5;cursor:default}
-
-  .list{display:flex;flex-direction:column;gap:11px;margin-top:16px}
-  .item{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-  .item .th{width:48px;height:48px;border-radius:9px;background:var(--purple-bg);display:grid;place-items:center;font-size:22px;overflow:hidden;flex:none}
-  .item .th img{width:100%;height:100%;object-fit:cover}
-  .item .meta{flex:1;min-width:0}
-  .item .meta .t{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item .meta .p{font-size:12px;color:var(--muted);margin-top:1px}
-  .item .meta .p .sy{color:var(--purple);font-weight:600}
-  .item .meta .p .ns{color:var(--dim)}
-  .item .rm{background:none;border:0;color:var(--dim);font-size:18px;padding:4px 6px;line-height:1}
-  .item .rm:hover{color:var(--pink)}
-  .empty{padding:40px 0;text-align:center;color:var(--dim);font-size:13px}
-  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--panel-2);color:var(--text);border:1px solid var(--line-grad);
-    font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
-  .toast.show{opacity:1}
-
-  /* The studio owns its own wallet UX (gate when out, "who" bar when in), so hide the
-     header's global Connect button here — otherwise the page shows two of them. */
-  #appHeader #oneipConnect{display:none !important}
-  .who .disc{font-size:12px;color:var(--dim);background:none;border:0;padding:4px 6px}
-  .who .disc:hover{color:var(--pink)}
-
-  /* affiliate & token-growth dashboard */
-  .section{margin-top:30px}
-  .section .stitle{display:flex;align-items:center;gap:9px;margin-bottom:4px}
-  .section .stitle h2{margin:0;font-size:17px;font-weight:800}
-  .section .stitle .tag{font-size:11px;font-weight:700;color:var(--purple);background:var(--purple-bg);border-radius:999px;padding:3px 9px}
-  .section .ssub{margin:0 0 16px;font-size:12.5px;color:var(--muted)}
-  .agrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
-  @media(max-width:760px){.agrid{grid-template-columns:1fr}}
-  .miss{grid-column:1/-1;border:1px solid var(--line);border-radius:14px;padding:20px 22px;
-    background:linear-gradient(100deg,rgba(254,44,85,.08),rgba(168,85,247,.07))}
-  .miss .lead{font-size:13px;color:var(--muted)}
-  .miss .big{font-size:34px;font-weight:800;letter-spacing:-.5px;color:var(--pink);margin:4px 0 2px;font-variant-numeric:tabular-nums}
-  .miss .exp{font-size:12.5px;color:var(--muted);max-width:640px}
-  .miss .exp b{color:var(--text)}
-  .mrow{display:flex;gap:26px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
-  .mrow .m .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-  .mrow .m .v{font-family:var(--mono);font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:1px}
-  .mrow .m .v.g{color:var(--green)} .mrow .m .v.p{color:var(--purple)}
-  .split{display:flex;gap:8px;margin:14px 0 4px}
-  .split .b{flex:1;text-align:center;border-radius:9px;padding:9px 6px;font-size:11.5px}
-  .split .b b{display:block;font-family:var(--mono);font-size:15px;font-weight:700}
-  .split .pool{background:var(--purple-bg);color:var(--purple)}
-  .split .floor{background:var(--green-bg);color:var(--green)}
-  .split .plat{background:rgba(255,255,255,.05);color:var(--muted)}
-  .thist{margin-top:8px;font-size:12.5px;color:var(--muted)}
-  .thist .h{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)}
-  .thist .h a{color:var(--purple);text-decoration:none}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ff);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.14),transparent 62%),radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.14),transparent 60%)}
+  .wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 22px;position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .logo{display:flex;align-items:center;gap:8px;cursor:pointer}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:var(--grad-btn);display:grid;place-items:center;font-size:17px}
+  .logo .word{font-family:var(--ff-disp);font-weight:700;font-size:20px}.logo .word .ai{color:var(--muted)}
+  .nav{border-bottom:1px solid var(--line)}
+  .nav__in{display:flex;align-items:center;justify-content:space-between;height:64px;gap:14px}
+  .nav__right{display:flex;align-items:center;gap:12px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(255,255,255,.03)}
+  .lang button{font-family:var(--ff);font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 12px;border-radius:999px}
+  .lang button[aria-pressed="true"]{background:var(--grad-btn);color:#fff}
+  .btn{font-family:var(--ff);font-size:14.5px;font-weight:700;display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:11px 18px;border-radius:999px;border:1px solid transparent;transition:transform .18s,box-shadow .25s,background .2s}
+  .btn--grad{background:var(--grad-btn);color:#fff;box-shadow:0 8px 26px -8px rgba(236,72,153,.6)}
+  .btn--grad:hover{transform:translateY(-2px)}
+  .btn--ghost{border-color:var(--line-grad);color:var(--text);background:rgba(168,85,247,.06)}
+  .btn--ghost:hover{border-color:var(--magenta)}
+  .btn--sm{padding:8px 14px;font-size:13px}.btn--block{width:100%;justify-content:center}
+  h1{font-family:var(--ff-disp);font-size:clamp(26px,4vw,36px);font-weight:800;margin:26px 0 4px}
+  .sub{color:var(--muted);margin:0 0 22px}
+  .panel{border:1px solid var(--line);border-radius:var(--r);padding:22px;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent);margin-bottom:18px}
+  .panel h3{font-family:var(--ff-disp);font-size:17px;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:9px}
+  label{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:12px 0 5px}
+  input,select,textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:14px;padding:10px 12px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--magenta)}
+  textarea{resize:vertical;min-height:64px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;padding:4px;background:rgba(255,255,255,.03);margin-bottom:4px}
+  .seg button{font-family:var(--ff);font-weight:700;font-size:13.5px;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:8px 16px;border-radius:9px}
+  .seg button.sel{background:var(--grad-btn);color:#fff}
+  .hint{font-size:12px;color:var(--muted-2);margin-top:6px;line-height:1.5}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{font-family:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-grad);background:rgba(168,85,247,.06);color:var(--text);border-radius:999px;padding:7px 14px;cursor:pointer;transition:.15s}
+  .chip:hover{background:rgba(168,85,247,.14)}
+  .chip.on{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.4);color:var(--ok);cursor:default}
+  .pubacc{display:flex;flex-direction:column;gap:8px}
+  .pubrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 11px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+  .pubrow.on{border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.05)}
+  .pubrow .pl{font-size:13.5px;font-weight:600;min-width:120px;display:flex;align-items:center;gap:6px}
+  .pubrow .st{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .pubrow .st.ok{color:var(--ok,#34d399);background:rgba(52,211,153,.14)}
+  .pubrow .st.off{color:var(--muted);background:rgba(255,255,255,.05)}
+  .pubrow .ph{flex:1;min-width:120px;font-size:13px;padding:7px 10px}
+  .pubrow .btn--xs{font-size:12px;padding:6px 12px}
+  .pubrow .actions{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;border:1px solid var(--line-grad);background:rgba(168,85,247,.08)}
+  .items{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+  .it{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:11px;align-items:center}
+  .it .ph{width:46px;height:46px;border-radius:10px;background:radial-gradient(120% 120% at 30% 20%,rgba(236,72,153,.22),rgba(139,92,246,.1));display:grid;place-items:center;font-size:20px;flex:none;overflow:hidden}
+  .it .ph img{width:100%;height:100%;object-fit:cover}
+  .it .m{flex:1;min-width:0}.it .m .t{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .it .m .p{font-size:12px;color:var(--muted)}
+  .it .tg{font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--line);border-radius:999px;padding:5px 10px;white-space:nowrap}
+  .it .tg.on{color:var(--ok);border-color:rgba(52,211,153,.4)}.it .tg.off{color:var(--muted-2)}
+  .vpool{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .vpool .big{font-family:var(--ff-disp);font-size:24px;font-weight:800}
+  .signin{max-width:440px;margin:8vh auto 0}
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--panel-2);border:1px solid var(--line-grad);border-radius:12px;padding:12px 18px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{border-color:var(--coral);color:var(--coral)}
+  .hide{display:none!important}
+  @media (max-width:620px){.row,.items{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="head">
-    <div class="ic">🎬</div>
-    <div><h1>Creator Studio</h1><p>List products &amp; services, and choose what syncs to your CoraX channel.</p></div>
-  </div>
+<div id="appHeader"></div>
 
-  <!-- connect gate (shown until wallet connects) -->
-  <div class="gate" id="gate">
-    <div class="big">🔑</div>
-    <h2>Connect your <b>Solana</b> wallet</h2>
-    <p>Sign in with the wallet you launch tokens from. Your listings are tied to it, so buyers on Shop and your creator page can find them.</p>
-    <button class="cbtn" id="gateConnect">Connect Wallet</button>
-    <!-- shown only when a BSC wallet is connected but no Solana one — clears up "I did connect!" -->
-    <p id="gateBscHint" style="display:none;margin-top:14px;color:#F0B90B;font-size:12.5px">You're connected on <b>BNB Chain</b>. Your creator Studio (listings, affiliate links, token) lives on <b>Solana</b> — connect a Solana wallet above to open it. BSC stays connected for marketplace payments.</p>
-  </div>
+<main class="wrap">
+  <!-- sign in -->
+  <section id="signin" class="signin">
+    <h1 data-i18n="si.title">Creator Studio</h1>
+    <p class="sub" data-i18n="si.sub2">Register with your email to manage your store, content and value pool. Bind a wallet later — only when you go on-chain.</p>
+    <div class="panel">
+      <div class="seg" id="authSeg" style="margin-bottom:4px">
+        <button data-a="register" class="sel" onclick="setAuth('register')" data-i18n="si.register">Register</button>
+        <button data-a="login" onclick="setAuth('login')" data-i18n="si.login">Log in</button>
+      </div>
+      <div id="regFields"><label data-i18n="si.handle">Creator handle</label><input id="aHandle" placeholder="e.g. AuroraTV"></div>
+      <label id="idLabel" data-i18n="si.email">Email</label><input id="aEmail" placeholder="you@example.com">
+      <label data-i18n="si.pw">Password</label><input id="aPw" type="password" placeholder="at least 6 characters" onkeydown="if(event.key==='Enter')submitAuth()">
+      <button class="btn btn--grad btn--block" style="margin-top:16px" id="authBtn" onclick="submitAuth()" data-i18n="si.register">Register</button>
+      <div id="forgotRow" class="hide" style="margin-top:10px;text-align:center"><a href="#" onclick="forgotPw();return false" data-i18n="si.forgot" style="font-size:13px;color:var(--muted);text-decoration:underline">Forgot password?</a></div>
+      <div id="resetInfo" class="hint" style="margin-top:8px"></div>
+      <div class="hint" data-i18n="si.note2">Your handle is your account across all of oneIP. No crypto needed to start.</div>
+    </div>
+  </section>
 
-  <!-- studio (shown once connected) -->
-  <div id="studio" style="display:none">
-    <div class="who">
-      <div class="av" id="whoAv"></div>
-      <div class="m"><b id="whoAddr"></b><span>Connected Solana wallet</span></div>
-      <a class="view" id="whoView" href="#" target="_blank" rel="noopener">View my creator page →</a>
-      <button class="disc" id="whoDisc">Disconnect</button>
+  <!-- dashboard -->
+  <section id="dash" class="hide">
+    <h1><span data-i18n="dash.hi">Hi,</span> <span class="grad-text" id="who">creator</span> 👋</h1>
+    <p class="sub" data-i18n="dash.sub">Manage your profile, list products & content, and grow your value pool.</p>
+
+    <div class="panel">
+      <h3>🪪 <span data-i18n="prof.title">Your profile</span></h3>
+      <label data-i18n="prof.name">Display name</label>
+      <input id="pName" placeholder="Aurora TV">
+      <label data-i18n="prof.bio">Bio</label>
+      <textarea id="pBio" placeholder="Travel + lifestyle creator…"></textarea>
+      <button class="btn btn--grad btn--sm" style="margin-top:14px" onclick="saveProfile()" data-i18n="prof.save">Save profile</button>
     </div>
 
-    <!-- CoraX channel link — makes "Show in my CoraX channel" actually flow to corax.live -->
-    <div class="panel" style="margin-bottom:20px;padding:15px 18px">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(120deg,#7C3AED,#4E9CF5);display:grid;place-items:center;font-size:17px;flex:none">💬</div>
-        <div style="flex:1;min-width:200px">
-          <div style="font-size:14px;font-weight:800">CoraX channel</div>
-          <div style="font-size:12px;color:var(--muted)" id="linkStatus">Link your CoraX channel so products you mark “Show in CoraX” appear there.</div>
-        </div>
-        <a href="https://corax.live" target="_blank" rel="noopener" style="font-size:12px;color:var(--purple);text-decoration:none;white-space:nowrap">Open CoraX ↗</a>
+    <div class="panel">
+      <h3>🌱 <span data-i18n="vp.title">Your value pool</span></h3>
+      <div class="vpool" id="vpoolView"></div>
+      <label data-i18n="vp.coin">Value-pool token (Solana mint from oneIP.io)</label>
+      <input id="pCoin" placeholder="paste your token mint, or launch one →">
+      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn--grad btn--sm" onclick="saveCoin()" data-i18n="vp.save">Link value pool</button>
+        <a class="btn btn--ghost btn--sm" id="launchLink" target="_blank" rel="noopener" data-i18n="vp.launch">Launch your token on oneIP.io →</a>
+        <button class="btn btn--ghost btn--sm" id="bindWalletBtn" onclick="bindWallet()" data-i18n="vp.bind">Bind Phantom wallet</button>
+        <span class="hint" id="walletStatus" style="margin:0"></span>
       </div>
-      <div style="display:flex;gap:9px;margin-top:11px" id="linkRow">
-        <input id="linkInput" placeholder="Your CoraX channel ID or link (corax.live/channel/…)" style="flex:1">
-        <button class="add" id="linkBtn" style="width:auto;margin-top:0;padding:11px 18px">Link</button>
-      </div>
-      <div style="margin-top:9px;font-size:12px;color:var(--muted)">or <a id="ssoCorax" style="color:var(--purple);cursor:pointer;font-weight:600">Sign in with CoraX</a> to pick or auto-create your channel — no ID needed.</div>
+      <div class="hint" data-i18n="vp.note">Every sale & tip routes 20% of net profit to this pool — a transparent, on-chain mechanic. No pool yet? You can still sell; the 20% activates once you launch.</div>
     </div>
 
-    <div class="cols">
-      <!-- add form -->
-      <div class="panel">
-        <h3>Add a listing</h3>
-        <p class="sub">A product (physical/digital) or a service you offer.</p>
-
-        <label>Type</label>
-        <div class="seg" id="kindSeg">
-          <button type="button" class="on" data-kind="product">🛍️ Product</button>
-          <button type="button" data-kind="service">🧰 Service</button>
-        </div>
-
-        <label for="fTitle">Title</label>
-        <input id="fTitle" placeholder="e.g. Signed vinyl · 1:1 coaching call">
-
-        <div class="row2">
-          <div><label for="fPrice">Price</label><input id="fPrice" type="number" min="0" step="0.01" placeholder="0.00"></div>
-          <div><label for="fCur">Currency</label>
-            <select id="fCur"><option>USD</option><option>USDC</option><option>SOL</option><option>EUR</option><option>MYR</option></select>
-          </div>
-        </div>
-
-        <label for="fUrl">Link (checkout / affiliate URL)</label>
-        <input id="fUrl" placeholder="https://…">
-
-        <label for="fImg">Image URL <span style="font-weight:400;color:var(--dim)">(optional)</span></label>
-        <input id="fImg" placeholder="https://…/photo.jpg">
-
-        <div class="sync">
-          <input type="checkbox" id="fSync">
-          <label for="fSync" style="margin:0;cursor:pointer">
-            <span class="st"><b>Show in my CoraX channel</b>
-            <span>Discoverable to your CoraX followers. Leave off to keep it oneIP-only.</span></span>
-          </label>
-        </div>
-
-        <button class="add" id="addBtn">Add listing</button>
+    <div class="panel">
+      <h3>➕ <span data-i18n="add.title">List something new</span></h3>
+      <div class="seg" id="typeSeg">
+        <button data-t="physical" class="sel" onclick="setType('physical')" data-i18n="add.physical">🛍️ Product</button>
+        <button data-t="digital" onclick="setType('digital')" data-i18n="add.digital">🎬 Video / content</button>
       </div>
-
-      <!-- current listings -->
-      <div class="panel">
-        <h3>My listings <span id="cnt" style="color:var(--dim);font-weight:600;font-size:13px"></span></h3>
-        <p class="sub">Everything you've listed. Remove hides it from Shop, your page, and CoraX.</p>
-        <div class="list" id="list"></div>
+      <label data-i18n="add.name">Title</label>
+      <input id="iTitle" placeholder="Onee Plush Toy">
+      <div class="row">
+        <div><label data-i18n="add.price">Price (USD)</label><input id="iPrice" type="number" min="1" step="0.01" placeholder="39.90"></div>
+        <div id="costWrap"><label data-i18n="add.cost">Supplier cost (USD)</label><input id="iCost" type="number" min="0" step="0.01" placeholder="12.00"></div>
       </div>
+      <div id="contentWrap" class="hide"><label data-i18n="add.content">Content URL (what the fan unlocks)</label><input id="iContent" placeholder="https://… (video / download link)"></div>
+      <label data-i18n="add.image">Image URL (optional)</label><input id="iImage" placeholder="https://… — or upload ↓">
+      <input id="iImageFile" type="file" accept="image/*" onchange="uploadImg(this,'iImage')" style="margin-top:6px;font-size:12px">
+      <button class="btn btn--grad btn--block" style="margin-top:16px" onclick="publishItem()" data-i18n="add.publish">Publish</button>
+      <div class="hint" id="addHint"></div>
     </div>
 
-    <!-- ===== Affiliate Links (Model A: paste-your-own tracked links) ===== -->
-    <div class="section">
-      <div class="stitle"><h2>Affiliate Links</h2><span class="tag" style="color:var(--green);background:var(--green-bg)">Non-custodial</span></div>
-      <p class="ssub">Paste the tracked link you generate on each network (Shopee/Lazada/AliExpress affiliate tools,
-        Amazon SiteStripe…). oneIP shares it on your creator page and counts clicks — the network pays you directly.
-        oneIP never touches the money.</p>
-      <div class="agrid">
-        <div class="panel">
-          <h3>Add a tracked link</h3>
-          <label for="afNet">Network</label>
-          <select id="afNet"></select>
-          <label for="afUrl">Your tracked link</label>
-          <input id="afUrl" placeholder="https://s.click.aliexpress.com/e/…">
-          <label for="afTitle">Title <span style="font-weight:400;color:var(--dim)">(optional)</span></label>
-          <input id="afTitle" placeholder="e.g. My gear picks">
-          <button class="add" id="afAdd">Add link</button>
-          <p class="sub" id="afHint" style="margin-top:8px"></p>
-        </div>
-        <div class="panel">
-          <h3>My links <span id="afCnt" style="color:var(--dim);font-weight:600;font-size:13px"></span></h3>
-          <p class="sub">Shown on your creator page. "Copy" gives you a tracked oneIP link that counts clicks, then forwards to your affiliate link.</p>
-          <div class="list" id="afList"></div>
-        </div>
-      </div>
+    <div class="panel">
+      <h3>📦 <span data-i18n="my.title">Your listings</span> <span class="pill" id="myCount" style="margin-left:auto">0</span></h3>
+      <div class="items" id="myItems"></div>
     </div>
 
-    <!-- ===== Affiliate & Token Growth ===== -->
-    <div class="section">
-      <div class="stitle"><h2>Affiliate &amp; Token Growth</h2><span class="tag">Solana</span></div>
-      <p class="ssub">You earn commission on the affiliate links you share. Routing part of it back into
-        your token pool grows your floor and market cap — the more you top up, the stronger your token's base value.</p>
-
-      <div class="agrid">
-        <!-- the nudge -->
-        <div class="miss">
-          <div class="lead">Token growth you've skipped</div>
-          <div class="big" id="missAmt">$0</div>
-          <div class="exp"><b id="commSrc">Estimated</b> commission of <b id="commAmt">$0</b>, and you've routed only
-            <b id="contAmt">$0</b> back into your token. The suggested <b id="rateLbl">20%</b> would add real base
-            value your holders keep. <span id="missNote"></span></div>
-          <div class="mrow">
-            <div class="m"><div class="k" id="kComm">Commission (est.)</div><div class="v" id="mComm">$0</div></div>
-            <div class="m"><div class="k">Affiliate clicks</div><div class="v" id="mClicks">0</div></div>
-            <div class="m"><div class="k">Routed to token</div><div class="v g" id="mCont">$0</div></div>
-            <div class="m"><div class="k">Suggested (20%)</div><div class="v p" id="mRec">$0</div></div>
-          </div>
-          <div id="estNote" style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5"></div>
-          <div style="margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-            <button class="add" id="commEditBtn" style="width:auto;margin-top:0;padding:9px 16px;background:transparent;border:1px solid var(--line);color:var(--text)">✎ Edit — self-report</button>
-            <a id="useEst" style="font-size:12.5px;font-weight:600;color:var(--purple);cursor:pointer;display:none">↺ Use click estimate</a>
-          </div>
-          <div id="commEdit" style="display:none;margin-top:10px">
-            <label style="margin-top:0">Your actual affiliate commission to date — overrides the estimate</label>
-            <div style="display:flex;gap:9px">
-              <input id="commInput" type="number" min="0" step="0.01" placeholder="e.g. 1250" style="flex:1">
-              <button class="add" id="commBtn" style="width:auto;margin-top:0;padding:11px 18px">Save</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- top up -->
-        <div class="panel">
-          <h3>Top up your token pool</h3>
-          <p class="sub">Every top-up follows <b>70% pool · 20% floor · 10% platform</b>. Pool and floor grow your token; the platform takes 10%.</p>
-          <label for="topAmt">Amount (USDC)</label>
-          <input id="topAmt" type="number" min="0" step="0.01" placeholder="0.00">
-          <div class="split">
-            <div class="b pool"><b id="spPool">$0</b>Pool 70%</div>
-            <div class="b floor"><b id="spFloor">$0</b>Floor 20%</div>
-            <div class="b plat"><b id="spPlat">$0</b>Platform 10%</div>
-          </div>
-          <button class="add" id="topBtn">Top up &amp; grow token</button>
-          <p class="sub" id="topHint" style="margin-top:10px"></p>
-          <a href="/swap" style="display:inline-block;margin-top:4px;font-size:12.5px;font-weight:600;color:var(--purple);text-decoration:none">Need SOL / USDC? Swap cross-chain →</a>
-        </div>
-
-        <!-- history -->
-        <div class="panel" style="grid-column:1/-1">
-          <h3>Base value added</h3>
-          <p class="sub">Everything you've routed into your token. Floor is the redeemable base value your holders can always claim.</p>
-          <div class="mrow" style="border-top:0;padding-top:4px;margin-top:0">
-            <div class="m"><div class="k">Total routed</div><div class="v" id="hTotal">$0</div></div>
-            <div class="m"><div class="k">→ Pool</div><div class="v p" id="hPool">$0</div></div>
-            <div class="m"><div class="k">→ Floor (base)</div><div class="v g" id="hFloor">$0</div></div>
-            <div class="m"><div class="k">→ Platform</div><div class="v" id="hPlat">$0</div></div>
-          </div>
-          <div class="thist" id="thist"></div>
-        </div>
-      </div>
+    <div class="panel">
+      <h3>📡 <span id="pubTitle">Publish to your platforms</span></h3>
+      <div class="hint" data-i18n="pub.sub">Connect each platform once via its official login — no passwords stored here. Then post to all in one click. Add your public @handle so fans can find you.</div>
+      <div id="pubAccounts" class="pubacc" style="margin-top:12px"></div>
+      <div class="hint" data-i18n="pub.connecthint" style="margin-top:8px">🔒 Connect → the platform's own authorization page opens (no password here, revoke anytime). The @handle is your public profile so fans can jump to you from oneIP.</div>
+      <label data-i18n="pub.compose">Post</label>
+      <textarea id="pubText" placeholder="Share an update, drop, or behind-the-scenes…"></textarea>
+      <label data-i18n="pub.image">Image URL (optional)</label><input id="pubImg" placeholder="https://…">
+      <button class="btn btn--grad btn--block" style="margin-top:14px" onclick="publishNow()" data-i18n="pub.now">Publish to all connected</button>
+      <div class="hint" id="pubStatus" style="margin-top:8px"></div>
     </div>
-  </div>
-</div>
+
+    <div class="panel">
+      <h3>💬 <span data-i18n="cx.title">Your CoraX channel</span></h3>
+      <div class="hint" data-i18n="cx.sub">Link your corax.live channel — your listings become discoverable there ("oneIP picks"), and fans can chat with you on CoraX.</div>
+      <label data-i18n="cx.id">Channel ID or URL</label>
+      <input id="cxChannel" placeholder="corax.live/channel/… or the raw channel id">
+      <button class="btn btn--grad btn--sm" style="margin-top:14px" onclick="saveCorax()" data-i18n="cx.save">Link channel</button>
+      <span class="hint" id="cxStatus" style="margin-left:10px"></span>
+    </div>
+
+    <div style="text-align:center;margin:18px 0 40px">
+      <button class="btn btn--ghost btn--sm" onclick="signOut()" data-i18n="dash.switch">Switch creator</button>
+    </div>
+  </section>
+</main>
 
 <div class="toast" id="toast"></div>
 
-<script src="i18n.js"></script>
 <script src="wallet.js"></script>
-<script src="affiliate-networks.js"></script>
-<script src="header.js"></script>
-<script type="module" src="chain.js"></script>
 <script>
-const $ = (id) => document.getElementById(id);
-const short = (a) => a && a.length > 12 ? a.slice(0,4) + "…" + a.slice(-4) : (a||"");
-const esc = (s) => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1700);}
-let kind = "product";
+  const IO_BASE = location.hostname.endsWith("oneip.ai") ? "https://www.oneip.io" : "";
+  const esc=(s)=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const money=(c)=>'$'+((c||0)/100).toFixed(2);
+  const initials=(s)=>(s||'?').slice(0,2).toUpperCase();
+  let HANDLE=localStorage.getItem('oneip_creator')||'';
+  let TOKEN=localStorage.getItem('oneip_token')||'';
+  let COIN=localStorage.getItem('oneip_coin')||'';
+  let curType='physical', authMode='register';
+  // Headers for creator-owned writes: carry the session token so the server can verify it's really you.
+  const AH=()=>TOKEN?{'content-type':'application/json','Authorization':'Bearer '+TOKEN}:{'content-type':'application/json'};
 
-let MY_MINT = "";   // the creator's launch mint, for on-chain top-ups
-function showFor(addr){
-  const on = !!addr;
-  $("gate").style.display = on ? "none" : "block";
-  $("studio").style.display = on ? "block" : "none";
-  if(on){
-    $("whoAddr").textContent = short(addr);
-    $("whoView").href = "/creator?id=" + encodeURIComponent(addr);
-    loadMine(addr);
-    loadAffiliate(addr);
-    loadPromoted(addr);
-    loadLink(addr);
-    loadMint(addr);
+  function toast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');setTimeout(()=>t.className='toast',2200);}
+
+  // ---- email-first auth: register (handle+email+password) → handle is your account; wallet later ----
+  function setAuth(m){authMode=m;
+    document.querySelectorAll('#authSeg button').forEach(b=>b.classList.toggle('sel',b.dataset.a===m));
+    document.getElementById('regFields').classList.toggle('hide',m!=='register');
+    document.getElementById('idLabel').textContent=m==='register'?T('si.email'):T('si.idlogin');
+    document.getElementById('authBtn').textContent=m==='register'?T('si.register'):T('si.login');
+    document.getElementById('forgotRow').classList.toggle('hide',m!=='login'); // forgot-password only in login mode
+    document.getElementById('resetInfo').innerHTML='';}
+  function forgotPw(){
+    const id=document.getElementById('aEmail').value.trim();
+    if(!id){toast(T('si.forgotned'),1);return;}
+    fetch('/api/account/forgot',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id})}).then(r=>r.json()).then(r=>{
+      const info=document.getElementById('resetInfo');
+      if(r.devToken){info.innerHTML=T('si.resetdev')+' <a href="?reset='+encodeURIComponent(r.devToken)+'" style="color:var(--acc,#7c5cff)">'+T('si.resetlink')+'</a>';}
+      else{info.textContent=T('si.resetsent');}
+    }).catch(()=>toast('network error',1));
   }
-}
-
-async function loadMint(addr){
-  try{
-    const board = await (await fetch("/api/board")).json();
-    const rows = Array.isArray(board) ? board : (board.rows || board.launches || []);
-    const mine = rows.find(r => r.creator === addr || r.coraxCreatorId === addr);
-    MY_MINT = (mine && mine.mint) || "";
-  }catch(e){}
-}
-
-// ---- Affiliate links (Model A: paste-your-own tracked links) ----
-const AFF_NETS = (window.KolAffiliates && window.KolAffiliates.NETWORKS) || [];
-function netById(id){ return AFF_NETS.find(n => n.id === id) || { id, name: id, emoji: "🔗" }; }
-// populate the network dropdown once
-(function initAfNet(){
-  const sel = $("afNet"); if(!sel || !AFF_NETS.length) return;
-  sel.innerHTML = AFF_NETS.map(n => `<option value="${n.id}">${n.emoji} ${esc(n.name)}${n.region?" · "+n.region:""}</option>`).join("");
-})();
-
-async function loadPromoted(addr){
-  let list = [];
-  try{ list = await (await fetch("/api/creator/promoted?id=" + encodeURIComponent(addr))).json(); }catch(e){}
-  list = Array.isArray(list) ? list : [];
-  $("afCnt").textContent = list.length ? "· " + list.length : "";
-  const el = $("afList");
-  if(!list.length){ el.innerHTML = '<div class="empty">No links yet — paste your first tracked link on the left.</div>'; return; }
-  el.innerHTML = list.slice().reverse().map(p => {
-    const n = netById(p.network);
-    return `<div class="item">
-      <div class="th" style="background:rgba(255,255,255,.05)">${n.emoji}</div>
-      <div class="meta">
-        <div class="t">${esc(p.title || n.name)}</div>
-        <div class="p">${esc(n.name)} · <span class="sy">${p.clicks||0} click${(p.clicks||0)===1?"":"s"}</span></div>
-      </div>
-      <button class="rm" title="Copy tracked link" data-copy="${esc(p.id)}" style="color:var(--purple)">⧉</button>
-      <button class="rm" title="Remove" data-rm="${esc(p.id)}">✕</button>
-    </div>`;
-  }).join("");
-  el.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => removePromoted(b.dataset.rm));
-  el.querySelectorAll("[data-copy]").forEach(b => b.onclick = () => {
-    const link = location.origin + "/go?id=" + encodeURIComponent(b.dataset.copy);
-    try{ navigator.clipboard.writeText(link); }catch(e){}
-    toast("Tracked link copied");
-  });
-}
-
-async function addPromoted(){
-  const addr = window.KolWallet && KolWallet.address; if(!addr){ toast("Connect your wallet first"); return; }
-  const network = $("afNet").value;
-  const linkUrl = $("afUrl").value.trim();
-  const title = $("afTitle").value.trim();
-  if(!/^https?:\/\//i.test(linkUrl)){ $("afHint").textContent = "Paste a full https:// link."; return; }
-  if(window.KolAffiliates && !window.KolAffiliates.looksValid(network, linkUrl)){
-    $("afHint").textContent = "That doesn't look like a tracked " + netById(network).name + " link — paste the affiliate/deep link, not a raw product URL.";
-    return;
+  function enterResetMode(token){
+    document.getElementById('authSeg').classList.add('hide');
+    document.getElementById('regFields').classList.add('hide');
+    document.getElementById('idLabel').classList.add('hide');
+    document.getElementById('aEmail').classList.add('hide');
+    document.getElementById('forgotRow').classList.add('hide');
+    document.querySelector('#signin h1').textContent=T('si.resettitle');
+    const pw=document.getElementById('aPw'); pw.value=''; pw.placeholder=T('si.newpw');
+    pw.onkeydown=(e)=>{if(e.key==='Enter')doReset(token);};
+    const btn=document.getElementById('authBtn'); btn.textContent=T('si.setpw'); btn.onclick=()=>doReset(token);
   }
-  const btn = $("afAdd"); btn.disabled = true; btn.textContent = "Adding…"; $("afHint").textContent = "";
-  try{
-    const r = await fetch("/api/promoted", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ creatorId: addr, network, url: linkUrl, title })});
-    if(!r.ok){ const e = await r.json().catch(()=>({})); $("afHint").textContent = e.error || "Could not add link"; }
-    else { $("afUrl").value = ""; $("afTitle").value = ""; toast("Link added"); loadPromoted(addr); }
-  }catch(e){ $("afHint").textContent = "Could not add link"; }
-  finally{ btn.disabled = false; btn.textContent = "Add link"; }
-}
-
-async function removePromoted(id){
-  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
-  try{
-    await fetch("/api/promoted/remove", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ id, creatorId: addr })});
-    toast("Link removed"); loadPromoted(addr);
-  }catch(e){ toast("Could not remove"); }
-}
-if($("afAdd")) $("afAdd").onclick = addPromoted;
-
-// ---- CoraX channel link (Phase 1) ----
-async function loadLink(addr){
-  // Returning from the CoraX SSO connect flow? Capture the channel id it handed back and save the link.
-  try{
-    const u = new URL(location.href);
-    const returned = u.searchParams.get("coraxChannelId");
-    if(returned){
-      await fetch("/api/creator/link", {method:"POST", headers:{"content-type":"application/json"},
-        body: JSON.stringify({ creatorId: addr, coraxChannelId: returned })});
-      u.searchParams.delete("coraxChannelId"); history.replaceState(null, "", u.toString());
-      toast("CoraX channel connected");
-    }
-  }catch(e){}
-  let d = {};
-  try{ d = await (await fetch("/api/creator/link?id=" + encodeURIComponent(addr))).json(); }catch(e){}
-  renderLink(d.coraxChannelId || "");
-}
-// "Sign in with CoraX" → corax picks/creates the channel and returns its id to us.
-function connectViaCoraX(){
-  const addr = window.KolWallet && KolWallet.address;
-  if(!addr){ toast("Connect your wallet first"); return; }
-  const ret = encodeURIComponent(location.origin + "/studio");
-  location.href = "https://corax.live/oneip/connect?creator=" + encodeURIComponent(addr) + "&return=" + ret;
-}
-document.addEventListener("click", (e) => { if(e.target && e.target.id === "ssoCorax") connectViaCoraX(); });
-function renderLink(ch){
-  const st = $("linkStatus"), row = $("linkRow");
-  if(ch){
-    st.innerHTML = `Linked to <b style="color:var(--green)">${esc(ch)}</b> — products marked “Show in CoraX” now appear in your channel.`;
-    row.innerHTML = `<button class="add" id="linkEdit" style="width:auto;margin-top:0;padding:9px 16px;background:transparent;border:1px solid var(--line);color:var(--text)">Change</button>
-      <button class="add" id="linkUnlink" style="width:auto;margin-top:0;padding:9px 16px;background:transparent;border:1px solid var(--line);color:var(--pink)">Unlink</button>`;
-    $("linkEdit").onclick = () => { row.innerHTML = ""; row.appendChild(mkLinkInput(ch)); };
-    $("linkUnlink").onclick = () => saveLink("");
-  }else{
-    st.innerHTML = "Link your CoraX channel so products you mark “Show in CoraX” appear there.";
-    row.innerHTML = ""; row.appendChild(mkLinkInput(""));
+  async function doReset(token){
+    const password=document.getElementById('aPw').value;
+    let r;try{r=await(await fetch('/api/account/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,password})})).json();}catch(e){toast('network error',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    TOKEN=r.token;HANDLE=r.handle;localStorage.setItem('oneip_token',TOKEN);localStorage.setItem('oneip_creator',HANDLE);
+    history.replaceState(null,'',location.pathname); // drop ?reset from the URL
+    loadDashboard();
   }
-}
-function mkLinkInput(val){
-  const wrap = document.createElement("div"); wrap.style.cssText = "display:flex;gap:9px;flex:1;width:100%";
-  wrap.innerHTML = `<input id="linkInput" placeholder="Your CoraX channel ID or link (corax.live/channel/…)" style="flex:1" value="${esc(val)}">
-    <button class="add" id="linkBtn" style="width:auto;margin-top:0;padding:11px 18px">Save</button>`;
-  setTimeout(() => { const b = $("linkBtn"); if(b) b.onclick = () => saveLink($("linkInput").value.trim()); }, 0);
-  return wrap;
-}
-async function saveLink(ch){
-  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
-  try{
-    const d = await (await fetch("/api/creator/link", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ creatorId: addr, coraxChannelId: ch })})).json();
-    renderLink(d.coraxChannelId || "");
-    loadMine(addr); // refresh listings (coraxCreatorId backfilled)
-    toast(d.coraxChannelId ? "CoraX channel linked" : "CoraX channel unlinked");
-  }catch(e){ toast("Could not save link"); }
-}
-if($("linkBtn")) $("linkBtn").onclick = () => saveLink($("linkInput").value.trim());
-
-const usd = (n) => "$" + (Number(n)||0).toLocaleString(undefined,{maximumFractionDigits:2});
-let AFF = null;
-
-async function loadAffiliate(addr){
-  try{ AFF = await (await fetch("/api/creator/affiliate?id=" + encodeURIComponent(addr))).json(); }
-  catch(e){ return; }
-  renderAffiliate();
-}
-
-function renderAffiliate(){
-  if(!AFF) return;
-  const a = AFF, est = a.usingEstimate;
-  $("missAmt").textContent = usd(a.missed);
-  $("commSrc").textContent = est ? "Estimated" : "Self-reported";
-  $("kComm").textContent = est ? "Commission (est.)" : "Commission (reported)";
-  $("commAmt").textContent = usd(a.commission);
-  $("contAmt").textContent = usd(a.contributed);
-  $("rateLbl").textContent = Math.round((a.contributionRate||0.2)*100) + "%";
-  $("missNote").textContent = a.missed > 0
-    ? "Top up below to close the gap and lift your token's base value."
-    : (a.commission > 0 ? "You're on track — nice work backing your token." : "Share your affiliate links to start earning, then route a share into your token.");
-  $("mComm").textContent = usd(a.commission);
-  $("mClicks").textContent = (a.clicks||0).toLocaleString();
-  $("mCont").textContent = usd(a.contributed);
-  $("mRec").textContent = usd(a.recommended);
-  const es = a.estAssumptions || {};
-  $("estNote").innerHTML = est
-    ? `Estimated from <b>${(a.clicks||0).toLocaleString()}</b> tracked click${a.clicks===1?"":"s"} — assumes ${Math.round((es.convRate||0)*100)}% convert · $${es.avgOrderUsd} avg order · ${Math.round((es.commissionRate||0)*100)}% commission. Hit <b>Edit</b> to enter your real figure.`
-    : `Using your self-reported figure. Your ${(a.clicks||0).toLocaleString()}-click estimate is ${usd(a.estimated)}.`;
-  $("useEst").style.display = est ? "none" : "inline";
-  const editInput = $("commInput"); if(editInput && $("commEdit").style.display==="none") editInput.value = a.commission ? Number(a.commission).toFixed(2) : "";
-  // base value added
-  $("hTotal").textContent = usd(a.contributed);
-  $("hPool").textContent = usd(a.toPool);
-  $("hFloor").textContent = usd(a.toFloor);
-  $("hPlat").textContent = usd(a.toPlatform);
-  const tx = (a.topups||[]).slice().reverse();
-  $("thist").innerHTML = tx.length ? tx.map(t => `
-    <div class="h"><span>+${usd(t.amount)} · ${t.currency||"USDC"} ${t.onchain?'· on-chain':''}</span>
-      <span>Pool ${usd(t.pool)} · Floor ${usd(t.floor)}${t.sig?` · <a href="https://explorer.solana.com/tx/${t.sig}?cluster=devnet" target="_blank" rel="noopener">tx ↗</a>`:''}</span></div>`).join("")
-    : '<div style="padding:14px 0;color:var(--dim)">No top-ups yet.</div>';
-}
-
-// live 70/20/10 split preview
-function previewSplit(){
-  const v = Number($("topAmt").value) || 0;
-  $("spPool").textContent = usd(v*0.70);
-  $("spFloor").textContent = usd(v*0.20);
-  $("spPlat").textContent = usd(v*0.10);
-}
-$("topAmt").addEventListener("input", previewSplit);
-
-async function saveCommission(){
-  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
-  const val = Number($("commInput").value);
-  if(!(val >= 0)){ toast("Enter a valid amount"); return; }
-  try{
-    AFF = await (await fetch("/api/creator/affiliate/earnings", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ creatorId: addr, commissionEarned: val })})).json();
-    $("commEdit").style.display = "none";
-    renderAffiliate(); toast("Self-reported commission saved");
-  }catch(e){ toast("Could not save"); }
-}
-async function resetToEstimate(){
-  const addr = window.KolWallet && KolWallet.address; if(!addr) return;
-  try{
-    AFF = await (await fetch("/api/creator/affiliate/earnings", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ creatorId: addr, reset: true })})).json();
-    $("commEdit").style.display = "none";
-    renderAffiliate(); toast("Reverted to click estimate");
-  }catch(e){ toast("Could not update"); }
-}
-$("commBtn").onclick = saveCommission;
-$("useEst").onclick = resetToEstimate;
-$("commEditBtn").onclick = () => {
-  const box = $("commEdit"); const open = box.style.display !== "none";
-  box.style.display = open ? "none" : "block";
-  if(!open && AFF) $("commInput").value = AFF.commission ? Number(AFF.commission).toFixed(2) : "";
-};
-
-async function topUp(){
-  const addr = window.KolWallet && KolWallet.address; if(!addr){ toast("Connect your wallet first"); return; }
-  const amount = Number($("topAmt").value);
-  if(!(amount > 0)){ toast("Enter an amount"); return; }
-  const btn = $("topBtn"); btn.disabled = true; btn.textContent = "Processing…";
-  let sig = "";
-  // Best-effort real on-chain contribution: a devnet buy grows the curve pool + 20% floor.
-  if(window.OneChain && MY_MINT){
+  async function submitAuth(){
+    const password=document.getElementById('aPw').value;
+    let r;
     try{
-      $("topHint").textContent = "Approve the Solana transaction in your wallet…";
-      const r = await window.OneChain.buy({ mint: MY_MINT, creator: addr, solAmount: amount });
-      sig = r && r.sig || "";
-    }catch(e){ /* fall through to ledger-only record */ }
+      if(authMode==='register'){
+        const body={handle:document.getElementById('aHandle').value.trim(),email:document.getElementById('aEmail').value.trim(),password};
+        r=await(await fetch('/api/account/register',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})).json();
+      }else{
+        const body={id:document.getElementById('aEmail').value.trim(),password};
+        r=await(await fetch('/api/account/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})).json();
+      }
+    }catch(e){toast('network error',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    TOKEN=r.token;HANDLE=r.handle;localStorage.setItem('oneip_token',TOKEN);localStorage.setItem('oneip_creator',HANDLE);
+    loadDashboard();
   }
-  try{
-    AFF = await (await fetch("/api/creator/affiliate/topup", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ creatorId: addr, amount, currency: "USDC", mint: MY_MINT, sig })})).json();
-    $("topAmt").value = ""; previewSplit(); renderAffiliate();
-    toast(sig ? "Top-up paid on Solana" : "Top-up recorded");
-    $("topHint").textContent = sig ? "Paid on-chain — pool and floor grew." : "Recorded to your token-growth ledger.";
-  }catch(e){ toast("Could not top up"); $("topHint").textContent = ""; }
-  finally{ btn.disabled = false; btn.textContent = "Top up & grow token"; }
-}
-$("topBtn").onclick = topUp;
-$("whoDisc").onclick = () => { if(window.KolWallet) KolWallet.disconnect(); };
+  function signOut(){
+    if(TOKEN)fetch('/api/account/logout',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:TOKEN})}).catch(()=>{});
+    localStorage.removeItem('oneip_token');localStorage.removeItem('oneip_creator');TOKEN='';HANDLE='';
+    document.getElementById('dash').classList.add('hide');document.getElementById('signin').classList.remove('hide');
+  }
+  async function bindWallet(){
+    if(!window.KolWallet){toast('wallet not available',1);return;}
+    let addr;try{addr=await KolWallet.connect();}catch(e){toast(e.message,1);return;}
+    let r;try{r=await(await fetch('/api/account/bind-wallet',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:TOKEN,wallet:addr})})).json();}catch(e){toast('network error',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    document.getElementById('walletStatus').textContent='✓ '+addr.slice(0,4)+'…'+addr.slice(-4);
+    toast(T('vp.bound'));
+  }
 
-async function loadMine(addr){
-  let mine = [];
-  try{ mine = await (await fetch("/api/creator/products?id=" + encodeURIComponent(addr))).json(); }catch(e){}
-  mine = Array.isArray(mine) ? mine : (mine.products || []);
-  $("cnt").textContent = mine.length ? "· " + mine.length : "";
-  const l = $("list");
-  if(!mine.length){ l.innerHTML = '<div class="empty">No listings yet — add your first on the left.</div>'; return; }
-  l.innerHTML = mine.map(p => `
-    <div class="item">
-      <div class="th">${p.image ? '<img src="'+esc(p.image)+'" alt="">' : (p.kind==="service"?"🧰":"🛍️")}</div>
-      <div class="meta">
-        <div class="t">${esc(p.title)}</div>
-        <div class="p">${p.price != null ? esc(p.currency||"USD")+" "+esc(p.price)+" · " : ""}${p.syncCorax ? '<span class="sy">✓ on CoraX</span>' : '<span class="ns">oneIP only</span>'}</div>
+  async function loadDashboard(){
+    document.getElementById('signin').classList.add('hide');
+    document.getElementById('dash').classList.remove('hide');
+    document.getElementById('who').textContent=HANDLE;
+    document.getElementById('launchLink').href=(IO_BASE||'')+'/launch?account='+encodeURIComponent(HANDLE);
+    if(TOKEN){fetch('/api/account/me?token='+encodeURIComponent(TOKEN)).then(r=>r.json()).then(a=>{if(a&&a.wallet)document.getElementById('walletStatus').textContent='✓ '+a.wallet.slice(0,4)+'…'+a.wallet.slice(-4);}).catch(()=>{});}
+    let info={};try{info=await (await fetch('/api/creator?w='+encodeURIComponent(HANDLE))).json();}catch(e){}
+    if(info.coin){COIN=info.coin;localStorage.setItem('oneip_coin',COIN);} // server auto-provisions the pool on first activity
+    document.getElementById('pCoin').value=COIN;
+    document.getElementById('pName').value=info.displayName||'';
+    document.getElementById('pBio').value=info.bio||'';
+    renderVpool();
+    loadItems();
+    loadPublish();
+    loadCorax();
+  }
+
+  // ---- CoraX channel link (listings become the channel's "oneIP picks" feed) ----
+  async function loadCorax(){
+    try{ const r=await (await fetch('/api/creator/link?id='+encodeURIComponent(HANDLE))).json();
+      if(r&&r.coraxChannelId){ document.getElementById('cxChannel').value=r.coraxChannelId; document.getElementById('cxStatus').textContent='✓ linked'; } }catch(e){}
+  }
+  async function saveCorax(){
+    const v=document.getElementById('cxChannel').value.trim();
+    try{ const r=await (await fetch('/api/creator/link',{method:'POST',headers:AH(),body:JSON.stringify({creatorId:HANDLE,coraxChannelId:v})})).json();
+      document.getElementById('cxStatus').textContent=r.coraxChannelId?'✓ linked':'unlinked'; toast(r.coraxChannelId?'CoraX channel linked':'Channel unlinked'); }
+    catch(e){ toast('network error',1); }
+  }
+
+  // ---- multi-platform publishing (AiToEarn behind it) — keyed by the .ai account handle ----
+  // Full set the AiToEarn engine (src/publish.js PLATFORMS) ships adapters for — keep in sync with it.
+  const PUB_PLATFORMS=[['twitter','Twitter / X'],['tiktok','TikTok'],['youtube','YouTube'],['instagram','Instagram'],['facebook','Facebook'],['linkedin','LinkedIn'],['pinterest','Pinterest'],['threads','Threads'],['bilibili','Bilibili'],['douyin','抖音 Douyin'],['kwai','快手 Kwai'],['rednote','小红书 RED'],['wechat','微信 WeChat'],['github','GitHub']];
+  async function loadPublish(){
+    const tl=document.getElementById('pubTitle'); if(tl) tl.textContent=T('pub.title').replace('{n}',PUB_PLATFORMS.length); // count always matches the list
+    const box=document.getElementById('pubAccounts'); if(!box||!HANDLE)return;
+    let acc={}, soc={};
+    try{ const r=await(await fetch('/api/publish/accounts?account='+encodeURIComponent(HANDLE))).json(); acc=(r&&r.accounts)||{}; soc=(r&&r.socials)||{}; }catch(e){}
+    box.innerHTML=PUB_PLATFORMS.map(([id,label])=>{
+      const on=!!acc[id];
+      return `<div class="pubrow ${on?'on':''}">
+        <div class="pl">${label} <span class="st ${on?'ok':'off'}">${on?T('pub.connected'):T('pub.notconnected')}</span></div>
+        <input class="ph" placeholder="@${id} (public)" value="${esc(soc[id]||'')}" onchange="pubSaveHandle('${id}',this.value)">
+        <div class="actions">${on
+          ? `<button class="btn btn--ghost btn--sm btn--xs" onclick="pubDisconnect('${id}')">${T('pub.disconnect')}</button>`
+          : `<button class="btn btn--grad btn--sm btn--xs" onclick="pubConnect('${id}')">${T('pub.connect')}</button>`}</div>
+      </div>`;
+    }).join('');
+  }
+  async function pubDisconnect(platform){
+    try{ await fetch('/api/publish/disconnect',{method:'POST',headers:AH(),body:JSON.stringify({account:HANDLE,platform})}); }catch(e){toast('network error',1);return;}
+    toast(T('pub.disconnected')); loadPublish();
+  }
+  async function pubSaveHandle(platform,handle){
+    try{ const r=await(await fetch('/api/publish/handle',{method:'POST',headers:AH(),body:JSON.stringify({account:HANDLE,platform,handle:(handle||'').trim()})})).json();
+      if(r.error){toast(r.error,1);return;} toast(T('toast.saved')); }catch(e){toast('network error',1);}
+  }
+  async function pubConnect(platform){
+    let r;try{r=await(await fetch('/api/publish/connect',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({account:HANDLE,platform})})).json();}catch(e){toast('network error',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    if(r.authUrl) window.open(r.authUrl,'_blank','width=620,height=720');
+    const sid=r.sessionId; let tries=0;
+    const poll=async()=>{
+      try{ const s=await(await fetch(`/api/publish/connect/status?platform=${platform}&sessionId=${encodeURIComponent(sid)}&account=${encodeURIComponent(HANDLE)}`)).json();
+        if(s.status==='authorized'&&s.accountId){ loadPublish(); toast(T('pub.connected')); return; } }catch(e){}
+      if(++tries<30) setTimeout(poll,2000);
+    };
+    setTimeout(poll, r.mock?300:2000);
+  }
+  async function publishNow(){
+    const text=document.getElementById('pubText').value.trim();
+    const image=document.getElementById('pubImg').value.trim();
+    if(!text){toast(T('pub.needtext'),1);return;}
+    let r;try{r=await(await fetch('/api/publish/now',{method:'POST',headers:AH(),body:JSON.stringify({account:HANDLE,text,mediaUrls:image?[image]:[]})})).json();}catch(e){toast('network error',1);return;}
+    if(r.error){toast(r.error,1);return;}
+    document.getElementById('pubText').value='';document.getElementById('pubImg').value='';
+    document.getElementById('pubStatus').textContent='✓ '+((r.items||[]).length||0)+' '+T('pub.platforms');
+    toast(T('pub.sent'));
+  }
+
+  async function saveProfile(){
+    const displayName=document.getElementById('pName').value.trim();
+    const bio=document.getElementById('pBio').value.trim();
+    try{
+      const r=await (await fetch('/api/creator',{method:'POST',headers:AH(),body:JSON.stringify({wallet:HANDLE,displayName,bio})})).json();
+      if(r.error)throw new Error(r.error);
+      toast(T('toast.saved'));
+    }catch(e){toast(e.message,true);}
+  }
+
+  function saveCoin(){COIN=document.getElementById('pCoin').value.trim();localStorage.setItem('oneip_coin',COIN);renderVpool();loadItems();toast(T('toast.linked'));}
+
+  async function renderVpool(){
+    const v=document.getElementById('vpoolView');
+    // State 0 — no pool yet: publishing anything auto-opens it (account-first flow, Model A).
+    if(!COIN){v.innerHTML=`<span class="hint">${T('vp.firstpub')}</span>`;return;}
+    let proof={count:0,totalFloorAddedSol:0,escrowUsd:0};
+    try{proof=await (await fetch('/api/shop/proof?coin='+encodeURIComponent(COIN))).json();}catch(e){}
+    const pending=COIN.startsWith('Kol'); // auto-provisioned off-chain, not yet minted on-chain
+    const esc=proof.escrowUsd||0;
+    const launchHref=(IO_BASE||'')+'/launch?account='+encodeURIComponent(HANDLE);
+    if(pending){
+      // State 1 — pool opened, no traction yet: gentle "it's open" message.
+      if(esc<=0){v.innerHTML=`<div><div style="font-weight:600">${T('vp.opened')}</div><div class="hint">${T('vp.opened_sub')}</div></div>`;return;}
+      // State 2 — pool has real held value: elevate the ACTIVATE milestone (flush escrow → on-chain floor).
+      v.innerHTML=`<div>
+          <div class="big grad-text">$${esc.toFixed(2)}</div>
+          <div class="hint">${T('vp.held')}</div>
+          <a class="btn btn--grad btn--sm" href="${launchHref}" target="_blank" rel="noopener" style="margin-top:10px">${T('vp.activate')}</a>
+          <div class="hint" style="margin-top:6px">${T('vp.activate_sub')}</div>
+        </div>`;
+      return;
+    }
+    // State 3 — activated on-chain: show floor built + a link to the live coin page.
+    const escrowLine=(esc>0)?`<div class="hint">$${esc.toFixed(2)} ${T('vp.escrow')}</div>`:'';
+    v.innerHTML=`<div>
+        <div class="big grad-text">${(proof.totalFloorAddedSol||0).toFixed(4)} SOL</div>
+        <div class="hint">${T('vp.added')} · ${(proof.count||0)} ${T('vp.sales')}</div>
+        ${escrowLine}
       </div>
-      <button class="rm" title="Remove" data-id="${esc(p.id)}">✕</button>
-    </div>`).join("");
-  l.querySelectorAll(".rm").forEach(b => b.onclick = () => removeItem(b.dataset.id));
-}
+      <a class="btn btn--ghost btn--sm" href="${(IO_BASE||'')}/coin?mint=${encodeURIComponent(COIN)}" target="_blank" rel="noopener">${T('vp.view')} →</a>`;
+  }
 
-async function removeItem(id){
-  const addr = window.KolWallet && KolWallet.address;
-  if(!addr) return;
-  try{
-    await fetch("/api/products/remove", {method:"POST", headers:{"content-type":"application/json"},
-      body: JSON.stringify({ id, creatorId: addr })});
-    toast("Listing removed");
-    loadMine(addr);
-  }catch(e){ toast("Could not remove"); }
-}
+  function setType(t){curType=t;document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('sel',b.dataset.t===t));
+    document.getElementById('costWrap').classList.toggle('hide',t!=='physical');
+    document.getElementById('contentWrap').classList.toggle('hide',t!=='digital');}
 
-async function addItem(){
-  const addr = window.KolWallet && KolWallet.address;
-  if(!addr){ toast("Connect your wallet first"); return; }
-  const title = $("fTitle").value.trim();
-  if(!title){ toast("Add a title"); return; }
-  const priceRaw = $("fPrice").value.trim();
-  const payload = {
-    creatorId: addr,
-    title,
-    kind,
-    price: priceRaw === "" ? null : Number(priceRaw),
-    currency: $("fCur").value,
-    url: $("fUrl").value.trim(),
-    image: $("fImg").value.trim(),
-    syncCorax: $("fSync").checked,
+  // Upload a real image file → data URL → /api/upload → fill `targetId` with the /uploads/ URL.
+  async function uploadImg(inp,targetId){
+    const f=inp.files&&inp.files[0]; if(!f)return;
+    if(f.size>5000000){toast('Image too large (max 5MB)',true);inp.value='';return;}
+    const data=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f);});
+    try{ const r=await(await fetch('/api/upload',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({data})})).json();
+      if(r.url){document.getElementById(targetId).value=r.url;toast('Image uploaded ✓');} else toast(r.error||'upload failed',true); }
+    catch(e){ toast('upload failed',true); }
+  }
+  async function publishItem(){
+    const title=document.getElementById('iTitle').value.trim();
+    const priceCents=Math.round(parseFloat(document.getElementById('iPrice').value||'0')*100);
+    const image=document.getElementById('iImage').value.trim();
+    if(!title){toast(T('add.name'),true);return;}
+    if(!(priceCents>0)){toast(T('add.price'),true);return;}
+    const body={creator:HANDLE,coin:COIN,type:curType,title,priceCents,image};
+    if(curType==='physical'){body.costCents=Math.round(parseFloat(document.getElementById('iCost').value||'0')*100);}
+    else{body.contentUrl=document.getElementById('iContent').value.trim();if(!body.contentUrl){toast(T('add.content'),true);return;}}
+    try{
+      const r=await (await fetch('/api/shop/product',{method:'POST',headers:AH(),body:JSON.stringify(body)})).json();
+      if(r.error)throw new Error(r.error);
+      ['iTitle','iPrice','iCost','iContent','iImage'].forEach(id=>document.getElementById(id).value='');
+      toast(T('toast.published'));loadItems();
+    }catch(e){toast(e.message,true);}
+  }
+
+  async function loadItems(){
+    let items=[];try{items=await (await fetch('/api/shop/products?creator='+encodeURIComponent(HANDLE)+'&activeOnly=false')).json();}catch(e){}
+    document.getElementById('myCount').textContent=items.length;
+    const el=document.getElementById('myItems');
+    if(!items.length){el.innerHTML=`<div class="hint">${T('my.none')}</div>`;return;}
+    const tIc={physical:'🛍️',digital:'🎬',nft:'🖼️'};
+    el.innerHTML=items.map(p=>`
+      <div class="it">
+        <div class="ph">${p.image?`<img src="${esc(p.image)}">`:(tIc[p.type]||'🛍️')}</div>
+        <div class="m"><div class="t">${esc(p.title)}</div><div class="p">${money(p.priceCents)} · ${T('type.'+(p.type||'physical'))}</div></div>
+        <button class="tg ${p.active?'on':'off'}" onclick='toggleActive(${JSON.stringify(p.id)},${!p.active})'>${p.active?'● '+T('my.live'):'○ '+T('my.off')}</button>
+      </div>`).join('');
+  }
+
+  async function toggleActive(id,active){
+    try{const r=await (await fetch('/api/shop/product/active',{method:'POST',headers:AH(),body:JSON.stringify({id,creator:HANDLE,active})})).json();if(r.error)throw new Error(r.error);loadItems();}
+    catch(e){toast(e.message,true);}
+  }
+
+  // ---- i18n ----
+  const I18N={
+    en:{"nav.shop":"← Storefront",
+      "si.title":"Creator Studio","si.handle":"Creator handle",
+      "si.sub2":"Register with your email to manage your store, content and value pool. Bind a wallet later — only when you go on-chain.",
+      "si.register":"Register","si.login":"Log in","si.email":"Email","si.idlogin":"Email or handle","si.pw":"Password",
+      "si.note2":"Your handle is your account across all of oneIP. No crypto needed to start.",
+      "si.forgot":"Forgot password?","si.forgotned":"Enter your email above first","si.resetdev":"Dev mode — use this link to reset:","si.resetlink":"Reset password →","si.resetsent":"If that account exists, a reset link has been sent.","si.newpw":"new password (min 6 characters)","si.setpw":"Set new password","si.resettitle":"Reset your password",
+      "vp.bind":"Bind Phantom wallet","vp.bound":"Wallet bound ✓",
+      "dash.hi":"Hi,","dash.sub":"Manage your profile, list products & content, and grow your value pool.","dash.switch":"Switch creator",
+      "prof.title":"Your profile","prof.name":"Display name","prof.bio":"Bio","prof.save":"Save profile",
+      "vp.title":"Your value pool","vp.coin":"Value-pool token (Solana mint from oneIP.io)","vp.save":"Link value pool","vp.launch":"Launch your token on oneIP.io →","vp.note":"Every sale & tip routes 20% of net profit to this pool — a transparent, on-chain mechanic. No pool yet? You can still sell; the 20% activates once you launch.","vp.none":"No value pool linked yet. Launch one on oneIP.io, then paste its mint here.","vp.added":"added by your sales","vp.sales":"sales","vp.view":"View on oneIP.io","vp.escrow":"in escrow — flushes to the floor when you launch on-chain","vp.pending":"escrowed from your sales · launch on-chain to activate","vp.firstpub":"Publish your first item — your value pool opens automatically.","vp.opened":"🌱 Your value pool is open","vp.opened_sub":"Every fan's support now builds real value in it.","vp.held":"held from your sales — ready to activate","vp.activate":"Activate on-chain →","vp.activate_sub":"Make it a live, tradable token — this held value flushes into a real on-chain floor.",
+      "add.title":"List something new","add.physical":"🛍️ Product","add.digital":"🎬 Video / content","add.name":"Title","add.price":"Price (USD)","add.cost":"Supplier cost (USD)","add.content":"Content URL (what the fan unlocks)","add.image":"Image URL (optional)","add.publish":"Publish",
+      "my.title":"Your listings","my.none":"Nothing listed yet — add your first item above.","my.live":"Live","my.off":"Hidden",
+      "pub.title":"Publish to {n} platforms","pub.sub":"Connect each platform once via its official login — no passwords stored here. Then post to all in one click.","pub.connecthint":"🔒 Click a platform → its own authorization page opens. You never type a password here; revoke access anytime from the platform.","pub.compose":"Post","pub.image":"Image URL (optional)","pub.now":"Publish to all connected","pub.needtext":"Write something to post","pub.sent":"Published ✓","pub.platforms":"platform(s)","pub.connected":"Connected","pub.notconnected":"Not connected","pub.connect":"Connect","pub.disconnect":"Disconnect","pub.disconnected":"Disconnected",
+      "type.physical":"Product","type.digital":"Video","type.nft":"NFT",
+      "toast.saved":"Profile saved ✓","toast.linked":"Value pool linked ✓","toast.published":"Published ✓"},
+    zh:{"nav.shop":"← 商城",
+      "si.title":"创作者工作台","si.handle":"创作者名",
+      "si.sub2":"用邮箱注册,管理你的店铺、内容和价值池。钱包待会再绑 —— 要上链时才需要。",
+      "si.register":"注册","si.login":"登录","si.email":"邮箱","si.idlogin":"邮箱或创作者名","si.pw":"密码",
+      "si.note2":"你的创作者名就是全站通用的 oneIP 账号。开始不需要任何加密货币。",
+      "si.forgot":"忘记密码?","si.forgotned":"请先在上方填入你的邮箱","si.resetdev":"开发模式 —— 用此链接重置:","si.resetlink":"重置密码 →","si.resetsent":"如果该账号存在,重置链接已发送。","si.newpw":"新密码(至少6位)","si.setpw":"设置新密码","si.resettitle":"重置你的密码",
+      "vp.bind":"绑定 Phantom 钱包","vp.bound":"钱包已绑定 ✓",
+      "dash.hi":"你好,","dash.sub":"管理资料、上架商品与内容,壮大你的价值池。","dash.switch":"切换创作者",
+      "prof.title":"你的资料","prof.name":"显示名","prof.bio":"简介","prof.save":"保存资料",
+      "vp.title":"你的价值池","vp.coin":"价值池代币(oneIP.io 上的 Solana mint)","vp.save":"绑定价值池","vp.launch":"去 oneIP.io 发行你的代币 →","vp.note":"每一笔成交与打赏,净利润的 20% 自动注入此池 —— 公开透明的链上机制。还没有池?也能先卖货,发行后 20% 自动生效。","vp.none":"还没绑定价值池。先去 oneIP.io 发行,再把 mint 粘贴到这里。","vp.added":"由你的销售注入","vp.sales":"笔成交","vp.view":"在 oneIP.io 查看","vp.escrow":"已托管 — 链上发币后注入地板","vp.pending":"已从你的销售托管 · 链上发币即激活","vp.firstpub":"发布你的第一个作品 —— 价值池会自动开启。","vp.opened":"🌱 你的价值池已开启","vp.opened_sub":"粉丝的每一次支持,都在为它累积真实价值。","vp.held":"已从你的销售托管 —— 可激活","vp.activate":"激活上链 →","vp.activate_sub":"变成可交易的上链代币 —— 托管的这笔价值将灌进真实链上地板。",
+      "add.title":"上架新内容","add.physical":"🛍️ 实物","add.digital":"🎬 视频/内容","add.name":"标题","add.price":"售价(美元)","add.cost":"供货成本(美元)","add.content":"内容链接(粉丝解锁的东西)","add.image":"图片链接(可选)","add.publish":"发布",
+      "my.title":"你的上架","my.none":"还没有上架 —— 在上方添加第一个。","my.live":"在售","my.off":"隐藏",
+      "pub.title":"一键发布到 {n} 个平台","pub.sub":"通过各平台官方登录授权连接一次(不存你的密码),之后一键发到全部平台。","pub.connecthint":"🔒 点击平台 → 跳转它的官方授权页。你不会在这里输入任何密码,随时可在该平台撤销授权。","pub.compose":"内容","pub.image":"图片链接(可选)","pub.now":"发布到所有已连接平台","pub.needtext":"写点内容再发","pub.sent":"已发布 ✓","pub.platforms":"个平台","pub.connected":"已连接","pub.notconnected":"未连接","pub.connect":"连接","pub.disconnect":"解绑","pub.disconnected":"已解绑",
+      "type.physical":"实物","type.digital":"视频","type.nft":"NFT",
+      "toast.saved":"资料已保存 ✓","toast.linked":"价值池已绑定 ✓","toast.published":"已发布 ✓"}
   };
-  const btn = $("addBtn"); btn.disabled = true; btn.textContent = "Adding…";
-  try{
-    const r = await fetch("/api/products", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify(payload)});
-    if(!r.ok){ const e = await r.json().catch(()=>({})); throw new Error(e.error||"failed"); }
-    toast("Listing added");
-    ["fTitle","fPrice","fUrl","fImg"].forEach(id => $(id).value = "");
-    $("fSync").checked = false;
-    loadMine(addr);
-  }catch(e){ toast("Could not add listing"); }
-  finally{ btn.disabled = false; btn.textContent = "Add listing"; }
-}
-
-// type toggle
-$("kindSeg").querySelectorAll("button").forEach(b => b.onclick = () => {
-  $("kindSeg").querySelectorAll("button").forEach(x => x.classList.remove("on"));
-  b.classList.add("on"); kind = b.dataset.kind;
-});
-$("addBtn").onclick = addItem;
-// Open the shared multi-wallet picker (Phantom/Solflare/Backpack…) instead of one hardcoded wallet.
-$("gateConnect").onclick = () => {
-  if (window.openWalletModal) return window.openWalletModal();
-  if (window.KolWallet) KolWallet.connect().catch(e => { if (e.message !== "PICK_WALLET") alert(e.message); });
-};
-
-// The gate hint appears when a BSC wallet is connected but no Solana one — so a creator who taps
-// "BNB Chain" isn't left thinking the (Solana-gated) Studio is broken.
-function syncGateHint(){
-  const hint=$("gateBscHint"); if(!hint) return;
-  const sol=window.KolWallet&&KolWallet.address, bsc=window.KolEvm&&KolEvm.address;
-  hint.style.display=(!sol&&bsc)?"block":"none";
-}
-// react to wallet connect/disconnect
-if(window.KolWallet){
-  KolWallet.onChange((a)=>{ showFor(a); syncGateHint(); });
-  showFor(KolWallet.address);
-}
-// KolEvm (thirdweb/BSC) loads a tick later via header.js — subscribe once it's ready.
-(function hookEvm(n){
-  if(window.KolEvm){ KolEvm.onChange(syncGateHint); syncGateHint(); return; }
-  if(n<40) setTimeout(()=>hookEvm(n+1),100);
-})(0);
+  let curLang=(localStorage.getItem('kol_lang')==='zh')?'zh':'en';
+  const T=(k)=>{const d=I18N[curLang]||I18N.en;return d[k]!=null?d[k]:(I18N.en[k]||k);};
+  function setLang(l){
+    curLang=(l==='zh')?'zh':'en';const d=I18N[curLang];
+    document.documentElement.setAttribute('lang',curLang==='zh'?'zh-CN':'en');
+    document.documentElement.setAttribute('data-lang',curLang);
+    document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.getAttribute('data-i18n');if(d[k]!=null)e.textContent=d[k]});
+    if(HANDLE){renderVpool();loadItems();loadPublish();}
+  }
+  window.onLangChange=setLang; // the shared header (aiheader.js) drives this page's body
+  setLang(curLang);
+  const RESET_TOKEN=new URLSearchParams(location.search).get('reset');
+  if(RESET_TOKEN){ enterResetMode(RESET_TOKEN); } // password-reset link → set-new-password form
+  else if(HANDLE)loadDashboard();
 </script>
+<script src="i18n.js"></script>
+<script src="header.js"></script>
 </body>
 </html>
