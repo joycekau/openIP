@@ -154,14 +154,26 @@ async function servePage(res, file) {
   return res.end(html);
 }
 
-// Transak partner access token — exchanged from apiKey + api-secret. Generating a new token
-// invalidates ALL previously issued ones, so a token cached here can die at any moment (manual
-// refresh in the dashboard, another serverless instance refreshing, etc.). Callers pass
-// force=true to bypass the cache and mint a fresh token when Transak rejects the cached one.
-let _transakTok = { token: null, exp: 0 };
+// Transak partner access token — exchanged from apiKey + api-secret, valid 7 days. Generating a
+// new token invalidates ALL previously issued ones, so minting must be RARE and the token SHARED:
+// on serverless every instance minting its own token would invalidate every other instance's.
+// The token therefore lives in durable storage (Supabase kv via persist.js; file locally) keyed
+// with the env + key it was minted for, with a small in-memory fast path. Callers pass force=true
+// to mint fresh when Transak rejects the stored one.
+let _transakTok = { token: null, exp: 0, key: "" };
 async function transakAccessToken(env, apiKey, apiSecret, force) {
   const now = Date.now();
-  if (!force && _transakTok.token && now < _transakTok.exp) return _transakTok.token;
+  const cacheKey = env + ":" + apiKey.slice(-4);
+  if (!force) {
+    if (_transakTok.token && _transakTok.key === cacheKey && now < _transakTok.exp) return _transakTok.token;
+    // Another instance may have minted a perfectly good token — reuse it instead of re-minting
+    // (a re-mint would invalidate it under that instance's feet).
+    const stored = await loadJson("transak_token", null);
+    if (stored && stored.key === cacheKey && stored.token && now < stored.exp) {
+      _transakTok = stored;
+      return stored.token;
+    }
+  }
   // refresh-token lives on api.transak.com (the gateway 404s it); create-widget-url is on the gateway.
   const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
   const r = await fetch(base + "/partners/api/v2/refresh-token", {
@@ -183,7 +195,8 @@ async function transakAccessToken(env, apiKey, apiSecret, force) {
   // Prefer Transak's own expiry (unix seconds), refreshing an hour early; else assume the
   // documented 7 days and cache for 6 to stay clear of the boundary.
   const expiresAt = Number(j.data?.expiresAt || j.expiresAt) * 1000;
-  _transakTok = { token, exp: expiresAt > now ? expiresAt - 3600 * 1000 : now + 6 * 24 * 3600 * 1000 };
+  _transakTok = { token, exp: expiresAt > now ? expiresAt - 3600 * 1000 : now + 6 * 24 * 3600 * 1000, key: cacheKey };
+  try { await saveJsonNow("transak_token", _transakTok); } catch (_) {}
   return token;
 }
 
