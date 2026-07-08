@@ -42,6 +42,7 @@ import * as payments from "./commerce/payments.js";
 import * as reactions from "./commerce/reactions.js";
 import * as agents from "./commerce/agents.js";
 import * as queue from "./commerce/queue.js";
+import * as coraxledger from "./commerce/coraxledger.js";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 // On a persistent host / locally, web/ + data/ sit one level up from src/. On Vercel the function
@@ -706,6 +707,41 @@ async function handler(req, res) {
       if (payments.hasStripe()) return json(res, 400, { error: "use Stripe checkout in production" });
       const b = JSON.parse((await readBody(req)) || "{}");
       try { return json(res, 200, orders.publicOrder(await orders.markPaid(b.orderId))); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+
+    // ---- unified creator earnings: two income lines (merchant / creator-IP) + the value pool ----
+    // The creator's own money, split by what they sell (product type decides the model), plus the
+    // pool as a separate NON-income figure. Reads the shared CoraX ledger when the account is linked
+    // (coraxId from SSO); always falls back to oneIP-local numbers so it works standalone too.
+    if (req.method === "GET" && path === "/api/creator/earnings") {
+      const acct = url.searchParams.get("account") || url.searchParams.get("w");
+      if (!acct) return json(res, 400, { error: "account required" });
+      if (!mayActAs(req, acct, null)) return json(res, 401, { error: "sign in to view your earnings" });
+      const coin = social.getCreator(acct).coin || "";
+      const coraxUuid = accounts.coraxIdFor(acct);
+      // creator-IP earnings + pool: prefer the shared CoraX ledger; else oneIP-local (buyback proof + settled IP orders).
+      const [merchant, ipCorax, poolCorax] = coraxUuid
+        ? await Promise.all([coraxledger.merchantEarnings(coraxUuid), coraxledger.creatorIpEarnings(coraxUuid), coraxledger.poolBalance(coraxUuid)])
+        : [null, null, null];
+      // oneIP-local rollups (this creator's settled IP orders on oneip.io + the on-chain/escrow pool proof).
+      const localIp = orders.list({ creator: acct }).filter((o) => o.status === "settled" && (o.poolCents || 0) > 0);
+      const localIpEarningsUsd = localIp.reduce((a, o) => a + (o.creatorCents || 0), 0) / 100;
+      const proof = coin ? buyback.proof(coin) : null;
+      return json(res, 200, {
+        account: acct, coin, linkedToCorax: !!coraxUuid, ledger: coraxledger.available ? "shared" : "local",
+        // Line 1 — merchant earnings (goods sales − category commission). CoraX-native; null if no channel.
+        merchant: merchant || { gmvUsd: 0, commissionUsd: 0, netUsd: 0, channels: 0, note: "manage in your CoraX channel" },
+        // Line 2 — creator/IP earnings (your 70% of digital sales).
+        creatorIp: {
+          earningsUsd: (ipCorax ? ipCorax.earningsUsd : 0) + localIpEarningsUsd,
+          sales: (ipCorax ? ipCorax.sales : 0) + localIp.length,
+        },
+        // Separate figure — value pool (token backing, NOT income). Utility framing only.
+        valuePool: poolCorax || (proof ? {
+          floorPendingUsd: proof.escrowUsd || 0, floorFundedSol: proof.totalFloorAddedSol || 0,
+          totalFromSalesUsd: proof.totalBuybackUsd || 0, exists: proof.count > 0 || proof.escrowCount > 0,
+        } : { exists: false }),
+      });
     }
 
     // ---- SHARED PAID-ORDERS QUEUE: the one place both doors hand paid sales to the single engine ----

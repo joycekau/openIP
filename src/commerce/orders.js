@@ -22,6 +22,7 @@ import { randomBytes } from "node:crypto";
 import * as source from "./source.js";
 import * as buyback from "./buyback.js";
 import * as accounts from "../accounts.js";
+import * as coraxledger from "./coraxledger.js";
 import { loadJson, saveJson } from "../persist.js";
 
 const KEY = "orders";
@@ -218,6 +219,19 @@ export async function settleQueued({ source, orderRef, creator, coin, type, cate
   o.status = "settled"; o.settledAt = Date.now(); o.buyback = rec;
   orders[id] = o;
   persist();
+  // Compatibility: mirror an IP-sale split onto the shared CoraX ledger so its earnings/pool
+  // displays keep working after the CoraX trigger is demoted. No-op unless CORAX_LEDGER_WRITE=1.
+  if ((o.poolCents || 0) > 0) {
+    const creatorUuid = accounts.coraxIdFor(creator);
+    if (creatorUuid) {
+      o.coraxLedger = await coraxledger.recordSplit({
+        creatorUuid, purchaseId: source === "corax" ? orderRef : null, productId: null,
+        baseCents: o.priceCents, creatorCents: o.creatorCents, poolCents: o.poolCents,
+        platformCents: o.platformFeeCents, liquidityCents: o.liquidityCents, floorCents: o.floorCents,
+        platformRate: 0.10,
+      });
+    }
+  }
   return o;
 }
 

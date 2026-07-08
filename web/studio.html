@@ -79,6 +79,15 @@
   .it .tg.on{color:var(--ok);border-color:rgba(52,211,153,.4)}.it .tg.off{color:var(--muted-2)}
   .vpool{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .vpool .big{font-family:var(--ff-disp);font-size:24px;font-weight:800}
+  .earn{display:flex;flex-direction:column;gap:2px}
+  .earn-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .earn-k{display:flex;flex-direction:column;gap:2px}
+  .earn-k>span:first-child{font-weight:700;font-size:14px}
+  .earn-sub{font-size:11.5px;color:var(--muted-2)}
+  .earn-v{font-family:var(--ff-disp);font-size:22px;font-weight:800;white-space:nowrap}
+  .earn-pool{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:12px;padding:13px 15px;border-radius:12px;
+    background:linear-gradient(100deg,rgba(168,85,247,.12),rgba(34,211,238,.06));border:1px solid var(--line-grad)}
+  .earn-pool .earn-v{color:var(--cyan)}
   .signin{max-width:440px;margin:8vh auto 0}
   .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--panel-2);border:1px solid var(--line-grad);border-radius:12px;padding:12px 18px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -114,6 +123,25 @@
   <section id="dash" class="hide">
     <h1><span data-i18n="dash.hi">Hi,</span> <span class="grad-text" id="who">creator</span> 👋</h1>
     <p class="sub" data-i18n="dash.sub">Manage your profile, list products & content, and grow your value pool.</p>
+
+    <div class="panel" id="earnPanel">
+      <h3>💰 <span data-i18n="earn.title">Your earnings</span></h3>
+      <div class="earn">
+        <div class="earn-row">
+          <div class="earn-k"><span data-i18n="earn.ip">Creator / IP earnings</span><span class="earn-sub" data-i18n="earn.ip.sub">your 70% of digital & IP sales</span></div>
+          <div class="earn-v" id="eIp">—</div>
+        </div>
+        <div class="earn-row" id="eMerchRow">
+          <div class="earn-k"><span data-i18n="earn.merch">Merchant earnings</span><span class="earn-sub" data-i18n="earn.merch.sub">goods sales − category commission · managed in CoraX</span></div>
+          <div class="earn-v" id="eMerch">—</div>
+        </div>
+      </div>
+      <div class="earn-pool">
+        <div class="earn-k"><span data-i18n="earn.pool">🌱 Value pool</span><span class="earn-sub" data-i18n="earn.pool.sub">your token's floor + liquidity — protocol backing, not withdrawable income</span></div>
+        <div class="earn-v" id="ePool">—</div>
+      </div>
+      <div class="hint" data-i18n="earn.note">Merchant goods settle by category commission (stays in CoraX). Your own digital/IP sales are the token program: 70% you · 20% value pool · 10% platform — the same wherever the sale happens.</div>
+    </div>
 
     <div class="panel">
       <h3>🪪 <span data-i18n="prof.title">Your profile</span></h3>
@@ -296,6 +324,22 @@
     loadItems();
     loadPublish();
     loadCorax();
+    loadEarnings();
+  }
+
+  // ---- unified earnings: two income lines (merchant / creator-IP) + the value pool (non-income) ----
+  const fmtUsd=(n)=>"$"+(Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+  async function loadEarnings(){
+    let e;try{e=await (await fetch('/api/creator/earnings?account='+encodeURIComponent(HANDLE),{headers:AH()})).json();}catch(err){return;}
+    if(!e||e.error)return;
+    document.getElementById('eIp').textContent=fmtUsd(e.creatorIp&&e.creatorIp.earningsUsd);
+    // merchant line only when they actually have a channel with sales; else hide it
+    const m=e.merchant||{};
+    if(m.channels>0||m.netUsd>0){ document.getElementById('eMerch').textContent=fmtUsd(m.netUsd); document.getElementById('eMerchRow').style.display=''; }
+    else { document.getElementById('eMerchRow').style.display='none'; }
+    const vp=e.valuePool||{};
+    const poolUsd=(vp.floorPendingUsd||0)+(vp.liquidityPendingUsd||0)+(vp.floorDeployedUsd||0)+(vp.liquidityDeployedUsd||0)+(vp.totalFromSalesUsd&&!vp.floorPendingUsd?vp.totalFromSalesUsd:0);
+    document.getElementById('ePool').textContent = vp.floorFundedSol ? (vp.floorFundedSol.toFixed(4)+' ◎') : fmtUsd(poolUsd);
   }
 
   // ---- CoraX channel link (listings become the channel's "oneIP picks" feed) ----
@@ -462,7 +506,7 @@
       "si.note2":"Your handle is your account across all of oneIP. No crypto needed to start.",
       "si.forgot":"Forgot password?","si.forgotned":"Enter your email above first","si.resetdev":"Dev mode — use this link to reset:","si.resetlink":"Reset password →","si.resetsent":"If that account exists, a reset link has been sent.","si.newpw":"new password (min 6 characters)","si.setpw":"Set new password","si.resettitle":"Reset your password",
       "vp.bind":"Bind Phantom wallet","vp.bound":"Wallet bound ✓",
-      "dash.hi":"Hi,","dash.sub":"Manage your profile, list products & content, and grow your value pool.","dash.switch":"Switch creator",
+      "dash.hi":"Hi,","dash.sub":"Manage your profile, list products & content, and grow your value pool.","dash.switch":"Switch creator","earn.title":"Your earnings","earn.ip":"Creator / IP earnings","earn.ip.sub":"your 70% of digital & IP sales","earn.merch":"Merchant earnings","earn.merch.sub":"goods sales − category commission · managed in CoraX","earn.pool":"🌱 Value pool","earn.pool.sub":"your token's floor + liquidity — protocol backing, not withdrawable income","earn.note":"Merchant goods settle by category commission (stays in CoraX). Your own digital/IP sales are the token program: 70% you · 20% value pool · 10% platform — the same wherever the sale happens.",
       "prof.title":"Your profile","prof.name":"Display name","prof.bio":"Bio","prof.save":"Save profile",
       "vp.title":"Your value pool","vp.coin":"Value-pool token (Solana mint from oneIP.io)","vp.save":"Link value pool","vp.launch":"Launch your token on oneIP.io →","vp.note":"Every digital sale, tip & reaction routes 20% into this pool (80% liquidity / 20% floor) — a transparent, on-chain mechanic. No pool yet? You can still sell; the 20% activates once you launch.","vp.none":"No value pool linked yet. Launch one on oneIP.io, then paste its mint here.","vp.added":"added by your sales","vp.sales":"sales","vp.view":"View on oneIP.io","vp.escrow":"in escrow — flushes to the floor when you launch on-chain","vp.pending":"escrowed from your sales · launch on-chain to activate","vp.firstpub":"Publish your first item — your value pool opens automatically.","vp.opened":"🌱 Your value pool is open","vp.opened_sub":"Every fan's support now builds real value in it.","vp.held":"held from your sales — ready to activate","vp.activate":"Activate on-chain →","vp.activate_sub":"Make it a live, tradable token — this held value flushes into a real on-chain floor.",
       "add.title":"List something new","add.physical":"🛍️ Product","add.digital":"🎬 Video / content","add.name":"Title","add.price":"Price (USD)","add.cost":"Supplier cost (USD)","add.content":"Content URL (what the fan unlocks)","add.image":"Image URL (optional)","add.publish":"Publish","add.cat":"Business category (sets the commission)","add.cat.retail":"🛍️ Retail — 5% commission (min $1) · price ≥ $3","add.cat.fnb":"🍜 F&B — 8% commission (min $5) · price ≥ $8","add.cat.edu":"📚 Education — 5% commission (min $1) · price ≥ $3","add.cat.note":"Merchant goods settle under a category commission and don't feed the value pool. Your own digital content/services are the token program: 70% you / 20% value pool / 10% platform.",
@@ -477,7 +521,7 @@
       "si.note2":"你的创作者名就是全站通用的 oneIP 账号。开始不需要任何加密货币。",
       "si.forgot":"忘记密码?","si.forgotned":"请先在上方填入你的邮箱","si.resetdev":"开发模式 —— 用此链接重置:","si.resetlink":"重置密码 →","si.resetsent":"如果该账号存在,重置链接已发送。","si.newpw":"新密码(至少6位)","si.setpw":"设置新密码","si.resettitle":"重置你的密码",
       "vp.bind":"绑定 Phantom 钱包","vp.bound":"钱包已绑定 ✓",
-      "dash.hi":"你好,","dash.sub":"管理资料、上架商品与内容,壮大你的价值池。","dash.switch":"切换创作者",
+      "dash.hi":"你好,","dash.sub":"管理资料、上架商品与内容,壮大你的价值池。","dash.switch":"切换创作者","earn.title":"你的收益","earn.ip":"创作者 / IP 收益","earn.ip.sub":"数字与 IP 销售中你的 70%","earn.merch":"商家收益","earn.merch.sub":"商品销售 − 类目佣金 · 在 CoraX 管理","earn.pool":"🌱 价值池","earn.pool.sub":"你的代币地板 + 流动性 —— 协议背书,非可提现收入","earn.note":"商家类商品按类目佣金结算(留在 CoraX)。你自己的数字/IP 销售属于代币计划:70% 归你 · 20% 价值池 · 10% 平台 —— 无论在哪成交都一样。",
       "prof.title":"你的资料","prof.name":"显示名","prof.bio":"简介","prof.save":"保存资料",
       "vp.title":"你的价值池","vp.coin":"价值池代币(oneIP.io 上的 Solana mint)","vp.save":"绑定价值池","vp.launch":"去 oneIP.io 发行你的代币 →","vp.note":"每一笔数字内容成交、打赏与付费表情,售价的 20% 自动注入此池(80% 流动性 / 20% 地板)—— 公开透明的链上机制。还没有池?也能先卖货,发行后 20% 自动生效。","vp.none":"还没绑定价值池。先去 oneIP.io 发行,再把 mint 粘贴到这里。","vp.added":"由你的销售注入","vp.sales":"笔成交","vp.view":"在 oneIP.io 查看","vp.escrow":"已托管 — 链上发币后注入地板","vp.pending":"已从你的销售托管 · 链上发币即激活","vp.firstpub":"发布你的第一个作品 —— 价值池会自动开启。","vp.opened":"🌱 你的价值池已开启","vp.opened_sub":"粉丝的每一次支持,都在为它累积真实价值。","vp.held":"已从你的销售托管 —— 可激活","vp.activate":"激活上链 →","vp.activate_sub":"变成可交易的上链代币 —— 托管的这笔价值将灌进真实链上地板。",
       "add.title":"上架新内容","add.physical":"🛍️ 实物","add.digital":"🎬 视频/内容","add.name":"标题","add.price":"售价(美元)","add.cost":"供货成本(美元)","add.content":"内容链接(粉丝解锁的东西)","add.image":"图片链接(可选)","add.publish":"发布","add.cat":"经营类目(决定佣金)","add.cat.retail":"🛍️ 零售 — 佣金 5%(最低 $1)· 售价 ≥ $3","add.cat.fnb":"🍜 餐饮 — 佣金 8%(最低 $5)· 售价 ≥ $8","add.cat.edu":"📚 教育 — 佣金 5%(最低 $1)· 售价 ≥ $3","add.cat.note":"商家类商品按类目佣金结算,不进入价值池。你自己的数字内容/服务才是代币计划:70% 归你 / 20% 价值池 / 10% 平台。",

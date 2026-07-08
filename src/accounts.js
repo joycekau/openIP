@@ -142,6 +142,13 @@ export function verifyActor(token, claimedHandle) {
   return { ok: sessions[token] === h, registered: true };
 }
 export function me(token) { const h = sessions[token]; return h ? publicAccount(accounts[h]) : null; }
+/** Resolve a oneIP handle/wallet → its CoraX creator uuid (set at SSO), or "" if none. Used to
+ *  bridge oneIP settlements onto the shared CoraX ledger tables (which are keyed by creator uuid). */
+export function coraxIdFor(handleOrWallet) {
+  const id = String(handleOrWallet || "").trim();
+  let a = accounts[id]; if (!a) { const h = handleForWallet(id); a = h ? accounts[h] : null; }
+  return (a && a.coraxId) || "";
+}
 export function logout(token) { delete sessions[token]; persist(); return { ok: true }; }
 export function getAccount(handle) { return publicAccount(accounts[handle]); }
 export function list() { return Object.values(accounts).map(publicAccount).sort((a, b) => b.createdAt - a.createdAt); }
