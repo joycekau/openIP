@@ -343,7 +343,7 @@
   document.getElementById('ioLink').href = IO_BASE || "/";
   document.getElementById('ioLink2').href = IO_BASE || "/";
 
-  // header (logo / nav / language / Start selling) is the shared component — aiheader.js
+  // header (logo / nav / language) is the shared site component — header.js
   function go(h){const el=document.querySelector(h);if(el)el.scrollIntoView({behavior:'smooth'});}
 
   const money=(cents,cur)=>new Intl.NumberFormat(undefined,{style:'currency',currency:cur||'USD'}).format((cents||0)/100);

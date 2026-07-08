@@ -485,7 +485,7 @@
     document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.getAttribute('data-i18n');if(d[k]!=null)e.textContent=d[k]});
     if(HANDLE){renderVpool();loadItems();loadPublish();}
   }
-  window.onLangChange=setLang; // the shared header (aiheader.js) drives this page's body
+  window.onLangChange=setLang; // the shared site header drives this page body i18n
   setLang(curLang);
   const RESET_TOKEN=new URLSearchParams(location.search).get('reset');
   if(RESET_TOKEN){ enterResetMode(RESET_TOKEN); } // password-reset link → set-new-password form
