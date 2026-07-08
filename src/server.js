@@ -257,37 +257,36 @@ async function handler(req, res) {
       const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
       const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
       const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "1.1.1.1";
-      // The endpoint pairing (legacy refresh → gateway session) is confirmed correct by docs and
-      // other integrations, yet a seconds-old PRODUCTION token gets 401. Prime suspect: the key in
-      // Vercel belongs to the OTHER environment. Probe both env pairings with the same key, plus an
-      // authorization-header variant. Whichever yields a widgetUrl is the truth.
-      const pairings = [
-        { name: "PRODUCTION pairing", refresh: "https://api.transak.com/partners/api/v2/refresh-token", gw: "https://api-gateway.transak.com" },
-        { name: "STAGING pairing", refresh: "https://api-stg.transak.com/partners/api/v2/refresh-token", gw: "https://api-gateway-stg.transak.com" },
-      ];
+      // Key is confirmed PRODUCTION (staging refresh rejects it) and refresh mints fine, yet the
+      // gateway 401s the fresh token immediately. Test whether the gateway just needs time to see a
+      // newly minted token (auth-service propagation): mint ONCE, try immediately, then retry the
+      // SAME token after increasing delays. If late attempts succeed → propagation lag; the fix is
+      // mint-rarely + durable shared storage. If they still 401 → account/IP-whitelist issue for
+      // Transak support.
+      const sleep = (ms) => new Promise((rs) => setTimeout(rs, ms));
       out.attempts = [];
       try {
-        for (const p of pairings) {
-          const a = { pairing: p.name };
-          out.attempts.push(a);
-          try {
-            const r1 = await fetch(p.refresh, {
-              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
+        const r1 = await fetch("https://api.transak.com/partners/api/v2/refresh-token", {
+          method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
+        });
+        const j1 = await r1.json().catch(() => ({}));
+        const token = j1 && (j1.data?.accessToken || j1.accessToken);
+        out.refresh = { status: r1.status, gotToken: !!token, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 200)) };
+        if (token) {
+          const tryCreate = async (label) => {
+            const r2 = await fetch("https://api-gateway.transak.com/api/v2/auth/session", {
+              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+              body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
             });
-            const j1 = await r1.json().catch(() => ({}));
-            const token = j1 && (j1.data?.accessToken || j1.accessToken);
-            a.refresh = { status: r1.status, gotToken: !!token, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 200)) };
-            if (!token) continue;
-            for (const hdr of ["access-token", "authorization"]) {
-              const headers = { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "x-user-ip": userIp };
-              headers[hdr] = hdr === "authorization" ? `Bearer ${token}` : token;
-              const r2 = await fetch(p.gw + "/api/v2/auth/session", { method: "POST", headers, body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }) });
-              const j2 = await r2.json().catch(() => ({}));
-              a["create_" + hdr] = { status: r2.status, gotWidgetUrl: !!(j2?.widgetUrl || j2?.data?.widgetUrl), error: (j2?.widgetUrl || j2?.data?.widgetUrl) ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) };
-              if (a["create_" + hdr].gotWidgetUrl) { out.winner = p.name + " via " + hdr; break; }
-            }
-            if (out.winner) break;
-          } catch (e) { a.exception = (e && e.message) || String(e); }
+            const j2 = await r2.json().catch(() => ({}));
+            const ok = !!(j2?.widgetUrl || j2?.data?.widgetUrl);
+            out.attempts.push({ label, status: r2.status, gotWidgetUrl: ok, error: ok ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) });
+            return ok;
+          };
+          if (!(await tryCreate("immediate"))) {
+            await sleep(3000);
+            if (!(await tryCreate("after 3s"))) { await sleep(4000); await tryCreate("after 7s"); }
+          }
         }
       } catch (e) { out.exception = (e && e.message) || String(e); }
       out.referrerDomain = referrerDomain;
