@@ -160,7 +160,7 @@
     <div class="tk"><div class="k">24h</div><div class="v" id="tChg">—</div></div>
     <div class="tk"><div class="k">Revenue floor</div><div class="v" id="tFloor">—</div></div>
     <a class="trade" id="tradeLink" href="#">View pool</a>
-    <div class="note" id="floorNote">Every sale, tip & reaction routes <b>20% of net revenue</b> into this pool's floor — an on-chain, publicly verifiable protocol mechanic.</div>
+    <div class="note" id="floorNote">Every digital sale, tip & reaction routes <b>20% of the sale</b> into this pool (80% liquidity / 20% floor) — an on-chain, publicly verifiable protocol mechanic.</div>
   </div>
 
   <div class="tabs">
@@ -178,7 +178,7 @@
 <div class="modal-bg" id="tipBg" onclick="if(event.target===this)closeTip()">
   <div class="modal">
     <h3>💝 Tip <span id="tipWho"></span></h3>
-    <div class="hint">Pay by card — no crypto needed. 20% of net supports their value-pool floor.</div>
+    <div class="hint">Pay by card — no crypto needed. 20% goes to their value pool (80% liquidity / 20% floor).</div>
     <div class="chips" id="tipChips">
       <button data-a="100">$1</button><button data-a="500" class="sel">$5</button>
       <button data-a="2000">$20</button><button data-a="5000">$50</button>
@@ -252,7 +252,7 @@ async function loadProof(coin){
     const p = await (await fetch("/api/shop/proof?coin=" + encodeURIComponent(coin))).json();
     const total = (p.totalFloorAddedSol||0) + 0;
     $("tFloor").textContent = total > 0 ? total.toFixed(4)+" ◎" : (p.escrowUsd>0 ? "$"+p.escrowUsd.toFixed(2)+" held" : "—");
-    if(p.count>0||p.escrowCount>0) $("floorNote").innerHTML = `<b>${p.count+p.escrowCount} sales</b> have routed 20% of net revenue here (` +
+    if(p.count>0||p.escrowCount>0) $("floorNote").innerHTML = `<b>${p.count+p.escrowCount} sales</b> have routed 20% of each sale here (` +
       (total>0? total.toFixed(4)+" ◎ funded":"") + (p.escrowUsd>0? (total>0?" + ":"")+"$"+p.escrowUsd.toFixed(2)+" held for launch":"") + `) — publicly verifiable.`;
   }catch(e){}
 }
@@ -291,7 +291,7 @@ async function sendTip(){
   if(r.checkout && r.checkout.url){ location.href = r.checkout.url; return; } // live Stripe
   try{ await fetch("/api/shop/dev-paid",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({orderId:r.order.id})}); }catch(e){}
   closeTip();
-  toast("💝 Thank you! 20% of net supports the value pool.");
+  toast("💝 Thank you! 20% goes to the value pool.");
   if(INFO.coin) loadProof(INFO.coin);
 }
 
