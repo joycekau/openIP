@@ -27,23 +27,39 @@ function persist() { saveJson(KEY, products); }
 /** Add/curate a product. Money is in integer CENTS to avoid float drift.
  *  priceCents = what the fan pays (fiat);  costCents = supplier landed cost. */
 // A monetizable item. `type` decides cost model + fulfillment + settle speed:
-//   physical = supply-chain goods (supplier ships, refund window) — the default
+//   physical = merchant goods (supplier ships, refund window) — the default
 //   digital  = paid video/photo/work/unlock (cost≈0, instant unlock of `contentUrl`)
 //   nft      = minted collectible (later)
 // (tips are ad-hoc, not catalog items — see orders.createTip.)
+// BOUNDARY RULE (user-locked): the creator's own IP/content (digital/nft) is in the TOKEN
+// PROGRAM (70/20/10, feeds the value pool). Merchant business verticals (physical goods) settle
+// under a CATEGORY COMMISSION instead — `category` picks which one (mirrors corax platform_fee_config).
 export const ITEM_TYPES = ["physical", "digital", "nft"];
+export const CATEGORIES = ["retail", "fnb", "education"];
 
-export function addProduct({ creator, coin, title, image, description, priceCents, costCents, currency, sku, supplier, type, contentUrl }) {
+// Minimum listing prices per merchant category so the minimum commission can never consume the
+// whole sale (a $1 retail item would net the seller $0 after the $1 minimum commission).
+const MIN_PRICE_CENTS = {
+  retail: Number(process.env.MIN_PRICE_RETAIL_CENTS || 300),   // ≥ $3
+  fnb: Number(process.env.MIN_PRICE_FNB_CENTS || 800),         // ≥ $8 (min commission is $5)
+  education: Number(process.env.MIN_PRICE_EDU_CENTS || 300),   // ≥ $3
+};
+
+export function addProduct({ creator, coin, title, image, description, priceCents, costCents, currency, sku, supplier, type, category, contentUrl }) {
   if (!creator) throw new Error("creator (account) required");
   if (!title) throw new Error("title required");
   const t = ITEM_TYPES.includes(type) ? type : "physical";
+  // category applies to merchant (physical) items only; the token program ignores it.
+  const cat = t === "physical" ? (CATEGORIES.includes(category) ? category : "retail") : "";
   const cost = Math.round(costCents || 0); // digital/nft default to 0 cost
   if (!(priceCents > 0)) throw new Error("priceCents must be > 0");
+  if (cat && priceCents < MIN_PRICE_CENTS[cat])
+    throw new Error(`${cat} items need a price of at least $${(MIN_PRICE_CENTS[cat] / 100).toFixed(2)} (so the minimum commission never nets you zero)`);
   if (cost < 0 || cost >= priceCents) throw new Error("costCents must be >= 0 and < priceCents");
   if (t === "digital" && !contentUrl) throw new Error("digital items need a contentUrl (the unlock payload)");
   const id = newId();
   products[id] = {
-    id, creator, coin: coin || "", type: t,
+    id, creator, coin: coin || "", type: t, category: cat,
     title: String(title).slice(0, 200), image: image || "", description: (description || "").slice(0, 2000),
     priceCents: Math.round(priceCents), costCents: cost,
     currency: currency || "USD", sku: sku || "", supplier: supplier || SOURCE,

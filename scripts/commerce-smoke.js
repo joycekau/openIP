@@ -34,10 +34,23 @@ const product = source.addProduct({
 ok(product.id, `physical product curated: ${product.title} @ ${usd(product.priceCents)} (cost ${usd(product.costCents)})`);
 
 const order = orders.create({ productId: product.id, fan: "fan@example.com", address: { name: "Fan", line1: "1 Test St", country: "PH" } });
-console.log(`  commission = max(5% of ${usd(order.priceCents)}, $1) = ${usd(order.platformFeeCents)} · PSP fee ${usd(order.feeCents)} · supplier ${usd(order.costCents)}`);
-ok(order.platformFeeCents === Math.max(Math.round(order.priceCents * 0.05), 100), "physical: platform commission = max(5%, $1)");
-ok(order.creatorCents === order.priceCents - order.platformFeeCents - order.feeCents - order.costCents, "physical: creator keeps price - commission - fee - cost");
+console.log(`  commission = max(5% of ${usd(order.priceCents)}, $1) = ${usd(order.platformFeeCents)} · PSP ${usd(order.feeCents)} absorbed · supplier ${usd(order.costCents)}`);
+ok(order.category === "retail", "physical defaults to the retail category");
+ok(order.platformFeeCents === Math.max(Math.round(order.priceCents * 0.05), 100), "retail: platform commission = max(5%, $1)");
+ok(order.creatorCents === order.priceCents - order.platformFeeCents - order.costCents, "retail: creator keeps price - commission - cost (PSP absorbed by platform)");
+ok(order.feeAbsorbed === true, "retail: PSP fee absorbed by the platform's commission, not the seller");
 ok(order.poolCents === 0, "physical: NO token-pool share (outside the token program)");
+
+// merchant categories: F&B 8% min $5, education 5% min $1; min listing prices guard the minimums
+const meal = source.addProduct({ creator: CREATOR, coin: COIN, type: "physical", category: "fnb", title: "Chef set", priceCents: 2000, costCents: 600 });
+const mealOrder = orders.create({ productId: meal.id, fan: "foodie@example.com" });
+ok(mealOrder.category === "fnb" && mealOrder.platformFeeCents === 500, "F&B: commission = max(8% of $20, $5 min) = $5");
+const course = source.addProduct({ creator: CREATOR, coin: COIN, type: "physical", category: "education", title: "Workshop seat", priceCents: 10000, costCents: 0 });
+const courseOrder = orders.create({ productId: course.id, fan: "student@example.com" });
+ok(courseOrder.category === "education" && courseOrder.platformFeeCents === 500, "education: commission = 5% of $100 = $5");
+let tooCheap = false;
+try { source.addProduct({ creator: CREATOR, type: "physical", category: "fnb", title: "Snack", priceCents: 400 }); } catch { tooCheap = true; }
+ok(tooCheap, "min listing price: a $4 F&B item is rejected (min commission would consume it)");
 
 // 2) fulfillment: paid -> shipped -> delivered
 await orders.markPaid(order.id);

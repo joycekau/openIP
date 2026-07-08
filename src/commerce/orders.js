@@ -10,9 +10,11 @@
 //       The 20% pool splits 80% liquidity / 20% floor (matching the on-chain buy mechanics).
 //       Payment/settlement costs are ABSORBED by the platform out of its 10% (no off-the-top
 //       settlement fee) — the fan-facing math is a clean 70/20/10 of the price.
-//   • PHYSICAL goods are NOT in the token program (no pool routing). They pay the category
-//       commission (retail default 5%, min $1 — mirrors corax platform_fee_config); the creator
-//       keeps price − commission − payment fee − supplier cost.
+//   • PHYSICAL goods (merchant verticals) are NOT in the token program (no pool routing). They
+//       pay a category commission — retail 5% min $1 / F&B 8% min $5 / education 5% min $1,
+//       mirroring corax platform_fee_config. The seller's ONLY fee is the commission: the
+//       payment-processor cost is absorbed by the platform out of its commission (same rule as
+//       digital's 10%), so the creator keeps price − commission − supplier cost.
 //
 // IRON RULE: buyback fires ONLY on settle, never on `paid`. A refund before settle just ends the
 // order — the pool never moves on money that might be clawed back.
@@ -33,9 +35,12 @@ const POOL_BPS = Number(process.env.POOL_BPS || 2000);              // 20% token
 const PLATFORM_BPS = Number(process.env.PLATFORM_BPS || 1000);      // 10% platform (absorbs settlement)
 // The 20% pool composition (matches the on-chain buy: ~80% curve liquidity / ~20% floor vault).
 const POOL_LIQ_BPS = Number(process.env.POOL_LIQ_BPS || 8000);      // 80% of pool -> liquidity
-// Physical category commission (mirrors corax platform_fee_config retail row).
-const RETAIL_COMMISSION_BPS = Number(process.env.RETAIL_COMMISSION_BPS || 500); // 5% of gross
-const RETAIL_MIN_FEE_CENTS = Number(process.env.RETAIL_MIN_FEE_CENTS || 100);  // min $1
+// Merchant category commissions (mirror corax platform_fee_config): bps of gross + minimum.
+const CATEGORY_FEES = {
+  retail: { bps: Number(process.env.RETAIL_COMMISSION_BPS || 500), minCents: Number(process.env.RETAIL_MIN_FEE_CENTS || 100) },      // 5%, min $1
+  fnb: { bps: Number(process.env.FNB_COMMISSION_BPS || 800), minCents: Number(process.env.FNB_MIN_FEE_CENTS || 500) },               // 8%, min $5
+  education: { bps: Number(process.env.EDU_COMMISSION_BPS || 500), minCents: Number(process.env.EDU_MIN_FEE_CENTS || 100) },         // 5%, min $1
+};
 // The platform's take is itself sub-split among channel partners, in bps OF THE SALE PRICE
 // (empty slots fall back to the platform base — the creator/pool never pay more for the channel).
 const POOL_COUNTRY_BPS = Number(process.env.POOL_COUNTRY_BPS || 50);   // 0.5% country partner
@@ -63,10 +68,12 @@ const paymentFee = (gross) => Math.round((gross * FEE_BPS) / 10000) + FEE_FIXED_
 const isInstant = (type) => type !== "physical";
 
 /** The money math for one sale.
- *  Digital (token program): price = 70% creator + 20% pool + 10% platform, PSP fee absorbed by
- *  the platform (recorded, informational). Physical: category commission (5%, min $1) to the
- *  platform; creator keeps price − commission − PSP fee − supplier cost; no pool. */
-function computeSplit(priceCents, costCents, type) {
+ *  Digital (token program): price = 70% creator + 20% pool + 10% platform.
+ *  Physical (merchant): category commission (retail/fnb/education) to the platform; creator keeps
+ *  price − commission − supplier cost; no pool.
+ *  BOTH: the payment-processor fee is absorbed by the platform's cut — the seller's only fee is
+ *  the split/commission, and the buyer always pays exactly the sticker price. */
+function computeSplit(priceCents, costCents, type, category) {
   const feeCents = paymentFee(priceCents);
   if (isInstant(type)) {
     const poolCents = Math.round((priceCents * POOL_BPS) / 10000);
@@ -74,17 +81,19 @@ function computeSplit(priceCents, costCents, type) {
     const creatorCents = priceCents - poolCents - platformFeeCents; // 70% (remainder, exact)
     const liquidityCents = Math.round((poolCents * POOL_LIQ_BPS) / 10000);
     return {
-      feeCents, feeAbsorbed: true,
+      feeCents, feeAbsorbed: true, category: "",
       netProfitCents: priceCents,      // split base (kept for back-compat with reports)
       poolCents, liquidityCents, floorCents: poolCents - liquidityCents,
       platformFeeCents, creatorCents,
     };
   }
-  const platformFeeCents = Math.max(Math.round((priceCents * RETAIL_COMMISSION_BPS) / 10000), RETAIL_MIN_FEE_CENTS);
-  const creatorCents = Math.max(0, priceCents - platformFeeCents - feeCents - (costCents || 0));
+  const cat = CATEGORY_FEES[category] ? category : "retail";
+  const fee = CATEGORY_FEES[cat];
+  const platformFeeCents = Math.max(Math.round((priceCents * fee.bps) / 10000), fee.minCents);
+  const creatorCents = Math.max(0, priceCents - platformFeeCents - (costCents || 0));
   return {
-    feeCents, feeAbsorbed: false,
-    netProfitCents: Math.max(0, priceCents - (costCents || 0) - feeCents),
+    feeCents, feeAbsorbed: true, category: cat,
+    netProfitCents: Math.max(0, priceCents - (costCents || 0)),
     poolCents: 0, liquidityCents: 0, floorCents: 0,
     platformFeeCents, creatorCents,
   };
@@ -127,7 +136,7 @@ export function create({ productId, fan, address }) {
   if (!product) throw new Error("product not found");
   if (!product.active) throw new Error("product not available");
   const type = product.type || "physical";
-  const split = computeSplit(product.priceCents, product.costCents, type);
+  const split = computeSplit(product.priceCents, product.costCents, type, product.category);
   const id = newId();
   orders[id] = blankOrder({
     id, type, productId, creator: product.creator, coin: product.coin,

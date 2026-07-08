@@ -150,6 +150,15 @@
         <div><label data-i18n="add.price">Price (USD)</label><input id="iPrice" type="number" min="1" step="0.01" placeholder="39.90"></div>
         <div id="costWrap"><label data-i18n="add.cost">Supplier cost (USD)</label><input id="iCost" type="number" min="0" step="0.01" placeholder="12.00"></div>
       </div>
+      <div id="catWrap">
+        <label data-i18n="add.cat">Business category (sets the commission)</label>
+        <select id="iCat">
+          <option value="retail" data-i18n="add.cat.retail">🛍️ Retail — 5% commission (min $1) · price ≥ $3</option>
+          <option value="fnb" data-i18n="add.cat.fnb">🍜 F&amp;B — 8% commission (min $5) · price ≥ $8</option>
+          <option value="education" data-i18n="add.cat.edu">📚 Education — 5% commission (min $1) · price ≥ $3</option>
+        </select>
+        <div class="hint" data-i18n="add.cat.note">Merchant goods settle under a category commission and don't feed the value pool. Your own digital content/services are the token program: 70% you / 20% value pool / 10% platform.</div>
+      </div>
       <div id="contentWrap" class="hide"><label data-i18n="add.content">Content URL (what the fan unlocks)</label><input id="iContent" placeholder="https://… (video / download link)"></div>
       <label data-i18n="add.image">Image URL (optional)</label><input id="iImage" placeholder="https://… — or upload ↓">
       <input id="iImageFile" type="file" accept="image/*" onchange="uploadImg(this,'iImage')" style="margin-top:6px;font-size:12px">
@@ -396,6 +405,7 @@
 
   function setType(t){curType=t;document.querySelectorAll('#typeSeg button').forEach(b=>b.classList.toggle('sel',b.dataset.t===t));
     document.getElementById('costWrap').classList.toggle('hide',t!=='physical');
+    document.getElementById('catWrap').classList.toggle('hide',t!=='physical');
     document.getElementById('contentWrap').classList.toggle('hide',t!=='digital');}
 
   // Upload a real image file → data URL → /api/upload → fill `targetId` with the /uploads/ URL.
@@ -414,7 +424,7 @@
     if(!title){toast(T('add.name'),true);return;}
     if(!(priceCents>0)){toast(T('add.price'),true);return;}
     const body={creator:HANDLE,coin:COIN,type:curType,title,priceCents,image};
-    if(curType==='physical'){body.costCents=Math.round(parseFloat(document.getElementById('iCost').value||'0')*100);}
+    if(curType==='physical'){body.costCents=Math.round(parseFloat(document.getElementById('iCost').value||'0')*100);body.category=document.getElementById('iCat').value;}
     else{body.contentUrl=document.getElementById('iContent').value.trim();if(!body.contentUrl){toast(T('add.content'),true);return;}}
     try{
       const r=await (await fetch('/api/shop/product',{method:'POST',headers:AH(),body:JSON.stringify(body)})).json();
@@ -455,7 +465,7 @@
       "dash.hi":"Hi,","dash.sub":"Manage your profile, list products & content, and grow your value pool.","dash.switch":"Switch creator",
       "prof.title":"Your profile","prof.name":"Display name","prof.bio":"Bio","prof.save":"Save profile",
       "vp.title":"Your value pool","vp.coin":"Value-pool token (Solana mint from oneIP.io)","vp.save":"Link value pool","vp.launch":"Launch your token on oneIP.io →","vp.note":"Every digital sale, tip & reaction routes 20% into this pool (80% liquidity / 20% floor) — a transparent, on-chain mechanic. No pool yet? You can still sell; the 20% activates once you launch.","vp.none":"No value pool linked yet. Launch one on oneIP.io, then paste its mint here.","vp.added":"added by your sales","vp.sales":"sales","vp.view":"View on oneIP.io","vp.escrow":"in escrow — flushes to the floor when you launch on-chain","vp.pending":"escrowed from your sales · launch on-chain to activate","vp.firstpub":"Publish your first item — your value pool opens automatically.","vp.opened":"🌱 Your value pool is open","vp.opened_sub":"Every fan's support now builds real value in it.","vp.held":"held from your sales — ready to activate","vp.activate":"Activate on-chain →","vp.activate_sub":"Make it a live, tradable token — this held value flushes into a real on-chain floor.",
-      "add.title":"List something new","add.physical":"🛍️ Product","add.digital":"🎬 Video / content","add.name":"Title","add.price":"Price (USD)","add.cost":"Supplier cost (USD)","add.content":"Content URL (what the fan unlocks)","add.image":"Image URL (optional)","add.publish":"Publish",
+      "add.title":"List something new","add.physical":"🛍️ Product","add.digital":"🎬 Video / content","add.name":"Title","add.price":"Price (USD)","add.cost":"Supplier cost (USD)","add.content":"Content URL (what the fan unlocks)","add.image":"Image URL (optional)","add.publish":"Publish","add.cat":"Business category (sets the commission)","add.cat.retail":"🛍️ Retail — 5% commission (min $1) · price ≥ $3","add.cat.fnb":"🍜 F&B — 8% commission (min $5) · price ≥ $8","add.cat.edu":"📚 Education — 5% commission (min $1) · price ≥ $3","add.cat.note":"Merchant goods settle under a category commission and don't feed the value pool. Your own digital content/services are the token program: 70% you / 20% value pool / 10% platform.",
       "my.title":"Your listings","my.none":"Nothing listed yet — add your first item above.","my.live":"Live","my.off":"Hidden",
       "pub.title":"Publish to {n} platforms","pub.sub":"Connect each platform once via its official login — no passwords stored here. Then post to all in one click.","pub.connecthint":"🔒 Click a platform → its own authorization page opens. You never type a password here; revoke access anytime from the platform.","pub.compose":"Post","pub.image":"Image URL (optional)","pub.now":"Publish to all connected","pub.needtext":"Write something to post","pub.sent":"Published ✓","pub.platforms":"platform(s)","pub.connected":"Connected","pub.notconnected":"Not connected","pub.connect":"Connect","pub.disconnect":"Disconnect","pub.disconnected":"Disconnected",
       "type.physical":"Product","type.digital":"Video","type.nft":"NFT",
@@ -470,7 +480,7 @@
       "dash.hi":"你好,","dash.sub":"管理资料、上架商品与内容,壮大你的价值池。","dash.switch":"切换创作者",
       "prof.title":"你的资料","prof.name":"显示名","prof.bio":"简介","prof.save":"保存资料",
       "vp.title":"你的价值池","vp.coin":"价值池代币(oneIP.io 上的 Solana mint)","vp.save":"绑定价值池","vp.launch":"去 oneIP.io 发行你的代币 →","vp.note":"每一笔数字内容成交、打赏与付费表情,售价的 20% 自动注入此池(80% 流动性 / 20% 地板)—— 公开透明的链上机制。还没有池?也能先卖货,发行后 20% 自动生效。","vp.none":"还没绑定价值池。先去 oneIP.io 发行,再把 mint 粘贴到这里。","vp.added":"由你的销售注入","vp.sales":"笔成交","vp.view":"在 oneIP.io 查看","vp.escrow":"已托管 — 链上发币后注入地板","vp.pending":"已从你的销售托管 · 链上发币即激活","vp.firstpub":"发布你的第一个作品 —— 价值池会自动开启。","vp.opened":"🌱 你的价值池已开启","vp.opened_sub":"粉丝的每一次支持,都在为它累积真实价值。","vp.held":"已从你的销售托管 —— 可激活","vp.activate":"激活上链 →","vp.activate_sub":"变成可交易的上链代币 —— 托管的这笔价值将灌进真实链上地板。",
-      "add.title":"上架新内容","add.physical":"🛍️ 实物","add.digital":"🎬 视频/内容","add.name":"标题","add.price":"售价(美元)","add.cost":"供货成本(美元)","add.content":"内容链接(粉丝解锁的东西)","add.image":"图片链接(可选)","add.publish":"发布",
+      "add.title":"上架新内容","add.physical":"🛍️ 实物","add.digital":"🎬 视频/内容","add.name":"标题","add.price":"售价(美元)","add.cost":"供货成本(美元)","add.content":"内容链接(粉丝解锁的东西)","add.image":"图片链接(可选)","add.publish":"发布","add.cat":"经营类目(决定佣金)","add.cat.retail":"🛍️ 零售 — 佣金 5%(最低 $1)· 售价 ≥ $3","add.cat.fnb":"🍜 餐饮 — 佣金 8%(最低 $5)· 售价 ≥ $8","add.cat.edu":"📚 教育 — 佣金 5%(最低 $1)· 售价 ≥ $3","add.cat.note":"商家类商品按类目佣金结算,不进入价值池。你自己的数字内容/服务才是代币计划:70% 归你 / 20% 价值池 / 10% 平台。",
       "my.title":"你的上架","my.none":"还没有上架 —— 在上方添加第一个。","my.live":"在售","my.off":"隐藏",
       "pub.title":"一键发布到 {n} 个平台","pub.sub":"通过各平台官方登录授权连接一次(不存你的密码),之后一键发到全部平台。","pub.connecthint":"🔒 点击平台 → 跳转它的官方授权页。你不会在这里输入任何密码,随时可在该平台撤销授权。","pub.compose":"内容","pub.image":"图片链接(可选)","pub.now":"发布到所有已连接平台","pub.needtext":"写点内容再发","pub.sent":"已发布 ✓","pub.platforms":"个平台","pub.connected":"已连接","pub.notconnected":"未连接","pub.connect":"连接","pub.disconnect":"解绑","pub.disconnected":"已解绑",
       "type.physical":"实物","type.digital":"视频","type.nft":"NFT",

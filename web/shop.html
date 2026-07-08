@@ -411,7 +411,9 @@
     PINS=[]; let i=0,j=0; while(i<pp.length||j<wp.length){ if(i<pp.length)PINS.push(pp[i++]); if(j<wp.length)PINS.push(wp[j++]); }
     renderMasonry(); renderCreators();
   }
-  const typeMeta=(t)=>({physical:{ic:'🛍️',badge:T('type.physical')},digital:{ic:'🎬',badge:T('type.digital')},nft:{ic:'🖼️',badge:'NFT'}}[t]||{ic:'🛍️',badge:''});
+  // 🌱 marks token-program items (the creator's own digital content — 20% of each sale feeds
+  // their value pool). Merchant goods (physical) settle under a category commission, no pool.
+  const typeMeta=(t)=>({physical:{ic:'🛍️',badge:T('type.physical')},digital:{ic:'🎬',badge:'🌱 '+T('type.digital')},nft:{ic:'🖼️',badge:'🌱 NFT'}}[t]||{ic:'🛍️',badge:''});
   const normType=(t)=>t||'physical'; // legacy items with no type are physical
   let curFilter='all';
   function setFilter(f){curFilter=f;document.querySelectorAll('#tabs .tab').forEach(t=>t.classList.toggle('sel',t.dataset.f===f));renderMasonry();}
@@ -588,7 +590,7 @@
         <h4>${digital?T('buy.unlocked'):T('buy.paid')}</h4>
         <p>${digital?T('buy.unlockedsub'):T('buy.paidsub')}</p>
         ${digital&&order.content?`<div class="unlock-box"><a href="${esc(order.content)}" target="_blank" rel="noopener">▶ ${T('buy.open')}</a></div>`:''}
-        <div class="util">🌱 ${T('buy.util')}</div>
+        <div class="util">${digital?'🌱 '+T('buy.util'):'💜 '+T('buy.util.merch')}</div>
         <button class="btn btn--ghost btn--block" style="margin-top:16px" onclick="closeBuy()">${T('buy.close')}</button>
       </div>`;
   }
@@ -621,7 +623,7 @@
       "buy.title":"Checkout","buy.now":"Buy now","buy.email":"Email (for receipt & tracking)","buy.name":"Full name","buy.country":"Country","buy.addr":"Shipping address",
       "buy.pay":"Pay","buy.note":"Secure card payment. You're buying a product — no crypto, no wallet needed.",
       "buy.done":"Order confirmed","buy.paid":"Payment received 🎉","buy.paidsub":"The supplier is preparing your shipment. You'll get tracking by email.",
-      "buy.util":"20% of this sale funds the creator’s value pool — on-chain & verifiable.",
+      "buy.util":"20% of this sale funds the creator’s value pool — on-chain & verifiable.","buy.util.merch":"Your purchase directly supports this creator’s business.",
       "buy.close":"Done",
       "type.physical":"Product","type.digital":"Video",
       "buy.unlock":"Unlock","buy.unlocktitle":"Unlock content","buy.dnote":"Instant access after payment — no shipping. You're buying content, no crypto needed.",
@@ -653,7 +655,7 @@
       "buy.title":"结账","buy.now":"立即购买","buy.email":"邮箱(收据与物流)","buy.name":"收货人姓名","buy.country":"国家/地区","buy.addr":"收货地址",
       "buy.pay":"支付","buy.note":"安全刷卡支付。你买的是商品 —— 无需加密货币、无需钱包。",
       "buy.done":"下单成功","buy.paid":"支付成功 🎉","buy.paidsub":"供应商正在备货发出，物流单号将通过邮件发送给你。",
-      "buy.util":"这笔成交的 20% 将注入该创作者的价值池 —— 链上可公开查验。",
+      "buy.util":"这笔成交的 20% 将注入该创作者的价值池 —— 链上可公开查验。","buy.util.merch":"你的购买直接支持了这位创作者的生意。",
       "buy.close":"完成",
       "type.physical":"实物","type.digital":"视频",
       "buy.unlock":"解锁","buy.unlocktitle":"解锁内容","buy.dnote":"支付后即时观看 —— 无需邮寄。你买的是内容，无需加密货币。",

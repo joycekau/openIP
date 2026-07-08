@@ -383,7 +383,7 @@ async function load(){
   const productCards = products.map(p => `
     <a class="card" href="/shop?p=${encodeURIComponent(p.id)}">
       <div class="cov">${p.image ? '<img src="'+esc(p.image)+'">' : typeBadge(p.type)}</div>
-      <div class="cb"><div class="t">${esc(p.title||"")}</div><div class="p">${(p.currency||'USD')} ${(p.priceCents/100).toFixed(2)}${p.type==="digital"?" · unlock":""}</div></div>
+      <div class="cb"><div class="t">${esc(p.title||"")}</div><div class="p">${(p.currency||'USD')} ${(p.priceCents/100).toFixed(2)}${p.type==="digital"?" · 🌱 unlock":(p.type==="nft"?" · 🌱":"")}</div></div>
     </a>`).join("");
   // affiliate links open through /go?id= so clicks are counted, then forward to the tracked link
   const promoCards = promoted.map(p => { const n = netOf(p.network); return `
