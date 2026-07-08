@@ -244,6 +244,37 @@ async function handler(req, res) {
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "cache-control": "public, max-age=30" });
       return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};window.MOONPAY_API_KEY=${JSON.stringify(cfg.MOONPAY_API_KEY)};window.TRANSAK_ENABLED=${JSON.stringify(cfg.TRANSAK_ENABLED)};window.TRANSAK_ENVIRONMENT=${JSON.stringify(cfg.TRANSAK_ENVIRONMENT)};`);
     }
+    // TEMPORARY diagnostic: run the full Transak exchange (refresh-token → create-widget-url) and
+    // report sanitized statuses/errors — no secrets, no full tokens, no widgetUrl. Lets us see
+    // exactly which step Transak rejects without shipping secrets to the client. Remove once fixed.
+    if (req.method === "GET" && path === "/api/transak/diag") {
+      const apiKey = process.env.TRANSAK_API_KEY, apiSecret = process.env.TRANSAK_API_SECRET;
+      const env = (process.env.TRANSAK_ENVIRONMENT || "STAGING").toUpperCase() === "PRODUCTION" ? "PRODUCTION" : "STAGING";
+      const out = { env, hasKey: !!apiKey, hasSecret: !!apiSecret, keyTail: apiKey ? apiKey.slice(-4) : null, keyLen: apiKey ? apiKey.length : 0, secretLen: apiSecret ? apiSecret.length : 0 };
+      res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+      if (!apiKey || !apiSecret) return res.end(JSON.stringify(out));
+      const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
+      try {
+        const r1 = await fetch(base + "/partners/api/v2/refresh-token", {
+          method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
+        });
+        const j1 = await r1.json().catch(() => ({}));
+        const token = j1 && (j1.data?.accessToken || j1.accessToken);
+        out.refresh = { status: r1.status, gotToken: !!token, expiresAt: j1?.data?.expiresAt ?? j1?.expiresAt ?? null, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 300)) };
+        if (token) {
+          const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
+          const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
+          const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "1.1.1.1";
+          const r2 = await fetch(gw + "/api/v2/auth/session", {
+            method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+            body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
+          });
+          const j2 = await r2.json().catch(() => ({}));
+          out.create = { status: r2.status, gotWidgetUrl: !!(j2?.widgetUrl || j2?.data?.widgetUrl), referrerDomain, error: (j2?.widgetUrl || j2?.data?.widgetUrl) ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 300)) };
+        }
+      } catch (e) { out.exception = (e && e.message) || String(e); }
+      return res.end(JSON.stringify(out));
+    }
     // Transak fiat on-ramp/off-ramp — server-side widget-URL generation (Transak's MANDATORY
     // migration: query-param widget URLs are deprecated). Flow: apiKey+secret → short-lived partner
     // access token (cached) → POST create-widget-url with widgetParams → return the 5-min widgetUrl.
