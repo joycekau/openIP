@@ -101,7 +101,9 @@ let _transakTok = { token: null, exp: 0 };
 async function transakAccessToken(env, apiKey, apiSecret) {
   const now = Date.now();
   if (_transakTok.token && now < _transakTok.exp) return _transakTok.token;
-  const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
+  // Issue the token from the SAME gateway host that create-widget-url uses — a token from
+  // api.transak.com is rejected by api-gateway.transak.com ("Invalid or missing access-token").
+  const base = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
   const r = await fetch(base + "/partners/api/v2/refresh-token", {
     method: "POST",
     headers: { "content-type": "application/json", "api-secret": apiSecret },
