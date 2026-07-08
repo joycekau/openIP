@@ -48,12 +48,9 @@
         if (r && r.token && r.handle) {
           localStorage.setItem("oneip_token", r.token);
           localStorage.setItem("oneip_creator", r.handle);
+          // Pages that gate on login (e.g. /studio) listen for this and boot their signed-in view
+          // in place — no reload, no flash of the sign-in screen.
           window.dispatchEvent(new CustomEvent("oneip-sso-login", { detail: { handle: r.handle } }));
-          // The studio gates its dashboard on the token at boot — reload once so it picks it up.
-          if (/^\/studio/.test(location.pathname) && !sessionStorage.getItem("oneip_sso_reloaded")) {
-            sessionStorage.setItem("oneip_sso_reloaded", "1");
-            location.reload();
-          }
         }
       } catch (_) { /* embed stays logged out; manual sign-in still works */ }
       busy = false;

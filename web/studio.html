@@ -500,6 +500,15 @@
   const RESET_TOKEN=new URLSearchParams(location.search).get('reset');
   if(RESET_TOKEN){ enterResetMode(RESET_TOKEN); } // password-reset link → set-new-password form
   else if(HANDLE)loadDashboard();
+  // CoraX embed auto-login: the shared header (header.js) exchanges corax's sso_token for an oneIP
+  // session and fires this event. Boot the dashboard in place — no reload — so opening /apps/oneip
+  // inside CoraX lands the user already signed in. Ignored during a password-reset flow.
+  window.addEventListener("oneip-sso-login", () => {
+    if(RESET_TOKEN) return;
+    HANDLE=localStorage.getItem('oneip_creator')||HANDLE;
+    TOKEN=localStorage.getItem('oneip_token')||TOKEN;
+    if(HANDLE && document.getElementById('dash').classList.contains('hide')) loadDashboard();
+  });
 </script>
 <script src="i18n.js"></script>
 <script src="header.js"></script>
