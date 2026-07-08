@@ -1,131 +1,689 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>oneIP · Shop</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oneIP · Shop · 全球网红好物</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#080510; --bg-2:#0F0A1C; --panel:#150E26; --panel-2:#1B1232;
     --line:rgba(255,255,255,.08); --line-grad:rgba(168,85,247,.28);
-    --text:#F4EFFC; --muted:#A99FC0; --dim:#766C8E;
-    --purple:#A855F7; --magenta:#EC4899; --purple-bg:rgba(168,85,247,.14); --green:#22D3EE;
-    --mono:ui-monospace,Consolas,"SF Mono",monospace;
-    --sans:"Plus Jakarta Sans","Noto Sans SC",system-ui,-apple-system,sans-serif;
-    --disp:"Space Grotesk","Plus Jakarta Sans",sans-serif;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --pink:#F472B6; --coral:#FB7185; --cyan:#22D3EE;
+    --text:#F4EFFC; --muted:#A99FC0; --muted-2:#766C8E; --ok:#34D399;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn:linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --r:18px; --wrap:1200px;
+    --ff:"Plus Jakarta Sans","Noto Sans SC",system-ui,sans-serif;
+    --ff-disp:"Space Grotesk","Plus Jakarta Sans","Noto Sans SC",sans-serif;
   }
+  html[data-lang="zh"]{ --ff:"Noto Sans SC","Plus Jakarta Sans",system-ui,sans-serif; --ff-disp:"Noto Sans SC","Space Grotesk",sans-serif; }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ff);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(680px 420px at 84% -6%,rgba(236,72,153,.13),transparent 62%),
-      radial-gradient(620px 460px at 12% 0%,rgba(139,92,246,.13),transparent 60%)}
-  .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 80px;position:relative;z-index:1}
-  .head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .head .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;font-size:19px;
-    background:linear-gradient(135deg,var(--purple),#4E9CF5)}
-  .head h1{margin:0;font-size:20px;font-weight:800;font-family:var(--disp)}
-  .head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
-  .search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);
-    border-radius:99px;padding:9px 16px;margin:16px 0;color:var(--dim);font-size:13.5px}
-  .search input{flex:1;border:0;background:none;outline:0;font:inherit;color:var(--text)}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-  .card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);text-decoration:none;color:inherit;
-    transition:box-shadow .15s,transform .15s,border-color .15s;display:block}
-  .card:hover{box-shadow:0 12px 34px rgba(0,0,0,.45);border-color:var(--line-grad);transform:translateY(-2px)}
-  .card .cov{aspect-ratio:1;display:grid;place-items:center;font-size:44px;background:var(--purple-bg);overflow:hidden}
-  .card .cov img{width:100%;height:100%;object-fit:cover}
-  .card .cb{padding:12px 13px}
-  .card .creator{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin-bottom:4px}
-  .card .creator .cav{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#8A6FB8,#2E3A5C);overflow:hidden;flex:none}
-  .card .creator .cav img{width:100%;height:100%;object-fit:cover}
-  .card .creator b{color:var(--purple);font-weight:600;cursor:pointer}
-  .card .t{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .card .p{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:3px}
-  .card .p b{color:var(--green)}
-  .empty{padding:70px 0;text-align:center;color:var(--dim)}
-  .seg{display:flex;gap:0;border-bottom:1px solid var(--line);margin-bottom:18px}
-  .seg button{background:none;border:0;padding:10px 20px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
-  .seg button.on{color:var(--text);border-color:var(--text)}
+    background:
+      radial-gradient(680px 420px at 84% -6%, rgba(236,72,153,.16), transparent 62%),
+      radial-gradient(620px 460px at 12% 0%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(700px 500px at 50% 112%, rgba(34,211,238,.09), transparent 60%);}
+  .wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 26px;position:relative;z-index:1}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:2px solid var(--magenta);outline-offset:3px;border-radius:8px}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  .logo{display:flex;align-items:center;gap:8px;cursor:pointer}
+  .logo .mark{width:30px;height:30px;flex:none;border-radius:9px;background:var(--grad-btn);display:grid;place-items:center;font-size:17px}
+  .logo .word{font-family:var(--ff-disp);font-weight:700;font-size:21px;letter-spacing:-.3px}
+  .logo .word .ai{color:var(--muted)}
+
+  .nav{position:sticky;top:0;z-index:50;transition:.3s}
+  .nav.scrolled{background:rgba(8,5,16,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .nav__in{display:flex;align-items:center;justify-content:space-between;height:68px;gap:18px}
+  .nav__links{display:flex;gap:26px;font-size:15px;color:var(--muted);font-weight:600}
+  .nav__links a{transition:.2s;cursor:pointer} .nav__links a:hover,.nav__links a.is-active{color:var(--text)}
+  .nav__right{display:flex;align-items:center;gap:12px}
+  .lang{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(255,255,255,.03)}
+  .lang button{font-family:var(--ff);font-size:12.5px;font-weight:600;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:5px 12px;border-radius:999px;transition:.2s}
+  .lang button[aria-pressed="true"]{background:var(--grad-btn);color:#fff}
+  .btn{font-family:var(--ff);font-size:14.5px;font-weight:700;display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:11px 20px;border-radius:999px;border:1px solid transparent;transition:transform .18s,box-shadow .25s,background .2s}
+  .btn--grad{background:var(--grad-btn);color:#fff;box-shadow:0 8px 26px -8px rgba(236,72,153,.6),0 1px 0 rgba(255,255,255,.25) inset}
+  .btn--grad:hover{transform:translateY(-2px);box-shadow:0 16px 38px -10px rgba(236,72,153,.75)}
+  .btn--ghost{border-color:var(--line-grad);color:var(--text);background:rgba(168,85,247,.06)}
+  .btn--ghost:hover{border-color:var(--magenta);background:rgba(236,72,153,.10);transform:translateY(-2px)}
+  .btn--sm{padding:8px 14px;font-size:13px}
+  .btn--block{width:100%;justify-content:center}
+
+  /* hero */
+  .hero{padding:clamp(34px,5vw,64px) 0 clamp(26px,4vw,42px)}
+  .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.6px;color:#fff;
+    border:1px solid var(--line-grad);border-radius:999px;padding:7px 14px;background:rgba(168,85,247,.10);margin-bottom:20px}
+  .eyebrow .d{width:7px;height:7px;border-radius:50%;background:var(--grad-btn);box-shadow:0 0 0 4px rgba(236,72,153,.18)}
+  .hero__grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  h1{font-family:var(--ff-disp);font-weight:800;font-size:clamp(32px,4.6vw,52px);line-height:1.08;letter-spacing:-.02em;margin:0 0 16px;max-width:16ch}
+  html[data-lang="zh"] h1{line-height:1.2;letter-spacing:0;font-weight:900}
+  .lead{font-size:17px;color:var(--muted);margin:0 0 24px;max-width:46ch}
+  .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero-card{border:1px solid var(--line-grad);border-radius:22px;padding:22px;background:linear-gradient(180deg,var(--panel-2),var(--bg-2));position:relative;overflow:hidden}
+  .hero-card .mascot{width:130px;float:right;margin:-6px -6px 0 10px;filter:drop-shadow(0 16px 30px rgba(168,85,247,.4))}
+  .hero-card h3{font-family:var(--ff-disp);font-size:18px;margin:0 0 12px}
+  .flowmini{display:grid;gap:8px;margin-top:4px}
+  .flowmini .row{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted)}
+  .flowmini .row .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:14px;flex:none}
+  .flowmini .row b{color:var(--text)}
+
+  .section{padding:clamp(30px,4vw,52px) 0}
+  .s-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+  .s-title{font-family:var(--ff-disp);font-size:clamp(21px,2.6vw,28px);font-weight:800;letter-spacing:-.01em}
+  .s-sub{font-size:14px;color:var(--muted);margin-top:4px}
+
+  /* product grid */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  /* Pinterest-style masonry home */
+  .masonry{column-count:5;column-gap:14px}
+  @media(max-width:1200px){.masonry{column-count:4}}@media(max-width:900px){.masonry{column-count:3}}@media(max-width:600px){.masonry{column-count:2;column-gap:10px}}
+  .pin{break-inside:avoid;margin-bottom:14px;border-radius:16px;overflow:hidden;position:relative;border:1px solid var(--line);background:#16101f;cursor:pointer}
+  .pin .media{position:relative;display:block;width:100%;background:radial-gradient(120% 120% at 30% 20%,rgba(236,72,153,.20),rgba(139,92,246,.10));min-height:120px}
+  .pin .media img{width:100%;display:block}
+  .pin .kbadge{position:absolute;top:8px;left:8px;font-size:10.5px;font-weight:700;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);color:#fff;padding:3px 8px;border-radius:6px;z-index:2}
+  .pin .pin-ov{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,7,19,0) 45%,rgba(11,7,19,.94));opacity:0;transition:.18s;display:flex;flex-direction:column;justify-content:flex-end;padding:11px;z-index:1}
+  .pin:hover .pin-ov{opacity:1}
+  .pin .pin-ttl{font-size:13px;font-weight:700;line-height:1.28;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .pin .pin-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pin .pin-price{font-weight:800;font-size:15px}
+  .pin .pin-foot{display:flex;align-items:center;gap:7px;padding:8px 10px}
+  .pin .pin-foot .fav{width:22px;height:22px;border-radius:50%;background:var(--grad-btn);display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;flex:none}
+  .pin .pin-foot .fnm{font-size:12px;font-weight:600;color:#d8cff0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pin .pin-foot .rxbar{margin-left:auto}
+  .card{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent);transition:.22s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-4px);border-color:var(--line-grad)}
+  .card .ph{aspect-ratio:1;background:radial-gradient(120% 120% at 30% 20%,rgba(236,72,153,.20),rgba(139,92,246,.10));display:grid;place-items:center;font-size:40px;position:relative;overflow:hidden}
+  .card .ph img{width:100%;height:100%;object-fit:cover}
+  .card .body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .card .by{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+  .card .by .av{width:20px;height:20px;border-radius:50%;background:var(--grad-btn);display:grid;place-items:center;font-size:10px;color:#fff;font-weight:700}
+  .card .ttl{font-weight:700;font-size:14.5px;line-height:1.35;min-height:2.7em}
+  .card .pr{display:flex;align-items:baseline;gap:8px;margin-top:auto}
+  .card .pr .now{font-family:var(--ff-disp);font-size:20px;font-weight:800}
+  .card .pr .cur{font-size:12px;color:var(--muted-2)}
+  .card .ph .badge{position:absolute;top:8px;left:8px;font-size:11px;font-weight:700;color:#fff;padding:4px 9px;border-radius:999px;background:rgba(8,5,16,.6);backdrop-filter:blur(6px);border:1px solid var(--line-grad)}
+  .empty{border:1px dashed var(--line-grad);border-radius:var(--r);padding:42px;text-align:center;color:var(--muted);grid-column:1/-1}
+  .rxtrig{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;padding:4px 2px;font-family:inherit;transition:color .15s,transform .12s}
+  .rxtrig:hover{color:var(--magenta)}
+  .rxtrig.pop{transform:scale(1.18)}
+  .rxtrig svg{width:17px;height:17px;display:block}
+  .rxtrig.reacted{color:var(--coral)}.rxtrig.reacted svg{fill:var(--coral)}
+  .rxpicker{position:fixed;z-index:200;display:none;gap:2px;background:#150E26;border:1px solid var(--line-grad);border-radius:999px;padding:6px;box-shadow:0 16px 44px -12px rgba(0,0,0,.75)}
+  .rxpicker.open{display:flex;animation:rxin .14s ease-out}
+  @keyframes rxin{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+  .rxpick{display:flex;flex-direction:column;align-items:center;gap:0;border:0;background:none;cursor:pointer;border-radius:12px;padding:5px 8px;transition:transform .12s,background .12s}
+  .rxpick:hover{background:rgba(236,72,153,.14);transform:scale(1.22)}
+  .rxpick .em{font-size:21px;line-height:1.1}
+  .rxpick .pr{font-size:9px;color:var(--muted-2);font-weight:700}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+  .chip{font-family:var(--ff-disp);font-weight:700;font-size:15px;border:1px solid var(--line-grad);background:rgba(168,85,247,.06);color:var(--text);border-radius:12px;padding:10px 16px;cursor:pointer;transition:.18s}
+  .chip:hover,.chip.sel{background:var(--grad-btn);border-color:transparent}
+  .unlock-box{border:1px solid rgba(34,211,238,.3);background:rgba(34,211,238,.07);border-radius:12px;padding:14px;margin-top:6px;word-break:break-all}
+  .unlock-box a{color:var(--cyan);font-weight:700}
+  /* shop filter tabs */
+  .tabs{display:inline-flex;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px;background:rgba(255,255,255,.03);margin-bottom:20px}
+  .tab{font-family:var(--ff);font-weight:700;font-size:13.5px;border:0;background:transparent;color:var(--muted);cursor:pointer;padding:8px 16px;border-radius:999px;transition:.2s}
+  .tab.sel{background:var(--grad-btn);color:#fff}
+  .by .nm-link{cursor:pointer} .by .nm-link:hover{color:var(--text)}
+  /* creator drawer */
+  .dr-ov{position:fixed;inset:0;z-index:109;background:rgba(6,4,12,.6);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.3s}
+  .dr-ov.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);z-index:110;transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);background:linear-gradient(180deg,var(--panel-2),var(--bg-2));border-left:1px solid var(--line-grad);overflow:auto}
+  .drawer.open{transform:none}
+  .dr-head{padding:22px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;position:sticky;top:0;background:var(--panel-2);z-index:1}
+  .dr-head .av{width:56px;height:56px;border-radius:18px;background:var(--grad-btn);display:grid;place-items:center;font-size:22px;font-weight:800;color:#fff;flex:none}
+  .dr-head .nm{font-family:var(--ff-disp);font-weight:800;font-size:20px}
+  .dr-head .st{font-size:13px;color:var(--muted);margin-top:2px}
+  .dr-x{margin-left:auto;border:1px solid var(--line);background:transparent;color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;flex:none;align-self:flex-start}
+  .dr-body{padding:18px 22px}
+  .dr-bio{font-size:14px;color:var(--muted);line-height:1.6}
+  .dr-actions{display:flex;gap:10px;margin:14px 0 4px}
+  .dr-sec-t{font-family:var(--ff-disp);font-weight:700;font-size:12.5px;color:var(--muted-2);text-transform:uppercase;letter-spacing:1.2px;margin:22px 0 12px}
+  .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .post{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;background:rgba(255,255,255,.02)}
+  .post .txt{font-size:14px;line-height:1.55}
+  .post img{width:100%;border-radius:10px;margin-top:10px}
+  .post .meta{font-size:12px;color:var(--muted-2);margin-top:8px;display:flex;gap:14px}
+
+  /* creators rail */
+  .crow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .cre{border:1px solid var(--line);border-radius:var(--r);padding:18px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);display:flex;align-items:center;gap:14px}
+  .cre .av{width:46px;height:46px;border-radius:14px;background:var(--grad-btn);display:grid;place-items:center;font-size:18px;color:#fff;font-weight:800;flex:none}
+  .cre .meta{flex:1;min-width:0}
+  .cre .nm{font-weight:700;font-size:15px}
+  .cre .st{font-size:12.5px;color:var(--muted)}
+  .cre .lk{font-size:12px;color:var(--cyan);font-weight:700;white-space:nowrap}
+
+  /* transparency band (the ONLY token touchpoint, framed as utility) */
+  .band{border-radius:24px;border:1px solid var(--line-grad);padding:clamp(26px,4vw,40px);text-align:center;
+    background:radial-gradient(600px 220px at 50% 120%,rgba(34,211,238,.16),transparent 70%),linear-gradient(180deg,var(--panel-2),var(--bg-2))}
+  .band h2{font-family:var(--ff-disp);font-size:clamp(20px,2.6vw,28px);font-weight:800;margin:0 0 10px}
+  .band p{color:var(--muted);max-width:60ch;margin:0 auto 18px}
+  .band .num{font-family:var(--ff-disp);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}
+
+  .foot{border-top:1px solid var(--line);padding:24px 0;margin-top:20px}
+  .foot__in{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .foot__txt{font-size:13px;color:var(--muted-2)} .foot__links{display:flex;gap:18px;font-size:14px;color:var(--muted);font-weight:600}
+  .foot__links a:hover{color:var(--magenta)}
+
+  /* modal */
+  .ov{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(6,4,12,.78);backdrop-filter:blur(6px)}
+  .ov.open{display:flex}
+  .mcard{width:100%;max-width:440px;max-height:90vh;overflow:auto;border-radius:20px;border:1px solid var(--line-grad);background:linear-gradient(180deg,var(--panel-2),var(--bg-2))}
+  .mhead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+  .mhead .t{font-family:var(--ff-disp);font-weight:800;font-size:17px}
+  .mx{border:1px solid var(--line);background:transparent;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer}
+  .mbody{padding:18px 20px}
+  .sum{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:16px}
+  .sum .ph{width:54px;height:54px;border-radius:10px;background:var(--grad-btn);display:grid;place-items:center;font-size:22px;flex:none;overflow:hidden}
+  .sum .ph img{width:100%;height:100%;object-fit:cover}
+  .sum .nm{font-weight:700;font-size:14px} .sum .pr{font-family:var(--ff-disp);font-weight:800;font-size:18px;margin-top:2px}
+  label{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin:12px 0 5px}
+  input,select{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--text);font-family:var(--ff);font-size:14px;padding:10px 12px}
+  input:focus,select:focus{outline:none;border-color:var(--magenta)}
+  .pay-note{font-size:12px;color:var(--muted-2);margin-top:12px;line-height:1.5}
+  .ok-box{text-align:center;padding:10px 0}
+  .ok-box .big{font-size:40px;margin-bottom:8px}
+  .ok-box h4{font-family:var(--ff-disp);margin:0 0 6px}
+  .ok-box p{color:var(--muted);font-size:13.5px;margin:0 0 6px}
+  .util{font-size:12px;color:var(--cyan);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);border-radius:10px;padding:9px 12px;margin-top:12px;line-height:1.5}
+
+  @media (max-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}.crow{grid-template-columns:1fr}}
+  @media (max-width:860px){.hero__grid{grid-template-columns:1fr;gap:24px}.nav__links{display:none}.grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:480px){.wrap{padding:0 16px}.grid{grid-template-columns:repeat(2,1fr);gap:12px}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="head">
-    <div class="ic">🛍️</div>
-    <div><h1>oneIP Marketplace</h1><p>Discover products, drops, and creator tokens across oneIP.</p></div>
-  </div>
-  <div class="search">🔍 <input id="q" placeholder="Search creators, products, tokens…"></div>
 
-  <div class="seg">
-    <button class="on" data-seg="products">Products</button>
-    <button data-seg="creators">Creators</button>
-  </div>
+<div id="appHeader"></div>
 
-  <div id="grid" class="grid"></div>
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <span class="eyebrow"><span class="d"></span><span data-i18n="hero.badge">Creator commerce · Worldwide · Pay by card</span></span>
+        <h1 data-i18n="hero.title">Creators sell the world's best products.</h1>
+        <p class="lead" data-i18n="hero.lead">Discover products hand-picked by creators you follow — buy with your card, shipped worldwide. Every purchase quietly powers the creator's own value pool.</p>
+        <div class="cta">
+          <button class="btn btn--grad" onclick="go('#shop')" data-i18n="hero.cta1">Shop now</button>
+          <a class="btn btn--ghost" href="/studio" data-i18n="hero.cta2">Become a creator</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <img class="mascot" src="/assets/onee.png" alt="Onee" onerror="this.style.display='none'">
+        <h3 data-i18n="hero.how.t">How it works</h3>
+        <div class="flowmini">
+          <div class="row"><span class="ic">🧭</span><span><b data-i18n="hero.how.1b">Creators curate</b> <span data-i18n="hero.how.1">products from vetted suppliers</span></span></div>
+          <div class="row"><span class="ic">💳</span><span><b data-i18n="hero.how.2b">You buy by card</b> <span data-i18n="hero.how.2">— normal checkout, shipped to you</span></span></div>
+          <div class="row"><span class="ic">📦</span><span><b data-i18n="hero.how.3b">Supplier ships</b> <span data-i18n="hero.how.3">— tracking like any store</span></span></div>
+          <div class="row"><span class="ic">🌱</span><span><span data-i18n="hero.how.4">Then </span><b data-i18n="hero.how.4b">20% of profit</b> <span data-i18n="hero.how.4c">grows the creator's value pool</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="shop">
+    <div class="wrap">
+      <div class="s-head">
+        <div>
+          <div class="s-title" data-i18n="shop.title">Shop creator picks</div>
+          <div class="s-sub" data-i18n="shop.sub">Curated by creators · shipped worldwide · pay by card</div>
+        </div>
+        <a class="btn btn--ghost btn--sm" href="/studio" data-i18n="shop.cta">+ List your product</a>
+      </div>
+      <div class="tabs" id="tabs">
+        <button class="tab sel" data-f="all" onclick="setFilter('all')" data-i18n="tab.all">All</button>
+        <button class="tab" data-f="physical" onclick="setFilter('physical')" data-i18n="tab.products">Products</button>
+        <button class="tab" data-f="digital" onclick="setFilter('digital')" data-i18n="tab.videos">Videos</button>
+        <button class="tab" data-f="work" onclick="setFilter('work')" data-i18n="tab.works">Works</button>
+      </div>
+      <div class="masonry" id="grid">
+        <div class="empty" data-i18n="shop.loading">Loading…</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="creators">
+    <div class="wrap">
+      <div class="s-head"><div><div class="s-title" data-i18n="cre.title">Creators on oneIP</div><div class="s-sub" data-i18n="cre.sub">Follow, watch, shop — and track their value pool</div></div></div>
+      <div class="crow" id="creators-row"><div class="empty" data-i18n="cre.empty">Creators appear here as they list products.</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="band">
+        <h2 data-i18n="band.t">Every sale builds real, on-chain value</h2>
+        <p data-i18n="band.p">Of a creator's 100% profit on each order, <span class="num">20%</span> automatically funds their token's value pool — a transparent, on-chain mechanic (not a payout). It's the engine that keeps a creator's value backed by real revenue.</p>
+        <div class="cta" style="justify-content:center">
+          <a class="btn btn--ghost btn--sm" id="ioLink" href="/" data-i18n="band.cta">See the value engine →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <span class="foot__txt" data-i18n="footer.text">© oneIP · creator commerce · worldwide shipping</span>
+    <nav class="foot__links">
+      <a onclick="go('#shop')" data-i18n="nav.shop">Shop</a>
+      <a href="/studio" data-i18n="nav.community">Community</a>
+      <a id="ioLink2" href="/" data-i18n="footer.io">Value engine</a>
+    </nav>
+  </div>
+</footer>
+
+<!-- creator profile drawer -->
+<div class="dr-ov" id="creOvBg" onclick="closeCreator()"></div>
+<aside class="drawer" id="creDrawer" aria-label="Creator profile">
+  <div class="dr-head" id="creHead"></div>
+  <div class="dr-body" id="creBody"></div>
+</aside>
+
+<!-- buy modal -->
+<div class="ov" id="buyOv" onclick="if(event.target===this)closeBuy()">
+  <div class="mcard">
+    <div class="mhead"><span class="t" id="buyTitle" data-i18n="buy.title">Checkout</span><button class="mx" onclick="closeBuy()">✕</button></div>
+    <div class="mbody" id="buyBody"></div>
+  </div>
 </div>
 
-<script src="i18n.js"></script>
-<script src="header.js"></script>
+<!-- Pinterest-style pin detail -->
+<style>
+  .dt-ov{position:fixed;inset:0;background:rgba(5,3,10,.86);backdrop-filter:blur(6px);z-index:120;display:none;overflow-y:auto;padding:24px}
+  .dt-ov.open{display:block}
+  .dt-card{max-width:1000px;margin:0 auto;background:#140d20;border:1px solid var(--line);border-radius:22px;position:relative;overflow:hidden}
+  .dt-x{position:absolute;top:14px;right:14px;z-index:3;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,.5);color:#fff;font-size:15px;cursor:pointer}
+  .dt-main{display:grid;grid-template-columns:1.1fr 1fr}
+  @media(max-width:760px){.dt-main{grid-template-columns:1fr}}
+  .dt-media{background:#0b0713;display:grid;place-items:center;min-height:300px;font-size:60px}
+  .dt-media img,.dt-media video{width:100%;max-height:76vh;object-fit:contain;display:block}
+  .dt-info{padding:22px;display:flex;flex-direction:column;gap:12px;max-height:76vh;overflow-y:auto}
+  .dt-cre{display:flex;align-items:center;gap:10px}
+  .dt-cre .av{width:40px;height:40px;border-radius:50%;background:var(--grad-btn);display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
+  .dt-ttl{font-size:19px;font-weight:800;line-height:1.28}
+  .dt-sec{font-size:11px;font-weight:700;color:#9a8fb5;text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
+  .dt-socials{display:flex;flex-wrap:wrap;gap:8px}
+  .dt-soc{font-size:12px;font-weight:600;color:#c9bee6;border:1px solid var(--line);border-radius:999px;padding:6px 12px;text-decoration:none}
+  .dt-soc:hover{border-color:var(--line-grad)}
+  .dt-buycard{display:flex;align-items:center;gap:10px;border:1px solid var(--line-grad);border-radius:12px;padding:9px;cursor:pointer;background:rgba(168,85,247,.06)}
+  .dt-buycard:hover{background:rgba(168,85,247,.12)}
+  .dt-buycard img{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:none}
+  .dt-buycard .bc-m{flex:1;min-width:0}
+  .dt-buycard .bc-t{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dt-buycard .bc-p{font-size:13px;font-weight:800;color:#a78bfa}
+  .dt-buycard .bc-btn{font-size:12px;font-weight:700;color:#fff;background:var(--grad-btn);padding:6px 12px;border-radius:999px;flex:none}
+  .dt-cmt{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px}
+  .dt-cmt .who{color:#a78bfa;font-weight:700;flex:none}
+  .dt-related{padding:6px 22px 24px}
+  .dt-related .masonry{column-count:4}
+  @media(max-width:760px){.dt-related .masonry{column-count:2}}
+</style>
+<div class="dt-ov" id="detailOv" onclick="if(event.target===this)closeDetail()">
+  <div class="dt-card">
+    <button class="dt-x" onclick="closeDetail()">✕</button>
+    <div class="dt-main" id="detailBody"></div>
+    <div class="dt-related" id="detailRelated"></div>
+  </div>
+</div>
+
 <script>
-const $ = (id)=>document.getElementById(id);
-const short=(a)=>a&&a.length>12?a.slice(0,4)+"…"+a.slice(-4):(a||"");
-let PRODUCTS=[], CREATORS=[], seg="products", q="";
+  // Cross-link to the oneIP.io face (token engine). In production set this to the .io host;
+  // in dev both faces share this backend, so same-origin works.
+  const IO_BASE = location.hostname.endsWith("oneip.ai") ? "https://www.oneip.io" : "";
+  const coinUrl = (mint) => `${IO_BASE}/coin?mint=${encodeURIComponent(mint)}`;
+  document.getElementById('ioLink').href = IO_BASE || "/";
+  document.getElementById('ioLink2').href = IO_BASE || "/";
 
-async function boot(){
-  try{
-    const board = await (await fetch("/api/board")).json();
-    const rows = Array.isArray(board)?board:(board.rows||board.launches||[]);
-    // Creators = unique launchers; each card links to their creator page.
-    const seen = new Map();
-    for(const r of rows){
-      const id = r.creator || r.coraxCreatorId;
-      if(!id) continue;
-      if(!seen.has(id)) seen.set(id,{id,name:r.creatorName||r.name||short(id),logo:r.logo||"",symbol:r.symbol||"",launches:0});
-      seen.get(id).launches++;
-    }
-    CREATORS=[...seen.values()];
-  }catch(e){}
-  try{ const p = await (await fetch("/api/shop/products")).json(); PRODUCTS = Array.isArray(p)?p:(p.products||[]); }catch(e){}
-  render();
-}
+  // header (logo / nav / language) is the shared site component — header.js
+  function go(h){const el=document.querySelector(h);if(el)el.scrollIntoView({behavior:'smooth'});}
 
-function creatorTag(c){
-  return `<a class="creator" href="/creator?id=${encodeURIComponent(c.id)}">
-    <span class="cav">${c.logo?'<img src="'+c.logo+'">':''}</span><b>${c.name}</b></a>`;
-}
+  const money=(cents,cur)=>new Intl.NumberFormat(undefined,{style:'currency',currency:cur||'USD'}).format((cents||0)/100);
+  const initials=(s)=>(s||'?').replace(/^0x|^Kol/,'').slice(0,2).toUpperCase();
+  const esc=(s)=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-function render(){
-  const g=$("grid");
-  if(seg==="creators"){
-    const list=CREATORS.filter(c=>!q||c.name.toLowerCase().includes(q));
-    g.innerHTML=list.length?list.map(c=>`
-      <a class="card" href="/creator?id=${encodeURIComponent(c.id)}">
-        <div class="cov">${c.logo?'<img src="'+c.logo+'">':"🎨"}</div>
-        <div class="cb"><div class="t">${c.name}</div><div class="p">${c.launches} launch${c.launches>1?'es':''}${c.symbol?' · $'+c.symbol:''}</div></div>
-      </a>`).join(""):'<div class="empty">No creators yet.</div>';
-  }else{
-    const list=PRODUCTS.filter(p=>!q||(p.title||"").toLowerCase().includes(q));
-    if(!list.length){
-      g.innerHTML='<div class="empty">No products listed yet — creators add them in the studio.<br>Browse <b style="cursor:pointer;color:var(--purple)" onclick="document.querySelector(\'.seg button:nth-child(2)\').click()">Creators</b> for now.</div>';
-      return;
-    }
-    g.innerHTML=list.map(p=>{
-      const c=CREATORS.find(c=>c.id===p.creatorId)||{id:p.creatorId,name:short(p.creatorId),logo:""};
-      return `<div class="card" style="cursor:default">
-        <a href="${p.url||'#'}"${p.url?' target="_blank" rel="noopener"':''}><div class="cov">${p.image?'<img src="'+p.image+'">':"🛍️"}</div></a>
-        <div class="cb">${creatorTag(c)}<div class="t">${p.title||""}</div>
-        <div class="p">${p.price!=null?(p.currency||'USD')+' <b>'+p.price+'</b>':''}</div></div>
-      </div>`;
-    }).join("");
+  // ---- paid emoji reactions ("web4 likes": every reaction is a micro-payment) ----
+  // Card shows ONE subtle trigger (heart + total); clicking pops a small picker with the 5 emojis.
+  let REACTIONS=[];
+  async function loadReactions(){ try{ REACTIONS=await (await fetch('/api/reactions/config')).json(); }catch(e){ REACTIONS=[]; } }
+  const HEART=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21l7.7-7.6 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>`;
+  const sumCounts=(c)=>Object.values(c||{}).reduce((a,n)=>a+n,0);
+  const rxEscT=(t)=>(window.CSS&&CSS.escape)?CSS.escape(t):t;
+  function reactionTrigger(target,creator,coin){
+    if(!REACTIONS.length||!target) return '';
+    return `<button class="rxtrig" data-rxt="${esc(target)}" onclick='openRxPicker(event,${JSON.stringify(target)},${JSON.stringify(creator||"")},${JSON.stringify(coin||"")})'>${HEART}<span class="ct">0</span></button>`;
   }
-}
+  function paintTotals(target,counts){
+    const total=sumCounts(counts);
+    document.querySelectorAll(`.rxtrig[data-rxt="${rxEscT(target)}"]`).forEach(b=>{ b.querySelector('.ct').textContent=total; b.classList.toggle('reacted',total>0); });
+  }
+  async function refreshReactions(){
+    const targets=[...new Set([...document.querySelectorAll('.rxtrig')].map(b=>b.dataset.rxt))];
+    for(const t of targets){ try{ const r=await (await fetch('/api/reactions?target='+encodeURIComponent(t))).json(); paintTotals(t,r.counts||{}); }catch(e){} }
+  }
+  // ---- the popup emoji picker (one shared element) ----
+  let rxPickerEl=null, rxCtx=null;
+  function ensurePicker(){
+    if(rxPickerEl) return;
+    rxPickerEl=document.createElement('div'); rxPickerEl.className='rxpicker'; rxPickerEl.id='rxPicker';
+    document.body.appendChild(rxPickerEl);
+    document.addEventListener('click',(e)=>{ if(rxPickerEl.classList.contains('open') && !rxPickerEl.contains(e.target)) closeRxPicker(); });
+    addEventListener('scroll',closeRxPicker,{passive:true}); addEventListener('resize',closeRxPicker);
+  }
+  function openRxPicker(ev,target,creator,coin){
+    ev.stopPropagation(); ensurePicker(); rxCtx={target,creator,coin};
+    rxPickerEl.innerHTML=REACTIONS.map(r=>`<button class="rxpick" title="${r.label}" onclick='pickReaction(${JSON.stringify(r.key)})'><span class="em">${r.emoji}</span><span class="pr">$${(r.priceCents/100).toFixed(r.priceCents%100?2:0)}</span></button>`).join('');
+    rxPickerEl.classList.add('open');
+    const rect=ev.currentTarget.getBoundingClientRect();
+    const pw=rxPickerEl.offsetWidth, ph=rxPickerEl.offsetHeight;
+    let left=Math.max(8,Math.min(rect.left+rect.width/2-pw/2, innerWidth-pw-8));
+    let top=rect.top-ph-8; if(top<8) top=rect.bottom+8;
+    rxPickerEl.style.left=left+'px'; rxPickerEl.style.top=top+'px';
+  }
+  function closeRxPicker(){ if(rxPickerEl) rxPickerEl.classList.remove('open'); }
+  function pickReaction(key){ const ctx=rxCtx; closeRxPicker(); if(ctx) react(ctx.target,ctx.creator,ctx.coin,key); }
+  async function react(target,creator,coin,key){
+    const trig=document.querySelector(`.rxtrig[data-rxt="${rxEscT(target)}"]`);
+    if(trig){trig.classList.add('pop');setTimeout(()=>trig.classList.remove('pop'),250);}
+    let r;try{ r=await (await fetch('/api/react',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({target,creator,coin,key,fan:'guest'})})).json(); }catch(e){return;}
+    if(r.error)return;
+    if(r.checkout&&r.checkout.url){ location.href=r.checkout.url; return; } // live Stripe → pay per reaction
+    if(r.counts) paintTotals(target,r.counts);
+  }
 
-document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".seg button").forEach(x=>x.classList.remove("on"));
-  b.classList.add("on"); seg=b.dataset.seg; render();
-}));
-$("q").addEventListener("input",e=>{q=e.target.value.trim().toLowerCase();render();});
-boot();
+  let PRODUCTS=[], PINS=[];
+  async function loadShop(){
+    let prods=[], fd=[];
+    try{ prods=await (await fetch('/api/shop/products')).json(); }catch(e){}
+    try{ fd=await (await fetch('/api/feed')).json(); }catch(e){}
+    PRODUCTS=Array.isArray(prods)?prods:[];
+    // Merge products + visual works (posts with photo/video) into ONE Pinterest feed.
+    const pp=PRODUCTS.map(p=>({kind:'product',ftype:normType(p.type),id:p.id,image:p.image,creator:p.creator,name:p.creatorName||p.creator,title:p.title,priceCents:p.priceCents,currency:p.currency,coin:p.coin,ptype:p.type}));
+    const wp=(Array.isArray(fd)?fd:[]).filter(x=>x.image||x.video).map(x=>({kind:'work',ftype:'work',id:x.id,image:x.image,video:x.video,creator:x.creator,name:x.creatorName||x.creator,title:x.text||'',coin:(x.coin&&x.coin.mint)||'',product:x.product||null,likes:x.likes||0}));
+    PINS=[]; let i=0,j=0; while(i<pp.length||j<wp.length){ if(i<pp.length)PINS.push(pp[i++]); if(j<wp.length)PINS.push(wp[j++]); }
+    renderMasonry(); renderCreators();
+  }
+  const typeMeta=(t)=>({physical:{ic:'🛍️',badge:T('type.physical')},digital:{ic:'🎬',badge:T('type.digital')},nft:{ic:'🖼️',badge:'NFT'}}[t]||{ic:'🛍️',badge:''});
+  const normType=(t)=>t||'physical'; // legacy items with no type are physical
+  let curFilter='all';
+  function setFilter(f){curFilter=f;document.querySelectorAll('#tabs .tab').forEach(t=>t.classList.toggle('sel',t.dataset.f===f));renderMasonry();}
+  function cardHtml(p){const tm=typeMeta(p.type);const digital=p.type==='digital';return `
+      <div class="card">
+        <div class="ph">${p.image?`<img src="${esc(p.image)}" alt="">`:tm.ic}${tm.badge?`<span class="badge">${tm.badge}</span>`:''}</div>
+        <div class="body">
+          <div class="by"><span class="av">${initials(p.creator)}</span><span class="nm-link" onclick='openCreator(${JSON.stringify(p.creator)},${JSON.stringify(p.coin||"")})'>${esc((p.creator||'').slice(0,10))}</span></div>
+          <div class="ttl">${esc(p.title)}</div>
+          <div class="pr"><span class="now">${money(p.priceCents,p.currency)}</span><span class="cur">${esc(p.currency||'USD')}</span></div>
+          <button class="btn btn--grad btn--block btn--sm" onclick='openBuy(${JSON.stringify(p.id)})'>${digital?('🔓 '+T('buy.unlock')):T('buy.now')}</button>
+          ${reactionTrigger(p.id,p.creator,p.coin)}
+        </div>
+      </div>`;}
+  // Pinterest-style pin: media fills, hover overlay shows title + price/buy or react; footer = creator + reaction.
+  function pinHtml(p){
+    const tm=typeMeta(p.ptype);
+    const media=p.image?`<img src="${esc(p.image)}" alt="" loading="lazy">`
+      :(p.video?`<video src="${esc(p.video)}" muted playsinline preload="metadata" style="width:100%;display:block"></video>`
+      :`<div style="height:180px;display:grid;place-items:center;font-size:40px">${p.kind==='work'?'📝':tm.ic}</div>`);
+    const badge=p.kind==='work'?T('tab.works'):tm.badge;
+    const action=p.kind==='product'
+      ? `<div class="pin-row"><span class="pin-price">${money(p.priceCents,p.currency)}</span><button class="btn btn--grad btn--sm" onclick='event.stopPropagation();openBuy(${JSON.stringify(p.id)})'>${p.ptype==='digital'?('🔓 '+T('buy.unlock')):T('buy.now')}</button></div>`
+      : `<div class="pin-row"><span></span><button class="btn btn--grad btn--sm" style="background:linear-gradient(120deg,#ec4899,#fb7185)" onclick='event.stopPropagation();openCreator(${JSON.stringify(p.creator)},${JSON.stringify(p.coin||"")})'>💝 ${T('cre.react')}</button></div>`;
+    return `<div class="pin" onclick='openDetail(${JSON.stringify(p.kind)},${JSON.stringify(p.id)})'>
+      <div class="media">${badge?`<span class="kbadge">${badge}</span>`:''}${p.kind==='work'&&p.product?'<span class="kbadge" style="left:auto;right:8px">🛍️</span>':''}${media}
+        <div class="pin-ov">${p.title?`<div class="pin-ttl">${esc(p.title.slice(0,90))}</div>`:''}${action}</div>
+      </div>
+      <div class="pin-foot"><span class="fav">${initials(p.creator)}</span><span class="fnm">${esc((p.name||'').slice(0,16))}</span><span class="rxbar" onclick="event.stopPropagation()">${reactionTrigger(p.id,p.creator,p.coin)}</span></div>
+    </div>`;
+  }
+  function renderMasonry(){
+    const g=document.getElementById('grid');
+    const list=PINS.filter(p=>curFilter==='all'||p.ftype===curFilter);
+    if(!list.length){g.innerHTML=`<div class="empty">${T('shop.none')}</div>`;return;}
+    g.innerHTML=list.map(pinHtml).join('');
+    refreshReactions();
+  }
+  function renderCreators(){
+    const row=document.getElementById('creators-row');
+    const by={};
+    PRODUCTS.forEach(p=>{(by[p.creator]=by[p.creator]||{creator:p.creator,coin:p.coin,n:0}).n++;});
+    const list=Object.values(by);
+    if(!list.length){row.innerHTML=`<div class="empty">${T('cre.empty')}</div>`;return;}
+    row.innerHTML=list.map(c=>`
+      <div class="cre">
+        <div class="av" style="cursor:pointer" onclick='openCreator(${JSON.stringify(c.creator)},${JSON.stringify(c.coin||"")})'>${initials(c.creator)}</div>
+        <div class="meta" style="cursor:pointer" onclick='openCreator(${JSON.stringify(c.creator)},${JSON.stringify(c.coin||"")})'><div class="nm">${esc((c.creator||'').slice(0,12))}</div><div class="st">${c.n} ${T('cre.items')}</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+          ${reactionTrigger(c.creator,c.creator,c.coin)}
+          ${c.coin?`<a class="lk" href="${coinUrl(c.coin)}" target="_blank" rel="noopener">${T('cre.pool')} →</a>`:''}
+        </div>
+      </div>`).join('');
+    refreshReactions();
+  }
+
+  // ---- Pinterest-style pin detail (big media + creator + buy/react + socials + comments + related) ----
+  async function openDetail(kind,id){
+    const pin=PINS.find(x=>x.kind===kind&&x.id===id); if(!pin)return;
+    const ov=document.getElementById('detailOv'); ov.classList.add('open'); ov.scrollTop=0;
+    const media=pin.image?`<img src="${esc(pin.image)}" alt="">`:(pin.video?`<video src="${esc(pin.video)}" controls playsinline></video>`:(pin.kind==='work'?'📝':'🛍️'));
+    document.getElementById('detailBody').innerHTML=`<div class="dt-media">${media}</div><div class="dt-info" id="dtInfo"><div class="empty">${T('cre.loading')}</div></div>`;
+    document.getElementById('detailRelated').innerHTML='';
+    let info={}, cmts=[];
+    try{info=await (await fetch('/api/creator?w='+encodeURIComponent(pin.creator))).json();}catch(e){}
+    if(pin.kind==='work'){try{cmts=await (await fetch('/api/comments?post='+encodeURIComponent(pin.id))).json();}catch(e){}}
+    const name=info.displayName||pin.name||pin.creator;
+    // Fan-facing social links built from the creator's PUBLIC @handles (set in Studio → my social accounts).
+    const SU={twitter:h=>'https://x.com/'+h,tiktok:h=>'https://www.tiktok.com/@'+h,youtube:h=>'https://www.youtube.com/@'+h,instagram:h=>'https://instagram.com/'+h,facebook:h=>'https://facebook.com/'+h,linkedin:h=>'https://www.linkedin.com/in/'+h,pinterest:h=>'https://www.pinterest.com/'+h,threads:h=>'https://www.threads.net/@'+h,bilibili:h=>'https://space.bilibili.com/'+h,douyin:h=>'https://www.douyin.com/user/'+h,kwai:h=>'https://www.kuaishou.com/profile/'+h,rednote:h=>'https://www.xiaohongshu.com/user/profile/'+h,github:h=>'https://github.com/'+h};
+    const SL={twitter:'Twitter/X',tiktok:'TikTok',youtube:'YouTube',instagram:'Instagram',facebook:'Facebook',linkedin:'LinkedIn',pinterest:'Pinterest',threads:'Threads',bilibili:'Bilibili',douyin:'抖音',kwai:'快手',rednote:'小红书',wechat:'微信',github:'GitHub'};
+    const socials=Object.entries(info.socials||{}).filter(([p,h])=>h).map(([p,h])=>{const hh=String(h).replace(/^@/,'');return [SL[p]||p, SU[p]?SU[p](hh):null, hh];});
+    const action=pin.kind==='product'
+      ? `<button class="btn btn--grad btn--block" onclick='openBuy(${JSON.stringify(pin.id)})'>${pin.ptype==='digital'?('🔓 '+T('buy.unlock')):T('buy.now')} · ${money(pin.priceCents,pin.currency)}</button>` : '';
+    const commentsHtml=pin.kind==='work'?`
+      <div class="dt-sec">${T('detail.comments')}</div>
+      <div id="dtComments">${(cmts||[]).length?cmts.map(c=>`<div class="dt-cmt"><span class="who">${esc((c.fan||'?').slice(0,8))}</span><span>${esc(c.text)}</span></div>`).join(''):`<div class="hint">${T('detail.nocomments')}</div>`}</div>
+      <div style="display:flex;gap:8px;margin-top:4px"><input id="dtCmtIn" placeholder="${T('detail.comment')}" style="flex:1"><button class="btn btn--ghost btn--sm" onclick='dtAddComment(${JSON.stringify(pin.id)})'>${T('detail.send')}</button></div>`:'';
+    document.getElementById('dtInfo').innerHTML=`
+      <div class="dt-cre" style="cursor:pointer" onclick='openCreator(${JSON.stringify(pin.creator)},${JSON.stringify(pin.coin||"")})'><span class="av">${initials(pin.creator)}</span><div><div style="font-weight:700">${esc(String(name).slice(0,24))}</div><div class="hint">${info.followers||0} ${T('cre.followers')}</div></div></div>
+      ${pin.title?`<div class="dt-ttl">${esc(pin.title.slice(0,140))}</div>`:''}
+      ${action}
+      ${pin.product?`<div class="dt-sec">${T('detail.attached')}</div><div class="dt-buycard" onclick='openBuy(${JSON.stringify(pin.product.id)})'>${pin.product.image?`<img src="${esc(pin.product.image)}" alt="">`:'<span style="font-size:24px">🛍️</span>'}<div class="bc-m"><div class="bc-t">${esc((pin.product.title||'').slice(0,40))}</div><div class="bc-p">${money(pin.product.priceCents,pin.product.currency)}</div></div><span class="bc-btn">${T('buy.now')} →</span></div>`:''}
+      <div class="dt-sec">${T('cre.react')}</div>${reactionTrigger(pin.id,pin.creator,pin.coin)}
+      ${socials.length?`<div class="dt-sec">${T('detail.socials')}</div><div class="dt-socials">${socials.map(([label,u,h])=>u?`<a class="dt-soc" href="${esc(u)}" target="_blank" rel="noopener">${esc(label)}</a>`:`<span class="dt-soc">${esc(label)}: ${esc(h)}</span>`).join('')}</div>`:''}
+      ${pin.coin?`<a class="dt-soc" style="align-self:flex-start" href="${coinUrl(pin.coin)}" target="_blank" rel="noopener">${T('cre.pool')} →</a>`:''}
+      ${commentsHtml}`;
+    refreshReactions();
+    const related=PINS.filter(x=>x.creator===pin.creator&&!(x.kind===kind&&x.id===id)).slice(0,8);
+    if(related.length){document.getElementById('detailRelated').innerHTML=`<div class="dt-sec">${T('detail.more')}</div><div class="masonry">${related.map(pinHtml).join('')}</div>`;refreshReactions();}
+  }
+  function closeDetail(){document.getElementById('detailOv').classList.remove('open');}
+  async function dtAddComment(postId){
+    const inp=document.getElementById('dtCmtIn'); const text=(inp.value||'').trim(); if(!text)return;
+    const fan=localStorage.getItem('oneip_creator')||'guest';
+    try{await fetch('/api/comments',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({postId,fan,text})});}catch(e){}
+    openDetail('work',postId);
+  }
+
+  // ---- creator profile drawer (info + items + posts + tip + value pool) ----
+  const postHtml=(p)=>`<div class="post">${p.text?`<div class="txt">${esc(p.text)}</div>`:''}${p.image?`<img src="${esc(p.image)}">`:''}<div class="meta"><span>❤ ${p.likes||0}</span><span>💬 ${p.commentCount||0}</span></div></div>`;
+  async function openCreator(creator,coin){
+    document.getElementById('creOvBg').classList.add('open');
+    document.getElementById('creDrawer').classList.add('open');
+    document.getElementById('creHead').innerHTML=`<div class="av">${initials(creator)}</div><div><div class="nm">${esc((creator||'').slice(0,18))}</div><div class="st">${T('cre.loading')}</div></div><button class="dr-x" onclick="closeCreator()">✕</button>`;
+    document.getElementById('creBody').innerHTML='';
+    let info={posts:[]}, items=[];
+    try{info=await (await fetch('/api/creator?w='+encodeURIComponent(creator))).json();}catch(e){}
+    try{items=await (await fetch('/api/shop/products?creator='+encodeURIComponent(creator))).json();}catch(e){}
+    const name=info.displayName||creator;
+    document.getElementById('creHead').innerHTML=`
+      <div class="av">${initials(creator)}</div>
+      <div><div class="nm">${esc(name.slice(0,18))}</div><div class="st">${info.followers||0} ${T('cre.followers')} · ${items.length} ${T('cre.items')}</div></div>
+      <button class="dr-x" onclick="closeCreator()">✕</button>`;
+    const posts=info.posts||[];
+    document.getElementById('creBody').innerHTML=`
+      ${info.bio?`<div class="dr-bio">${esc(info.bio)}</div>`:''}
+      <div class="dr-sec-t">${T('cre.react')}</div>
+      ${reactionTrigger(creator,creator,coin)}
+      ${coin?`<div style="margin-top:12px"><a class="btn btn--ghost btn--sm" href="${coinUrl(coin)}" target="_blank" rel="noopener">${T('cre.pool')} →</a></div>`:''}
+      <div class="dr-sec-t">${T('cre.shop')}</div>
+      ${items.length?`<div class="mini-grid">${items.map(cardHtml).join('')}</div>`:`<div class="empty" style="padding:20px">${T('cre.noitems')}</div>`}
+      <div class="dr-sec-t">${T('cre.posts')}</div>
+      ${posts.length?posts.map(postHtml).join(''):`<div class="empty" style="padding:20px">${T('cre.noposts')}</div>`}`;
+    refreshReactions();
+  }
+  function closeCreator(){document.getElementById('creOvBg').classList.remove('open');document.getElementById('creDrawer').classList.remove('open');}
+
+  // ---- buy flow (FIAT) — physical asks for shipping; digital is an instant unlock ----
+  let curProduct=null;
+  function openBuy(id){
+    curProduct=PRODUCTS.find(p=>p.id===id); if(!curProduct)return;
+    const p=curProduct; const digital=p.type==='digital'; const tm=typeMeta(p.type);
+    document.getElementById('buyTitle').textContent=digital?T('buy.unlocktitle'):T('buy.title');
+    document.getElementById('buyBody').innerHTML=`
+      <div class="sum">
+        <div class="ph">${p.image?`<img src="${esc(p.image)}">`:tm.ic}</div>
+        <div><div class="nm">${esc(p.title)}</div><div class="pr">${money(p.priceCents,p.currency)}</div></div>
+      </div>
+      <label>${T('buy.email')}</label><input id="bEmail" type="email" placeholder="you@example.com">
+      ${digital?'':`
+      <label>${T('buy.name')}</label><input id="bName" placeholder="${T('buy.name')}">
+      <label>${T('buy.country')}</label>
+      <select id="bCountry"><option>Philippines</option><option>Indonesia</option><option>Thailand</option><option>Vietnam</option><option>Malaysia</option><option>Singapore</option><option>Other</option></select>
+      <label>${T('buy.addr')}</label><input id="bAddr" placeholder="${T('buy.addr')}">`}
+      <button class="btn btn--grad btn--block" style="margin-top:16px" onclick="payNow()">${digital?('🔓 '+T('buy.unlock')):T('buy.pay')} · ${money(p.priceCents,p.currency)}</button>
+      <div class="pay-note">${digital?T('buy.dnote'):T('buy.note')}</div>`;
+    document.getElementById('buyOv').classList.add('open');
+  }
+  function closeBuy(){document.getElementById('buyOv').classList.remove('open');curProduct=null;}
+
+  async function payNow(){
+    const p=curProduct; if(!p)return;
+    const fan=document.getElementById('bEmail').value.trim();
+    const addrEl=document.getElementById('bAddr');
+    const address=addrEl?{name:document.getElementById('bName').value.trim(),country:document.getElementById('bCountry').value,line1:addrEl.value.trim()}:null;
+    if(!fan){alert(T('buy.email'));return;}
+    let res;
+    try{
+      res=await (await fetch('/api/shop/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({productId:p.id,fan,address})})).json();
+    }catch(e){alert('network error');return;}
+    if(res.error){alert(res.error);return;}
+    // Live Stripe -> redirect to hosted checkout. Dev mode -> simulate a cleared card payment.
+    if(res.checkout&&res.checkout.url){location.href=res.checkout.url;return;}
+    let paid=res.order;
+    try{paid=await (await fetch('/api/shop/dev-paid',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({orderId:res.order.id})})).json();}catch(e){}
+    showPaid(paid);
+  }
+  function showPaid(order){
+    const digital=order.type==='digital';
+    document.getElementById('buyTitle').textContent=T('buy.done');
+    document.getElementById('buyBody').innerHTML=`
+      <div class="ok-box">
+        <div class="big">${digital?'🔓':'✅'}</div>
+        <h4>${digital?T('buy.unlocked'):T('buy.paid')}</h4>
+        <p>${digital?T('buy.unlockedsub'):T('buy.paidsub')}</p>
+        ${digital&&order.content?`<div class="unlock-box"><a href="${esc(order.content)}" target="_blank" rel="noopener">▶ ${T('buy.open')}</a></div>`:''}
+        <div class="util">🌱 ${T('buy.util')}</div>
+        <button class="btn btn--ghost btn--block" style="margin-top:16px" onclick="closeBuy()">${T('buy.close')}</button>
+      </div>`;
+  }
+
+  // (removed: legacy tip modal — superseded by the paid-reaction system; see reactionTrigger/openRxPicker)
+
+  // ---- i18n ----
+  const I18N={
+    en:{
+      "nav.shop":"Shop","nav.creators":"Creators","nav.brands":"Brands","nav.community":"Community","nav.how":"How it works","nav.sell":"Start selling",
+      "hero.badge":"Creator commerce · Worldwide · Pay by card",
+      "hero.title":"Creators sell the world's best products.",
+      "hero.lead":"Discover products hand-picked by creators you follow — buy with your card, shipped worldwide. Every purchase quietly powers the creator's own value pool.",
+      "hero.cta1":"Shop now","hero.cta2":"Become a creator",
+      "hero.how.t":"How it works",
+      "hero.how.1b":"Creators curate","hero.how.1":"products from vetted suppliers",
+      "hero.how.2b":"You buy by card","hero.how.2":"— normal checkout, shipped to you",
+      "hero.how.3b":"Supplier ships","hero.how.3":"— tracking like any store",
+      "hero.how.4":"Then ","hero.how.4b":"20% of profit","hero.how.4c":"grows the creator's value pool",
+      "shop.title":"Shop creator picks","shop.sub":"Curated by creators · shipped worldwide · pay by card","shop.cta":"+ List your product",
+      "shop.loading":"Loading products…","shop.none":"No products yet — creators are curating. Check back soon.",
+      "cre.title":"Creators on oneIP","cre.sub":"Follow, watch, shop — and track their value pool","cre.empty":"Creators appear here as they list products.","cre.items":"items","cre.pool":"Value pool","cre.react":"Send a paid reaction",
+      "tab.all":"All","tab.products":"Products","tab.videos":"Videos","tab.works":"Works",
+      "detail.socials":"Creator's platforms","detail.more":"More from this creator","detail.comments":"Comments","detail.nocomments":"No comments yet — be the first.","detail.comment":"Add a comment…","detail.send":"Send","detail.attached":"Shop this",
+      "cre.loading":"Loading…","cre.followers":"followers","cre.shop":"Shop","cre.posts":"Posts","cre.noitems":"No items yet.","cre.noposts":"No posts yet.",
+      "band.t":"Every sale builds real, on-chain value",
+      "band.p":"Of a creator's 100% profit on each order, 20% automatically funds their token's value pool — a transparent, on-chain mechanic (not a payout). It's the engine that keeps a creator's value backed by real revenue.",
+      "band.cta":"See the value engine →",
+      "footer.text":"© oneIP · creator commerce · worldwide shipping","footer.io":"Value engine",
+      "buy.title":"Checkout","buy.now":"Buy now","buy.email":"Email (for receipt & tracking)","buy.name":"Full name","buy.country":"Country","buy.addr":"Shipping address",
+      "buy.pay":"Pay","buy.note":"Secure card payment. You're buying a product — no crypto, no wallet needed.",
+      "buy.done":"Order confirmed","buy.paid":"Payment received 🎉","buy.paidsub":"The supplier is preparing your shipment. You'll get tracking by email.",
+      "buy.util":"20% of the profit funds this creator's value pool — on-chain & verifiable.",
+      "buy.close":"Done",
+      "type.physical":"Product","type.digital":"Video",
+      "buy.unlock":"Unlock","buy.unlocktitle":"Unlock content","buy.dnote":"Instant access after payment — no shipping. You're buying content, no crypto needed.",
+      "buy.unlocked":"Unlocked 🔓","buy.unlockedsub":"Enjoy — your access is ready below.","buy.open":"Open content",
+      "tip.btn":"Tip","tip.title":"Send a tip","tip.sub":"Support","tip.custom":"Amount (USD)","tip.pay":"Send tip","tip.note":"A direct thank-you to the creator — paid by card, no crypto needed.",
+      "tip.done":"Tip sent","tip.donesub":"Tip sent 💝","tip.thanks":"Thank you for supporting this creator!"
+    },
+    zh:{
+      "nav.shop":"商城","nav.creators":"创作者","nav.brands":"品牌","nav.community":"社区","nav.how":"运作方式","nav.sell":"我要开店",
+      "hero.badge":"创作者电商 · 全球直达 · 刷卡支付",
+      "hero.title":"网红带你买，全世界的好物。",
+      "hero.lead":"发现你关注的创作者亲选的好物 —— 信用卡支付，全球发货。每一笔购买，都在悄悄壮大这位创作者的价值池。",
+      "hero.cta1":"立即逛","hero.cta2":"成为创作者",
+      "hero.how.t":"怎么运作",
+      "hero.how.1b":"创作者选品","hero.how.1":"来自审核过的供应链",
+      "hero.how.2b":"你刷卡购买","hero.how.2":"—— 和普通网店一样下单收货",
+      "hero.how.3b":"供应商发货","hero.how.3":"—— 全程物流可追踪",
+      "hero.how.4":"然后 ","hero.how.4b":"利润的 20%","hero.how.4c":"自动壮大创作者的价值池",
+      "shop.title":"创作者甄选好物","shop.sub":"网红亲选 · 全球发货 · 刷卡支付","shop.cta":"+ 上架你的商品",
+      "shop.loading":"加载商品中…","shop.none":"还没有商品 —— 创作者正在选品，敬请期待。",
+      "cre.title":"oneIP 上的创作者","cre.sub":"关注、追更、购买 —— 还能查看他们的价值池","cre.empty":"创作者上架商品后会显示在这里。","cre.items":"件商品","cre.pool":"价值池","cre.react":"给个付费表情",
+      "tab.all":"全部","tab.products":"实物","tab.videos":"视频","tab.works":"作品",
+      "detail.socials":"创作者的社交平台","detail.more":"该创作者的更多","detail.comments":"评论","detail.nocomments":"还没有评论 —— 来抢沙发。","detail.comment":"写条评论…","detail.send":"发送","detail.attached":"买同款",
+      "cre.loading":"加载中…","cre.followers":"粉丝","cre.shop":"在售","cre.posts":"动态","cre.noitems":"暂无商品。","cre.noposts":"暂无动态。",
+      "band.t":"每一笔成交，都在链上沉淀真实价值",
+      "band.p":"创作者每单 100% 利润中的 20%，会自动注入其代币的价值池 —— 这是一套公开透明的链上机制(不是分红)。它让创作者的价值，始终由真实营收支撑。",
+      "band.cta":"看看价值引擎 →",
+      "footer.text":"© oneIP · 创作者电商 · 全球发货","footer.io":"价值引擎",
+      "buy.title":"结账","buy.now":"立即购买","buy.email":"邮箱(收据与物流)","buy.name":"收货人姓名","buy.country":"国家/地区","buy.addr":"收货地址",
+      "buy.pay":"支付","buy.note":"安全刷卡支付。你买的是商品 —— 无需加密货币、无需钱包。",
+      "buy.done":"下单成功","buy.paid":"支付成功 🎉","buy.paidsub":"供应商正在备货发出，物流单号将通过邮件发送给你。",
+      "buy.util":"利润的 20% 将注入该创作者的价值池 —— 链上可公开查验。",
+      "buy.close":"完成",
+      "type.physical":"实物","type.digital":"视频",
+      "buy.unlock":"解锁","buy.unlocktitle":"解锁内容","buy.dnote":"支付后即时观看 —— 无需邮寄。你买的是内容，无需加密货币。",
+      "buy.unlocked":"已解锁 🔓","buy.unlockedsub":"尽情享受 —— 你的内容已就绪。","buy.open":"打开内容",
+      "tip.btn":"打赏","tip.title":"打赏","tip.sub":"支持","tip.custom":"金额(美元)","tip.pay":"送出打赏","tip.note":"直接感谢创作者 —— 刷卡支付，无需加密货币。",
+      "tip.done":"打赏成功","tip.donesub":"打赏已送出 💝","tip.thanks":"感谢你支持这位创作者！"
+    }
+  };
+  let curLang=(localStorage.getItem('kol_lang')==='zh')?'zh':'en';
+  const T=(k)=>{const d=I18N[curLang]||I18N.en;return d[k]!=null?d[k]:(I18N.en[k]||k);};
+  function setLang(l){
+    curLang=(l==='zh')?'zh':'en'; const d=I18N[curLang];
+    document.documentElement.setAttribute('lang',curLang==='zh'?'zh-CN':'en');
+    document.documentElement.setAttribute('data-lang',curLang);
+    document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.getAttribute('data-i18n');if(d[k]!=null)e.textContent=d[k]});
+    renderMasonry(); renderCreators(); // re-render dynamic strings
+  }
+  window.onLangChange=setLang; // the shared site header drives this page's body i18n
+  setLang(curLang);
+  // Deep links: /shop?p=<productId> opens that item; /shop?creator=<id> opens the creator drawer.
+  function openFromQuery(){
+    const q=new URLSearchParams(location.search);
+    const pid=q.get('p'), cre=q.get('creator');
+    if(pid){ const pin=PINS.find(x=>x.id===pid); if(pin) openDetail(pin.kind,pin.id); }
+    else if(cre){ openCreator(cre,''); }
+  }
+  loadReactions().then(loadShop).then(openFromQuery); // reaction config first, so cards render with the emoji bar
 </script>
+<script src="i18n.js"></script>
+<script src="wallet.js"></script>
+<script src="header.js"></script>
 </body>
 </html>

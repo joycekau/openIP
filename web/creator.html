@@ -43,12 +43,15 @@
   .actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
   .follow{background:var(--pink);color:#fff;border:0;border-radius:6px;padding:9px 42px;font-size:15px;font-weight:700}
   .follow:hover{filter:brightness(1.06)}
+  .follow.on{background:var(--panel);border:1px solid var(--line)}
   .ghost{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 20px;font-size:14px;font-weight:600;color:var(--text);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
   .ghost:hover{background:rgba(255,255,255,.06)}
   .corax{background:linear-gradient(100deg,var(--purple),#4E9CF5);color:#fff;border:0;border-radius:6px;padding:9px 18px;font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
   .corax:hover{filter:brightness(1.06)}
-  .bio{color:var(--muted);margin-top:13px;font-size:13.5px}
-  .bio b{color:var(--text)}
+  .bio{color:var(--muted);margin-top:13px;font-size:13.5px;white-space:pre-wrap}
+  .socrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+  .socrow a{background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:5px 13px;font-size:12.5px;font-weight:600;text-decoration:none;color:var(--muted)}
+  .socrow a:hover{color:var(--text);border-color:var(--line-grad)}
 
   .token{margin-top:20px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;
     display:flex;gap:28px;align-items:center;flex-wrap:wrap;
@@ -77,7 +80,7 @@
   .tabs .cnt{font-size:12px;color:var(--dim);margin-left:5px;font-weight:500}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:20px}
-  .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);transition:box-shadow .15s,transform .15s,border-color .15s;text-decoration:none;color:inherit}
+  .card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);transition:box-shadow .15s,transform .15s,border-color .15s;text-decoration:none;color:inherit;display:block}
   .card:hover{box-shadow:0 12px 34px rgba(0,0,0,.45);border-color:var(--line-grad);transform:translateY(-2px)}
   .card .cov{aspect-ratio:1;display:grid;place-items:center;font-size:40px;background:var(--purple-bg);overflow:hidden}
   .card .cov img{width:100%;height:100%;object-fit:cover}
@@ -85,12 +88,41 @@
   .card .cb .t{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .card .cb .p{font-size:12px;color:var(--muted);margin-top:2px}
   .empty{padding:60px 0;text-align:center;color:var(--dim);font-size:13.5px}
+
+  .posts{margin-top:20px;display:flex;flex-direction:column;gap:14px;max-width:640px}
+  .post{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+  .post .ptext{font-size:14px;white-space:pre-wrap}
+  .post .pimg{margin-top:10px;border-radius:10px;max-width:100%;max-height:420px;object-fit:cover;display:block}
+  .post video{margin-top:10px;border-radius:10px;max-width:100%}
+  .post .pmeta{margin-top:10px;display:flex;align-items:center;gap:14px;font-size:12px;color:var(--dim)}
+  .rxbar{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .rxbar button{background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:5px 11px;font-size:12.5px;color:var(--text)}
+  .rxbar button:hover{border-color:var(--line-grad)}
+  .rxbar .cnt{color:var(--muted);margin-left:4px;font-variant-numeric:tabular-nums}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(4,2,10,.72);backdrop-filter:blur(4px);display:none;z-index:90}
+  .modal-bg.open{display:grid;place-items:center}
+  .modal{width:min(420px,92vw);background:var(--panel-2);border:1px solid var(--line-grad);border-radius:18px;padding:24px}
+  .modal h3{margin:0 0 6px;font-size:17px}
+  .modal .hint{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .chips button{background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:8px 16px;font-size:14px;font-weight:700;color:var(--text)}
+  .chips button.sel{background:linear-gradient(120deg,var(--purple),var(--magenta));border-color:transparent;color:#fff}
+  .modal input{width:100%;background:var(--bg-2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:10px 12px;font:inherit;outline:none}
+  .modal input:focus{border-color:var(--line-grad)}
+  .mrow{display:flex;gap:10px;margin-top:16px}
+  .mbtn{flex:1;border:0;border-radius:10px;padding:11px;font-weight:700;font-size:14px}
+  .mbtn.go{background:linear-gradient(120deg,var(--purple),var(--magenta));color:#fff}
+  .mbtn.x{background:var(--panel);border:1px solid var(--line);color:var(--muted)}
+
   .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--panel-2);color:var(--text);border:1px solid var(--line-grad);
     font-weight:600;font-size:13px;border-radius:8px;padding:9px 18px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
   .toast.show{opacity:1}
 </style>
 </head>
 <body>
+
+<div id="appHeader"></div>
 
 <div class="wrap">
   <div class="profile">
@@ -102,57 +134,86 @@
         <span class="handle" id="handle"></span>
       </div>
       <div class="statline">
-        <div class="st"><b id="stLaunches">0</b><span>Launches</span></div>
+        <div class="st"><b id="stFollowers">0</b><span>Followers</span></div>
         <div class="st"><b id="stProducts">0</b><span>Products</span></div>
-        <div class="st"><b id="stHolders">—</b><span>Holders</span></div>
+        <div class="st"><b id="stPosts">0</b><span>Posts</span></div>
       </div>
       <div class="actions">
-        <button class="follow" onclick="toast('Following')">Follow</button>
+        <button class="follow" id="followBtn" onclick="toggleFollow()">Follow</button>
+        <button class="ghost" onclick="openTip()">💝 Tip</button>
         <button class="ghost" onclick="share()">↗ Share</button>
-        <a class="corax" id="coraxLink" href="https://corax.live" target="_blank" rel="noopener">💬 Connect on CoraX</a>
+        <a class="corax" id="coraxLink" href="https://corax.live" target="_blank" rel="noopener" style="display:none">💬 Connect on CoraX</a>
       </div>
       <div class="bio" id="bio"></div>
+      <div class="socrow" id="socRow"></div>
     </div>
   </div>
 
-  <!-- creator token strip -->
+  <!-- creator token strip: the value pool -->
   <div class="token" id="tokenStrip" style="display:none">
     <div class="badge">
       <div class="coin" id="tCoin">$</div>
-      <div><div class="n" id="tName">—</div><div class="s">oneIP creator token · Solana</div></div>
+      <div><div class="n" id="tName">—</div><div class="s">oneIP creator value pool · Solana</div></div>
     </div>
     <div class="tk"><div class="k">Market cap</div><div class="v" id="tMcap">—</div></div>
     <div class="tk"><div class="k">Price</div><div class="v" id="tPrice">—</div></div>
     <div class="tk"><div class="k">24h</div><div class="v" id="tChg">—</div></div>
-    <div class="tk"><div class="k">Holders</div><div class="v" id="tHolders">—</div></div>
-    <a class="trade" id="tradeLink" href="#">Trade</a>
-    <div class="note">Sales commission auto-buys back the creator token — the more fans buy, the stronger the bid. Market cap tracks real sales cash flow.</div>
+    <div class="tk"><div class="k">Revenue floor</div><div class="v" id="tFloor">—</div></div>
+    <a class="trade" id="tradeLink" href="#">View pool</a>
+    <div class="note" id="floorNote">Every sale, tip & reaction routes <b>20% of net revenue</b> into this pool's floor — an on-chain, publicly verifiable protocol mechanic.</div>
   </div>
 
   <div class="tabs">
     <button class="on" data-tab="shop">Shop<span class="cnt" id="cntShop">0</span></button>
+    <button data-tab="posts">Posts<span class="cnt" id="cntPosts">0</span></button>
     <button data-tab="launches">Launches<span class="cnt" id="cntLaunch">0</span></button>
-    <button data-tab="holders">Holders</button>
   </div>
 
   <div id="tab-shop" class="grid"></div>
+  <div id="tab-posts" class="posts" style="display:none"></div>
   <div id="tab-launches" class="grid" style="display:none"></div>
-  <div id="tab-holders" class="empty" style="display:none">Top holders leaderboard coming soon.</div>
+</div>
+
+<!-- tip modal -->
+<div class="modal-bg" id="tipBg" onclick="if(event.target===this)closeTip()">
+  <div class="modal">
+    <h3>💝 Tip <span id="tipWho"></span></h3>
+    <div class="hint">Pay by card — no crypto needed. 20% of net supports their value-pool floor.</div>
+    <div class="chips" id="tipChips">
+      <button data-a="100">$1</button><button data-a="500" class="sel">$5</button>
+      <button data-a="2000">$20</button><button data-a="5000">$50</button>
+    </div>
+    <input id="tipCustom" type="number" min="1" step="0.5" placeholder="Custom amount (USD)">
+    <div class="mrow">
+      <button class="mbtn x" onclick="closeTip()">Cancel</button>
+      <button class="mbtn go" onclick="sendTip()">Send tip</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script src="i18n.js"></script>
 <script src="affiliate-networks.js"></script>
+<script src="wallet.js"></script>
 <script src="header.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
-const creatorId = params.get("id") || params.get("creator") || "";
+const creatorId = params.get("id") || params.get("creator") || params.get("w") || "";
 const short = (a) => a && a.length > 12 ? a.slice(0,4) + "…" + a.slice(-4) : (a||"");
 const initials = (n) => (n||"?").trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();
-function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1600);}
+const esc = (s) => String(s??"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200);}
 function share(){try{navigator.clipboard.writeText(location.href);}catch(e){} toast("Profile link copied");}
+// anonymous visitor id — lets fans follow/react without an account (registered users use their handle)
+let FAN = localStorage.getItem("oneip_fan");
+if(!FAN){ FAN = "fan_" + Math.random().toString(36).slice(2,10); localStorage.setItem("oneip_fan", FAN); }
+const ME = localStorage.getItem("oneip_creator") || FAN;
+
+// Fan-facing profile links from the creator's PUBLIC @handles (set in Studio).
+const SU={twitter:h=>'https://x.com/'+h,tiktok:h=>'https://www.tiktok.com/@'+h,youtube:h=>'https://www.youtube.com/@'+h,instagram:h=>'https://instagram.com/'+h,facebook:h=>'https://facebook.com/'+h,linkedin:h=>'https://www.linkedin.com/in/'+h,pinterest:h=>'https://www.pinterest.com/'+h,threads:h=>'https://www.threads.net/@'+h,bilibili:h=>'https://space.bilibili.com/'+h,douyin:h=>'https://www.douyin.com/user/'+h,kwai:h=>'https://www.kuaishou.com/profile/'+h,rednote:h=>'https://www.xiaohongshu.com/user/profile/'+h,wechat:h=>'#',github:h=>'https://github.com/'+h};
+const SOC_ICON={twitter:'𝕏',tiktok:'TikTok',youtube:'YouTube',instagram:'Instagram',facebook:'Facebook',linkedin:'LinkedIn',pinterest:'Pinterest',threads:'Threads',bilibili:'Bilibili',douyin:'抖音',kwai:'快手',rednote:'小红书',wechat:'微信',github:'GitHub'};
 
 // compact market formatting: $1.2M, $34.5K, $0.0000123, +4.2%
 function fmtUsd(n){
@@ -172,7 +233,6 @@ function fmtChg(n){
   if(n==null||!isFinite(n)) return "—";
   return (n>=0?"+":"")+n.toFixed(1)+"%";
 }
-// Live market data for the creator token (deepest-liquidity Solana pair).
 async function loadPrice(mint){
   let d;
   try{ d = await (await fetch("/api/token/price?mint=" + encodeURIComponent(mint))).json(); }catch(e){ return; }
@@ -186,83 +246,181 @@ async function loadPrice(mint){
     chg.classList.toggle("down", d.change24h < 0);
   }
 }
+// Revenue-floor proof: how much real sales cash flow has funded this pool's floor.
+async function loadProof(coin){
+  try{
+    const p = await (await fetch("/api/shop/proof?coin=" + encodeURIComponent(coin))).json();
+    const total = (p.totalFloorAddedSol||0) + 0;
+    $("tFloor").textContent = total > 0 ? total.toFixed(4)+" ◎" : (p.escrowUsd>0 ? "$"+p.escrowUsd.toFixed(2)+" held" : "—");
+    if(p.count>0||p.escrowCount>0) $("floorNote").innerHTML = `<b>${p.count+p.escrowCount} sales</b> have routed 20% of net revenue here (` +
+      (total>0? total.toFixed(4)+" ◎ funded":"") + (p.escrowUsd>0? (total>0?" + ":"")+"$"+p.escrowUsd.toFixed(2)+" held for launch":"") + `) — publicly verifiable.`;
+  }catch(e){}
+}
+
+let INFO = {}, FOLLOWING = false;
+async function toggleFollow(){
+  const path = FOLLOWING ? "/api/unfollow" : "/api/follow";
+  try{
+    const r = await (await fetch(path,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({fan:ME,creator:creatorId})})).json();
+    FOLLOWING = !!r.following;
+    $("stFollowers").textContent = r.followers ?? $("stFollowers").textContent;
+    renderFollow();
+  }catch(e){ toast("network error"); }
+}
+function renderFollow(){
+  const b=$("followBtn");
+  b.textContent = FOLLOWING ? "Following ✓" : "Follow";
+  b.classList.toggle("on", FOLLOWING);
+}
+
+// ---- tip (fiat; devMode instant when Stripe unkeyed) ----
+let tipAmount = 500;
+function openTip(){ $("tipWho").textContent = $("cname").textContent; $("tipBg").classList.add("open"); }
+function closeTip(){ $("tipBg").classList.remove("open"); }
+document.querySelectorAll("#tipChips button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#tipChips button").forEach(x=>x.classList.remove("sel"));
+  b.classList.add("sel"); tipAmount = Number(b.dataset.a); $("tipCustom").value="";
+});
+async function sendTip(){
+  const custom = Number($("tipCustom").value);
+  const amountCents = custom > 0 ? Math.round(custom*100) : tipAmount;
+  let r;
+  try{ r = await (await fetch("/api/tip",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({creator:creatorId,coin:INFO.coin||"",amountCents,fan:ME})})).json(); }
+  catch(e){ toast("network error"); return; }
+  if(r.error){ toast(r.error); return; }
+  if(r.checkout && r.checkout.url){ location.href = r.checkout.url; return; } // live Stripe
+  try{ await fetch("/api/shop/dev-paid",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({orderId:r.order.id})}); }catch(e){}
+  closeTip();
+  toast("💝 Thank you! 20% of net supports the value pool.");
+  if(INFO.coin) loadProof(INFO.coin);
+}
+
+// ---- paid emoji reactions on posts ----
+let RX = [];
+async function loadReactions(){ try{ RX = await (await fetch("/api/reactions/config")).json(); }catch(e){ RX=[]; } }
+async function react(postId, key){
+  try{
+    const r = await (await fetch("/api/react",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({key,target:postId,creator:creatorId,coin:INFO.coin||"",fan:ME})})).json();
+    if(r.error){ toast(r.error); return; }
+    if(r.checkout && r.checkout.url){ location.href = r.checkout.url; return; }
+    const el = $("rx-"+postId+"-"+key);
+    if(el && r.counts) el.textContent = r.counts[key] || 0;
+    toast("Sent — thank you!");
+  }catch(e){ toast("network error"); }
+}
+function rxBar(postId, counts){
+  return `<div class="rxbar">` + RX.map(r =>
+    `<button onclick="react('${postId}','${r.key}')" title="$${(r.priceCents/100).toFixed(2)}">${r.emoji} $${(r.priceCents/100).toFixed(r.priceCents%100?2:0)}<span class="cnt" id="rx-${postId}-${r.key}">${(counts&&counts[r.key])||0}</span></button>`
+  ).join("") + `</div>`;
+}
 
 async function load(){
+  // profile + posts (the social layer is the source of truth for identity)
+  try{ INFO = await (await fetch("/api/creator?w=" + encodeURIComponent(creatorId) + "&viewer=" + encodeURIComponent(ME))).json(); }catch(e){ INFO={}; }
+  const name = INFO.displayName || short(creatorId) || "Creator";
+  $("cname").textContent = name;
+  $("handle").textContent = "@" + (creatorId.length>20 ? short(creatorId) : creatorId);
+  $("avatar").textContent = initials(name);
+  if (INFO.avatar) $("avatar").innerHTML = '<img src="'+esc(INFO.avatar)+'" alt="">';
+  $("bio").textContent = INFO.bio || "";
+  $("stFollowers").textContent = INFO.followers || 0;
+  FOLLOWING = !!INFO.following; renderFollow();
+
+  // public social platform links (from Studio → my social accounts)
+  const socials = INFO.socials || {};
+  $("socRow").innerHTML = Object.keys(socials).filter(p=>SU[p]).map(p=>
+    `<a href="${SU[p](encodeURIComponent(socials[p]))}" target="_blank" rel="noopener">${SOC_ICON[p]||p} @${esc(socials[p])}</a>`).join("");
+
+  // launches — token strip prefers the linked value pool, falls back to their newest launch
   let launches = [];
   try{
     const board = await (await fetch("/api/board")).json();
     const rows = Array.isArray(board) ? board : (board.rows || board.launches || []);
     launches = rows.filter(r => r.creator === creatorId || r.coraxCreatorId === creatorId);
   }catch(e){}
-
-  const first = launches[0];
-  const name = (first && first.creatorName) || (first && first.name) || short(creatorId) || "Creator";
-  $("cname").textContent = first && first.creatorName ? first.creatorName : name;
-  $("handle").textContent = "@" + (short(creatorId) || "creator");
-  $("avatar").textContent = initials(name);
-  if (first && first.logo){ $("avatar").innerHTML = '<img src="'+first.logo+'" alt="">'; }
-  $("stLaunches").textContent = launches.length;
-
-  // CoraX channel connect: if the creator is linked to a CoraX account, deep-link there.
-  if (first && first.coraxCreatorId){
-    $("coraxLink").href = "https://corax.live/oneip/creator/" + first.coraxCreatorId;
-    $("verify").style.display = "";
-  }
-
-  // Creator token strip — from their launch (real symbol/name/mint).
-  if (first){
+  try{
+    const mine = await (await fetch("/api/creator/launches?w=" + encodeURIComponent(creatorId))).json();
+    for(const l of (Array.isArray(mine)?mine:[])) if(!launches.find(x=>x.mint===l.mint)) launches.push(l);
+  }catch(e){}
+  const coin = INFO.coin || (launches[0] && launches[0].mint) || "";
+  let launch = launches.find(l=>l.mint===coin) || launches[0] || null;
+  if (coin && !launch){ try{ launch = await (await fetch("/api/launch?mint="+encodeURIComponent(coin))).json(); }catch(e){} }
+  if (launch && launch.mint){
     $("tokenStrip").style.display = "flex";
-    $("tCoin").textContent = "$" + (first.symbol||"");
-    if (first.logo) $("tCoin").innerHTML = '<img src="'+first.logo+'" alt="">';
-    $("tName").textContent = first.name || first.symbol || "—";
-    $("tradeLink").href = "/coin?mint=" + encodeURIComponent(first.mint);
-    $("tradeLink").textContent = "Trade $" + (first.symbol||"");
-    $("bio").innerHTML = first.description ? first.description : "";
-    if (first.mint) loadPrice(first.mint);
+    $("tCoin").textContent = "$" + (launch.symbol||"");
+    if (launch.logo) $("tCoin").innerHTML = '<img src="'+esc(launch.logo)+'" alt="">';
+    $("tName").textContent = launch.name || launch.symbol || "—";
+    $("tradeLink").href = "/coin?mint=" + encodeURIComponent(launch.mint);
+    $("tradeLink").textContent = launch.onchain === false || String(launch.mint).startsWith("Kol") ? "View pool" : "Trade $" + (launch.symbol||"");
+    if (launch.verified) $("verify").style.display = "";
+    if (!String(launch.mint).startsWith("Kol")) loadPrice(launch.mint);
+    loadProof(launch.mint);
+  }
+  if (launch && launch.coraxCreatorId){
+    $("coraxLink").href = "https://corax.live/oneip/creator/" + launch.coraxCreatorId;
+    $("coraxLink").style.display = "";
   }
 
-  // Launches tab (their tokens).
+  // Launches tab
   $("cntLaunch").textContent = launches.length;
   $("tab-launches").innerHTML = launches.length ? launches.map(l => `
     <a class="card" href="/coin?mint=${encodeURIComponent(l.mint)}">
-      <div class="cov">${l.logo ? '<img src="'+l.logo+'">' : "🪙"}</div>
-      <div class="cb"><div class="t">${l.name||l.symbol||""}</div><div class="p">$${l.symbol||""}</div></div>
+      <div class="cov">${l.logo ? '<img src="'+esc(l.logo)+'">' : "🪙"}</div>
+      <div class="cb"><div class="t">${esc(l.name||l.symbol||"")}</div><div class="p">$${esc(l.symbol||"")}</div></div>
     </a>`).join("") : '<div class="empty">No launches yet.</div>';
 
-  // Shop tab — the creator's marketplace listings + their pasted affiliate links (Model A).
+  // Shop tab — on-platform listings (fiat checkout on /shop) + pasted affiliate links
   let products = [], promoted = [];
-  try{ products = await (await fetch("/api/creator/products?id=" + encodeURIComponent(creatorId))).json(); }catch(e){}
+  try{ products = await (await fetch("/api/shop/products?creator=" + encodeURIComponent(creatorId))).json(); }catch(e){}
   try{ promoted = await (await fetch("/api/creator/promoted?id=" + encodeURIComponent(creatorId))).json(); }catch(e){}
-  products = Array.isArray(products) ? products : (products.products || []);
+  products = Array.isArray(products) ? products : [];
   promoted = Array.isArray(promoted) ? promoted : [];
   const netOf = (id) => (window.KolAffiliates && window.KolAffiliates.byId(id)) || { name: id, emoji: "🔗" };
   const total = products.length + promoted.length;
   $("stProducts").textContent = total;
   $("cntShop").textContent = total;
+  const typeBadge = t => t==="digital" ? "🎬" : t==="nft" ? "💎" : "🛍️";
   const productCards = products.map(p => `
-    <a class="card" href="${p.url || '#'}"${p.url ? ' target="_blank" rel="noopener"' : ''}>
-      <div class="cov">${p.image ? '<img src="'+p.image+'">' : "🛍️"}</div>
-      <div class="cb"><div class="t">${p.title||""}</div><div class="p">${p.price != null ? (p.currency||'USD')+' '+p.price : ''}</div></div>
+    <a class="card" href="/shop?p=${encodeURIComponent(p.id)}">
+      <div class="cov">${p.image ? '<img src="'+esc(p.image)+'">' : typeBadge(p.type)}</div>
+      <div class="cb"><div class="t">${esc(p.title||"")}</div><div class="p">${(p.currency||'USD')} ${(p.priceCents/100).toFixed(2)}${p.type==="digital"?" · unlock":""}</div></div>
     </a>`).join("");
   // affiliate links open through /go?id= so clicks are counted, then forward to the tracked link
   const promoCards = promoted.map(p => { const n = netOf(p.network); return `
     <a class="card" href="/go?id=${encodeURIComponent(p.id)}" target="_blank" rel="noopener">
-      <div class="cov">${p.image ? '<img src="'+p.image+'">' : n.emoji}</div>
-      <div class="cb"><div class="t">${p.title || n.name}</div><div class="p" style="color:var(--purple)">${n.name} ↗</div></div>
+      <div class="cov">${p.image ? '<img src="'+esc(p.image)+'">' : n.emoji}</div>
+      <div class="cb"><div class="t">${esc(p.title || n.name)}</div><div class="p" style="color:var(--purple)">${n.name} ↗</div></div>
     </a>`; }).join("");
   $("tab-shop").innerHTML = total ? (productCards + promoCards) : '<div class="empty">No products yet.</div>';
+
+  // Posts tab — the creator's works, with paid emoji reactions
+  const posts = Array.isArray(INFO.posts) ? INFO.posts : [];
+  $("cntPosts").textContent = posts.length;
+  $("stPosts").textContent = posts.length;
+  const rxCounts = {};
+  await Promise.all(posts.slice(0,20).map(async p => {
+    try{ const r = await (await fetch("/api/reactions?target="+encodeURIComponent(p.id))).json(); rxCounts[p.id]=r.counts||{}; }catch(e){ rxCounts[p.id]={}; }
+  }));
+  $("tab-posts").innerHTML = posts.length ? posts.map(p => `
+    <div class="post">
+      <div class="ptext">${esc(p.text||"")}</div>
+      ${p.image ? `<img class="pimg" src="${esc(p.image)}" alt="">` : ""}
+      ${p.video ? `<video src="${esc(p.video)}" controls playsinline></video>` : ""}
+      <div class="pmeta"><span>❤ ${p.likes||0}</span><span>💬 ${p.commentCount||0}</span><span>${new Date(p.ts).toLocaleDateString()}</span>${p.synced?'<span>↻ synced</span>':''}</div>
+      ${rxBar(p.id, rxCounts[p.id])}
+    </div>`).join("") : '<div class="empty">No posts yet.</div>';
 }
 
 document.querySelectorAll(".tabs button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".tabs button").forEach(x => x.classList.remove("on"));
   b.classList.add("on");
-  ["shop","launches","holders"].forEach(t => {
+  ["shop","posts","launches"].forEach(t => {
     const el = $("tab-"+t);
-    el.style.display = (t === b.dataset.tab) ? (t === "holders" ? "block" : "grid") : "none";
+    el.style.display = (t === b.dataset.tab) ? (t === "posts" ? "flex" : "grid") : "none";
   });
 }));
 
-load();
+loadReactions().then(load);
 </script>
 </body>
 </html>
