@@ -155,24 +155,49 @@ async function servePage(res, file) {
   return res.end(html);
 }
 
-// Transak partner access token — exchanged from apiKey + api-secret, valid 7 days (only the latest is
-// valid). Cached in memory and refreshed proactively so we don't re-auth on every widget-url request.
-let _transakTok = { token: null, exp: 0 };
-async function transakAccessToken(env, apiKey, apiSecret) {
+// Transak partner access token — exchanged from apiKey + api-secret, valid 7 days. Generating a
+// new token invalidates ALL previously issued ones, so minting must be RARE and the token SHARED:
+// on serverless every instance minting its own token would invalidate every other instance's.
+// The token therefore lives in durable storage (Supabase kv via persist.js; file locally) keyed
+// with the env + key it was minted for, with a small in-memory fast path. Callers pass force=true
+// to mint fresh when Transak rejects the stored one.
+let _transakTok = { token: null, exp: 0, key: "" };
+async function transakAccessToken(env, apiKey, apiSecret, force) {
   const now = Date.now();
-  if (_transakTok.token && now < _transakTok.exp) return _transakTok.token;
+  const cacheKey = env + ":" + apiKey.slice(-4);
+  if (!force) {
+    if (_transakTok.token && _transakTok.key === cacheKey && now < _transakTok.exp) return _transakTok.token;
+    // Another instance may have minted a perfectly good token — reuse it instead of re-minting
+    // (a re-mint would invalidate it under that instance's feet).
+    const stored = await loadJson("transak_token", null);
+    if (stored && stored.key === cacheKey && stored.token && now < stored.exp) {
+      _transakTok = stored;
+      return stored.token;
+    }
+  }
   // refresh-token lives on api.transak.com (the gateway 404s it); create-widget-url is on the gateway.
   const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
   const r = await fetch(base + "/partners/api/v2/refresh-token", {
     method: "POST",
-    headers: { "content-type": "application/json", "api-secret": apiSecret },
+    headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret },
     body: JSON.stringify({ apiKey }),
   });
   const j = await r.json().catch(() => ({}));
   const token = j && (j.data?.accessToken || j.accessToken);
+  // Diagnostic (no secrets): which env/host minted the token and what Transak said.
+  console.log("[transak] refresh-token", JSON.stringify({
+    env, host: base, status: r.status, force: !!force, gotToken: !!token,
+    tokenTail: token ? String(token).slice(-6) : null,
+    expiresAt: j?.data?.expiresAt ?? j?.expiresAt ?? null,
+    error: !token ? (j?.error?.message || j?.message || null) : null,
+    apiKeyTail: String(apiKey).slice(-4),
+  }));
   if (!r.ok || !token) throw new Error((j && (j.error?.message || j.message)) || `Transak access token failed (${r.status})`);
-  // Token lives 7 days; cache for 6 to stay clear of the boundary.
-  _transakTok = { token, exp: now + 6 * 24 * 3600 * 1000 };
+  // Prefer Transak's own expiry (unix seconds), refreshing an hour early; else assume the
+  // documented 7 days and cache for 6 to stay clear of the boundary.
+  const expiresAt = Number(j.data?.expiresAt || j.expiresAt) * 1000;
+  _transakTok = { token, exp: expiresAt > now ? expiresAt - 3600 * 1000 : now + 6 * 24 * 3600 * 1000, key: cacheKey };
+  try { await saveJsonNow("transak_token", _transakTok); } catch (_) {}
   return token;
 }
 
@@ -233,6 +258,60 @@ async function handler(req, res) {
       res.writeHead(200, { "content-type": "application/javascript; charset=utf-8", "cache-control": "public, max-age=30" });
       return res.end(`window.THIRDWEB_CLIENT_ID=${JSON.stringify(cfg.THIRDWEB_CLIENT_ID)};window.LIFI_INTEGRATOR=${JSON.stringify(cfg.LIFI_INTEGRATOR)};window.LIFI_FEE=${JSON.stringify(cfg.LIFI_FEE)};window.MOONPAY_API_KEY=${JSON.stringify(cfg.MOONPAY_API_KEY)};window.TRANSAK_ENABLED=${JSON.stringify(cfg.TRANSAK_ENABLED)};window.TRANSAK_ENVIRONMENT=${JSON.stringify(cfg.TRANSAK_ENVIRONMENT)};`);
     }
+    // TEMPORARY diagnostic: run the full Transak exchange (refresh-token → create-widget-url) and
+    // report sanitized statuses/errors — no secrets, no full tokens, no widgetUrl. Lets us see
+    // exactly which step Transak rejects without shipping secrets to the client. Remove once fixed.
+    if (req.method === "GET" && path === "/api/transak/diag") {
+      const apiKey = process.env.TRANSAK_API_KEY, apiSecret = process.env.TRANSAK_API_SECRET;
+      const env = (process.env.TRANSAK_ENVIRONMENT || "STAGING").toUpperCase() === "PRODUCTION" ? "PRODUCTION" : "STAGING";
+      const out = { env, hasKey: !!apiKey, hasSecret: !!apiSecret, keyTail: apiKey ? apiKey.slice(-4) : null, keyLen: apiKey ? apiKey.length : 0, secretLen: apiSecret ? apiSecret.length : 0 };
+      res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+      if (!apiKey || !apiSecret) return res.end(JSON.stringify(out));
+      const legacy = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
+      const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
+      const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
+      const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "1.1.1.1";
+      // Key is confirmed PRODUCTION (staging refresh rejects it) and refresh mints fine, yet the
+      // gateway 401s the fresh token immediately. Test whether the gateway just needs time to see a
+      // newly minted token (auth-service propagation): mint ONCE, try immediately, then retry the
+      // SAME token after increasing delays. If late attempts succeed → propagation lag; the fix is
+      // mint-rarely + durable shared storage. If they still 401 → account/IP-whitelist issue for
+      // Transak support.
+      const sleep = (ms) => new Promise((rs) => setTimeout(rs, ms));
+      out.attempts = [];
+      // Report the function's current egress IP — the IP Transak's gateway actually sees. Vercel
+      // serverless egress is dynamic, so this is evidence for the whitelisting conversation.
+      try {
+        const ipr = await fetch("https://api.ipify.org?format=json");
+        out.egressIp = (await ipr.json().catch(() => ({})))?.ip || null;
+      } catch (e) { out.egressIp = "lookup failed: " + ((e && e.message) || String(e)); }
+      try {
+        const r1 = await fetch("https://api.transak.com/partners/api/v2/refresh-token", {
+          method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
+        });
+        const j1 = await r1.json().catch(() => ({}));
+        const token = j1 && (j1.data?.accessToken || j1.accessToken);
+        out.refresh = { status: r1.status, gotToken: !!token, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 200)) };
+        if (token) {
+          const tryCreate = async (label) => {
+            const r2 = await fetch("https://api-gateway.transak.com/api/v2/auth/session", {
+              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+              body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
+            });
+            const j2 = await r2.json().catch(() => ({}));
+            const ok = !!(j2?.widgetUrl || j2?.data?.widgetUrl);
+            out.attempts.push({ label, status: r2.status, gotWidgetUrl: ok, error: ok ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) });
+            return ok;
+          };
+          if (!(await tryCreate("immediate"))) {
+            await sleep(3000);
+            if (!(await tryCreate("after 3s"))) { await sleep(4000); await tryCreate("after 7s"); }
+          }
+        }
+      } catch (e) { out.exception = (e && e.message) || String(e); }
+      out.referrerDomain = referrerDomain;
+      return res.end(JSON.stringify(out));
+    }
     // Transak fiat on-ramp/off-ramp — server-side widget-URL generation (Transak's MANDATORY
     // migration: query-param widget URLs are deprecated). Flow: apiKey+secret → short-lived partner
     // access token (cached) → POST create-widget-url with widgetParams → return the 5-min widgetUrl.
@@ -261,15 +340,32 @@ async function handler(req, res) {
       // Prefilled a wallet? Lock the destination so funds can only reach the user's own address.
       if (widgetParams.walletAddress && widgetParams.disableWalletAddressForm == null) widgetParams.disableWalletAddressForm = true;
       try {
-        const token = await transakAccessToken(env, apiKey, apiSecret);
         const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
-        const r = await fetch(gw + "/api/v2/auth/session", {
-          method: "POST",
-          // create-widget-url requires x-api-key + access-token + x-user-ip headers.
-          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, authorization: `Bearer ${token}`, "x-user-ip": userIp },
-          body: JSON.stringify({ widgetParams }),
-        });
-        const j = await r.json().catch(() => ({}));
+        // create-widget-url requires x-api-key + access-token + x-user-ip headers. No `authorization`
+        // header — that slot is for end-USER auth tokens and confuses the gateway if it carries the
+        // partner token.
+        const createSession = async (token, attempt) => {
+          const rr = await fetch(gw + "/api/v2/auth/session", {
+            method: "POST",
+            headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+            body: JSON.stringify({ widgetParams }),
+          });
+          const jj = await rr.json().catch(() => ({}));
+          // Diagnostic (no secrets): what the gateway said about this token.
+          console.log("[transak] create-widget-url", JSON.stringify({
+            env, gw, attempt, status: rr.status, tokenTail: String(token).slice(-6),
+            referrerDomain, ok: !!(jj?.widgetUrl || jj?.data?.widgetUrl),
+            error: jj?.error?.message || jj?.message || null,
+          }));
+          return { r: rr, j: jj };
+        };
+        let { r, j } = await createSession(await transakAccessToken(env, apiKey, apiSecret), 1);
+        // Transak invalidates every older access token whenever a new one is minted, so our cached
+        // token can be rejected through no fault of ours. Per Transak support: refresh the token once
+        // and immediately reuse it on create-widget-url — i.e. force a fresh token and retry.
+        if (r.status === 401 || r.status === 403) {
+          ({ r, j } = await createSession(await transakAccessToken(env, apiKey, apiSecret, true), 2));
+        }
         const widgetUrl = j && (j.widgetUrl || (j.data && j.data.widgetUrl));
         if (!r.ok || !widgetUrl) {
           res.writeHead(r.status && r.status >= 400 ? r.status : 502, { "content-type": "application/json" });
