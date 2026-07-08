@@ -257,33 +257,36 @@ async function handler(req, res) {
       const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
       const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
       const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "1.1.1.1";
-      // Try every plausible refresh-token endpoint; for each token minted, test create-widget-url.
-      // The pair that yields a widgetUrl is the correct one.
-      const candidates = [
-        { name: "gateway /auth/public/v2/refresh-token", url: gw + "/auth/public/v2/refresh-token" },
-        { name: "gateway /partners/api/v2/refresh-token", url: gw + "/partners/api/v2/refresh-token" },
-        { name: "legacy /partners/api/v2/refresh-token", url: legacy + "/partners/api/v2/refresh-token" },
+      // The endpoint pairing (legacy refresh → gateway session) is confirmed correct by docs and
+      // other integrations, yet a seconds-old PRODUCTION token gets 401. Prime suspect: the key in
+      // Vercel belongs to the OTHER environment. Probe both env pairings with the same key, plus an
+      // authorization-header variant. Whichever yields a widgetUrl is the truth.
+      const pairings = [
+        { name: "PRODUCTION pairing", refresh: "https://api.transak.com/partners/api/v2/refresh-token", gw: "https://api-gateway.transak.com" },
+        { name: "STAGING pairing", refresh: "https://api-stg.transak.com/partners/api/v2/refresh-token", gw: "https://api-gateway-stg.transak.com" },
       ];
       out.attempts = [];
       try {
-        for (const c of candidates) {
-          const a = { refreshEndpoint: c.name };
+        for (const p of pairings) {
+          const a = { pairing: p.name };
           out.attempts.push(a);
           try {
-            const r1 = await fetch(c.url, {
+            const r1 = await fetch(p.refresh, {
               method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
             });
             const j1 = await r1.json().catch(() => ({}));
             const token = j1 && (j1.data?.accessToken || j1.accessToken);
             a.refresh = { status: r1.status, gotToken: !!token, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 200)) };
             if (!token) continue;
-            const r2 = await fetch(gw + "/api/v2/auth/session", {
-              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
-              body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
-            });
-            const j2 = await r2.json().catch(() => ({}));
-            a.create = { status: r2.status, gotWidgetUrl: !!(j2?.widgetUrl || j2?.data?.widgetUrl), error: (j2?.widgetUrl || j2?.data?.widgetUrl) ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) };
-            if (a.create.gotWidgetUrl) { out.winner = c.name; break; }
+            for (const hdr of ["access-token", "authorization"]) {
+              const headers = { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "x-user-ip": userIp };
+              headers[hdr] = hdr === "authorization" ? `Bearer ${token}` : token;
+              const r2 = await fetch(p.gw + "/api/v2/auth/session", { method: "POST", headers, body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }) });
+              const j2 = await r2.json().catch(() => ({}));
+              a["create_" + hdr] = { status: r2.status, gotWidgetUrl: !!(j2?.widgetUrl || j2?.data?.widgetUrl), error: (j2?.widgetUrl || j2?.data?.widgetUrl) ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) };
+              if (a["create_" + hdr].gotWidgetUrl) { out.winner = p.name + " via " + hdr; break; }
+            }
+            if (out.winner) break;
           } catch (e) { a.exception = (e && e.message) || String(e); }
         }
       } catch (e) { out.exception = (e && e.message) || String(e); }
