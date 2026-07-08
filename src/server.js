@@ -926,7 +926,7 @@ async function handler(req, res) {
       const bearer = String(req.headers["authorization"] || "").replace(/^Bearer\s+/i, "");
       const token = bearer || body.token || "";
       if (token) {
-        try { creatorId = sso.verifyJwt(token).claims.sub || creatorId; }
+        try { creatorId = (await sso.verifyAny(token)).claims.sub || creatorId; } // HS256 or RS256 sso-issue
         catch (e) { return json(res, 401, { error: "invalid corax token: " + e.message }); }
       }
       if (!creatorId) return json(res, 400, { error: "creatorId (or a corax Bearer token) required" });
