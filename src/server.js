@@ -253,26 +253,41 @@ async function handler(req, res) {
       const out = { env, hasKey: !!apiKey, hasSecret: !!apiSecret, keyTail: apiKey ? apiKey.slice(-4) : null, keyLen: apiKey ? apiKey.length : 0, secretLen: apiSecret ? apiSecret.length : 0 };
       res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
       if (!apiKey || !apiSecret) return res.end(JSON.stringify(out));
-      const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
+      const legacy = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
+      const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
+      const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
+      const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "1.1.1.1";
+      // Try every plausible refresh-token endpoint; for each token minted, test create-widget-url.
+      // The pair that yields a widgetUrl is the correct one.
+      const candidates = [
+        { name: "gateway /auth/public/v2/refresh-token", url: gw + "/auth/public/v2/refresh-token" },
+        { name: "gateway /partners/api/v2/refresh-token", url: gw + "/partners/api/v2/refresh-token" },
+        { name: "legacy /partners/api/v2/refresh-token", url: legacy + "/partners/api/v2/refresh-token" },
+      ];
+      out.attempts = [];
       try {
-        const r1 = await fetch(base + "/partners/api/v2/refresh-token", {
-          method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
-        });
-        const j1 = await r1.json().catch(() => ({}));
-        const token = j1 && (j1.data?.accessToken || j1.accessToken);
-        out.refresh = { status: r1.status, gotToken: !!token, expiresAt: j1?.data?.expiresAt ?? j1?.expiresAt ?? null, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 300)) };
-        if (token) {
-          const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
-          const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
-          const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "1.1.1.1";
-          const r2 = await fetch(gw + "/api/v2/auth/session", {
-            method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
-            body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
-          });
-          const j2 = await r2.json().catch(() => ({}));
-          out.create = { status: r2.status, gotWidgetUrl: !!(j2?.widgetUrl || j2?.data?.widgetUrl), referrerDomain, error: (j2?.widgetUrl || j2?.data?.widgetUrl) ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 300)) };
+        for (const c of candidates) {
+          const a = { refreshEndpoint: c.name };
+          out.attempts.push(a);
+          try {
+            const r1 = await fetch(c.url, {
+              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret }, body: JSON.stringify({ apiKey }),
+            });
+            const j1 = await r1.json().catch(() => ({}));
+            const token = j1 && (j1.data?.accessToken || j1.accessToken);
+            a.refresh = { status: r1.status, gotToken: !!token, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 200)) };
+            if (!token) continue;
+            const r2 = await fetch(gw + "/api/v2/auth/session", {
+              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+              body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
+            });
+            const j2 = await r2.json().catch(() => ({}));
+            a.create = { status: r2.status, gotWidgetUrl: !!(j2?.widgetUrl || j2?.data?.widgetUrl), error: (j2?.widgetUrl || j2?.data?.widgetUrl) ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) };
+            if (a.create.gotWidgetUrl) { out.winner = c.name; break; }
+          } catch (e) { a.exception = (e && e.message) || String(e); }
         }
       } catch (e) { out.exception = (e && e.message) || String(e); }
+      out.referrerDomain = referrerDomain;
       return res.end(JSON.stringify(out));
     }
     // Transak fiat on-ramp/off-ramp — server-side widget-URL generation (Transak's MANDATORY
