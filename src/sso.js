@@ -51,25 +51,31 @@ export function verifyJwt(token) {
   return { claims, verified: true };
 }
 
-// Normalize a creator identity out of Supabase Auth claims. Supabase nests app-specific fields under
-// `user_metadata`; we also accept flat fields so corax can shape the token however it likes. Anything
-// missing degrades to a sensible default at the call site.
+// Normalize a creator identity out of Supabase Auth claims. Verified against the live CoraX project
+// (aokaupvmtakfegdpyvky): `sub` is the auth user id; `user_metadata` carries display_name / name /
+// full_name and avatar_url / picture. It does NOT carry the token config, socials, channel, or wallet —
+// those live in relational tables (profiles.wallet_address, profiles.linked_providers, the channel_*
+// tables). So we read what's actually in the token and treat token/socials as OPTIONAL enrichment corax
+// may add later via `custom_claims`; the caller supplies wallet/symbol when the JWT can't.
 export function creatorFromClaims(claims = {}) {
   const meta = claims.user_metadata || claims.metadata || {};
-  const token = meta.token || claims.token || {};
-  const socials = meta.socials || claims.socials || [];
-  const coraxCreatorId = claims.sub || meta.creator_id || meta.creatorId || meta.channel_id || "";
+  const custom = meta.custom_claims || claims.custom_claims || {};
+  const token = meta.token || custom.token || claims.token || {};        // optional enrichment
+  const socials = meta.socials || custom.socials || claims.socials || []; // optional enrichment
+  const app = claims.app_metadata || {};
+  const coraxCreatorId = claims.sub || meta.sub || meta.creator_id || meta.creatorId || "";
   return {
-    coraxCreatorId,
-    channelId: meta.channel_id || meta.channelId || meta.creator_id || coraxCreatorId,
-    wallet: claims.wallet || meta.wallet || meta.wallet_address || "",
-    name: token.name || meta.display_name || meta.name || claims.name || "",
-    symbol: token.symbol || meta.symbol || "",
-    logo: token.logo || token.image || meta.avatar_url || meta.avatar || "",
+    coraxCreatorId,                                    // = auth.users.id = profiles.user_id = oneip_creator_tokens.creator_id
+    channelId: meta.channel_id || meta.channelId || custom.channel_id || "", // empty unless corax adds it
+    wallet: claims.wallet || meta.wallet_address || custom.wallet_address || "", // usually NOT in the JWT
+    name: token.name || meta.display_name || meta.name || meta.full_name || claims.name || "",
+    symbol: token.symbol || meta.symbol || "",         // not in the JWT → caller derives from name
+    logo: token.logo || token.image || meta.avatar_url || meta.picture || "",
     website: token.website || meta.website || "",
     twitter: token.twitter || meta.twitter || "",
     telegram: token.telegram || meta.telegram || "",
     description: token.description || meta.bio || "",
-    socials: Array.isArray(socials) ? socials : [],
+    provider: app.provider || meta.provider_id || "",  // google / twitter / … (linked_providers)
+    socials: Array.isArray(socials) ? socials : [],    // empty from a stock CoraX JWT → no auto-verify
   };
 }
