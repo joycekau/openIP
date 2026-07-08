@@ -189,6 +189,8 @@ async function handler(req, res) {
       // referrerDomain is mandatory; use the calling host (must match a domain whitelisted in the
       // Transak dashboard). Falls back to oneip.io.
       const referrerDomain = String(req.headers.host || "oneip.io").replace(/:\d+$/, "");
+      // create-widget-url REQUIRES x-user-ip (end user's IP) + x-api-key headers.
+      const userIp = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || (req.socket && req.socket.remoteAddress) || "1.1.1.1";
       const widgetParams = { apiKey, referrerDomain, productsAvailed: inBody.productsAvailed === "SELL" ? "SELL" : "BUY" };
       for (const k of ["network", "defaultNetwork", "cryptoCurrencyCode", "walletAddress", "fiatCurrency", "defaultFiatAmount", "cryptoCurrencyList", "themeColor", "colorMode", "hideMenu", "disableWalletAddressForm", "defaultPaymentMethod"]) {
         if (inBody[k] != null && inBody[k] !== "") widgetParams[k] = inBody[k];
@@ -202,10 +204,9 @@ async function handler(req, res) {
         const token = await transakAccessToken(env, apiKey, apiSecret);
         const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
         const r = await fetch(gw + "/api/v2/auth/session", {
-          // Send the token in BOTH headers — the gateway is picky about which it wants (access-token
-          // vs Authorization: <token>, no Bearer prefix).
           method: "POST",
-          headers: { accept: "application/json", "content-type": "application/json", "access-token": token, authorization: token },
+          // create-widget-url requires x-api-key + access-token + x-user-ip headers.
+          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
           body: JSON.stringify({ widgetParams }),
         });
         const j = await r.json().catch(() => ({}));
