@@ -101,9 +101,8 @@ let _transakTok = { token: null, exp: 0 };
 async function transakAccessToken(env, apiKey, apiSecret) {
   const now = Date.now();
   if (_transakTok.token && now < _transakTok.exp) return _transakTok.token;
-  // Issue the token from the SAME gateway host that create-widget-url uses — a token from
-  // api.transak.com is rejected by api-gateway.transak.com ("Invalid or missing access-token").
-  const base = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
+  // refresh-token lives on api.transak.com (the gateway 404s it); create-widget-url is on the gateway.
+  const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
   const r = await fetch(base + "/partners/api/v2/refresh-token", {
     method: "POST",
     headers: { "content-type": "application/json", "api-secret": apiSecret },
@@ -203,8 +202,10 @@ async function handler(req, res) {
         const token = await transakAccessToken(env, apiKey, apiSecret);
         const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
         const r = await fetch(gw + "/api/v2/auth/session", {
+          // Send the token in BOTH headers — the gateway is picky about which it wants (access-token
+          // vs Authorization: <token>, no Bearer prefix).
           method: "POST",
-          headers: { accept: "application/json", "content-type": "application/json", "access-token": token },
+          headers: { accept: "application/json", "content-type": "application/json", "access-token": token, authorization: token },
           body: JSON.stringify({ widgetParams }),
         });
         const j = await r.json().catch(() => ({}));
