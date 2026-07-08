@@ -189,6 +189,38 @@ export function createReaction({ creator, coin, amountCents, emoji, target, reac
   return orders[id];
 }
 
+/** Create + instantly settle an order from a SHARED-QUEUE row (a sale that a door already captured
+ *  payment for — oneip.io or a corax.live channel). The door owns fulfilment; the single engine owns
+ *  the money: it snapshots the split, records the order as settled, and fires the pool buyback. This
+ *  is the entry point behind "2 doors, 1 engine" — every paid sale, wherever it happened, settles
+ *  through the identical code path. Returns the settled order (buyback attached). */
+export async function settleQueued({ source, orderRef, creator, coin, type, category, amountCents, currency, fan, target, reactionKey }) {
+  const t = ["physical", "digital", "nft", "tip", "reaction"].includes(type) ? type : "digital";
+  const split = computeSplit(Math.round(amountCents), 0, t, category);
+  const id = newId();
+  await accounts.ensureLoaded();
+  const parties = accounts.resolveSaleParties(creator, Date.now());
+  const o = blankOrder({
+    id, source: source || "", orderRef: orderRef || "", type: t, productId: null,
+    creator, coin: coin || "",
+    fan: fan || "", address: null,
+    title: t === "reaction" ? (reactionKey || "Reaction") : t === "tip" ? "Tip" : "Order",
+    currency: currency || "USD",
+    target: target || "", reactionKey: reactionKey || "",
+    priceCents: Math.round(amountCents), costCents: 0, ...split,
+    deliverPayload: "", content: null, unlocked: t === "digital",
+    status: "delivered", paidAt: Date.now(), deliveredAt: Date.now(),
+  });
+  o.payout = splitPlatformPool(o.priceCents, o.platformFeeCents || 0, parties);
+  const rec = (o.poolCents || 0) > 0
+    ? await buyback.execute({ coin: o.coin, orderId: o.id, poolCents: o.poolCents })
+    : { skipped: true, reason: "physical/merchant sale — outside the token program (no pool share)" };
+  o.status = "settled"; o.settledAt = Date.now(); o.buyback = rec;
+  orders[id] = o;
+  persist();
+  return o;
+}
+
 export function get(id) { return orders[id] || null; }
 
 /** Public-safe view: hide the digital payload until it's actually unlocked (paid). */

@@ -41,6 +41,7 @@ import * as buyback from "./commerce/buyback.js";
 import * as payments from "./commerce/payments.js";
 import * as reactions from "./commerce/reactions.js";
 import * as agents from "./commerce/agents.js";
+import * as queue from "./commerce/queue.js";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 // On a persistent host / locally, web/ + data/ sit one level up from src/. On Vercel the function
@@ -178,7 +179,7 @@ async function handler(req, res) {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const path = url.pathname;
   try {
-    if (req.method === "OPTIONS") { res.writeHead(204, { "access-control-allow-origin": "*", "access-control-allow-methods": "GET,POST,OPTIONS", "access-control-allow-headers": "content-type,x-admin-token,authorization,x-oneip-token" }); return res.end(); }
+    if (req.method === "OPTIONS") { res.writeHead(204, { "access-control-allow-origin": "*", "access-control-allow-methods": "GET,POST,OPTIONS", "access-control-allow-headers": "content-type,x-admin-token,authorization,x-oneip-token,x-settle-secret" }); return res.end(); }
 
     // ---- pages (OpenIP is one brand; every host serves the launchpad) ----
     if (req.method === "GET" && (path === "/" || path === "/home" || path === "/home.html")) return servePage(res, "home.html");
@@ -705,6 +706,40 @@ async function handler(req, res) {
       if (payments.hasStripe()) return json(res, 400, { error: "use Stripe checkout in production" });
       const b = JSON.parse((await readBody(req)) || "{}");
       try { return json(res, 200, orders.publicOrder(await orders.markPaid(b.orderId))); } catch (e) { return json(res, 400, { error: e.message }); }
+    }
+
+    // ---- SHARED PAID-ORDERS QUEUE: the one place both doors hand paid sales to the single engine ----
+    // A door (oneip.io or a corax.live channel) captures payment natively, then POSTs the paid sale
+    // here. The single settlement engine (orders.settleQueued) runs the identical split + pool
+    // buyback regardless of which door it came from — "2 doors, 1 engine". Idempotent on
+    // (source, orderRef): webhook retries / at-least-once delivery never double-settle.
+    // Auth: shared secret in `x-settle-secret` (SETTLE_INGEST_SECRET). Unset ⇒ dev-open (mock mode).
+    if (req.method === "POST" && path === "/api/settle/ingest") {
+      const secret = process.env.SETTLE_INGEST_SECRET || "";
+      if (secret && req.headers["x-settle-secret"] !== secret) return json(res, 401, { error: "unauthorized" });
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const source = (b.source || "corax").toLowerCase();
+      if (!b.orderRef || !b.creator || !(b.amountCents > 0)) return json(res, 400, { error: "orderRef, creator, amountCents required" });
+      try {
+        // First product/post/sale for a brand-new creator → make sure their value pool exists.
+        const coin = b.coin || ensureValuePool(b.creator);
+        const { row, duplicate } = await queue.enqueue({ ...b, source, coin });
+        if (duplicate && row.status === "settled") {
+          return json(res, 200, { duplicate: true, alreadySettled: true, orderId: row.orderId });
+        }
+        // Settle immediately through the ONE engine, then mark the queue row done.
+        const settled = await orders.settleQueued({
+          source, orderRef: b.orderRef, creator: b.creator, coin,
+          type: b.type, category: b.category, amountCents: b.amountCents, currency: b.currency,
+          fan: b.fan, target: b.target, reactionKey: b.reactionKey,
+        });
+        await queue.markSettled(source, b.orderRef, settled.id);
+        if (settled.type === "reaction" && b.target && b.reactionKey) reactions.bump(b.target, b.reactionKey);
+        return json(res, 200, { settled: true, order: orders.publicOrder(settled), buyback: settled.buyback });
+      } catch (e) {
+        try { await queue.markError(source, b.orderRef, e.message); } catch (_) {}
+        return json(res, 400, { error: e.message });
+      }
     }
 
     // ---- email-first accounts (register with email → handle is your account; bind wallet later) ----
@@ -1245,6 +1280,25 @@ async function handler(req, res) {
         const b = JSON.parse((await readBody(req)) || "{}");
         try { return json(res, 200, { lamports: treasury.topUp(Number(b.lamports), b.note), sol: treasury.balanceSol() }); } catch (e) { return json(res, 400, { error: e.message }); }
       }
+      // Shared settlement queue: view + drain (the fallback worker that retries any pending/errored
+      // rows — e.g. sales enqueued while the engine was down, or that failed a transient buyback).
+      if (req.method === "GET" && path === "/api/admin/settle/queue") return json(res, 200, await queue.snapshot());
+      if (req.method === "POST" && path === "/api/admin/settle/drain") {
+        const pend = await queue.pending();
+        const results = [];
+        for (const r of pend) {
+          try {
+            const settled = await orders.settleQueued(r);
+            await queue.markSettled(r.source, r.orderRef, settled.id);
+            if (settled.type === "reaction" && r.target && r.reactionKey) reactions.bump(r.target, r.reactionKey);
+            results.push({ ref: `${r.source}:${r.orderRef}`, ok: true, buyback: settled.buyback && settled.buyback.status });
+          } catch (e) {
+            await queue.markError(r.source, r.orderRef, e.message);
+            results.push({ ref: `${r.source}:${r.orderRef}`, ok: false, error: e.message });
+          }
+        }
+        return json(res, 200, { drained: results.length, results });
+      }
       // Channel-payout ledger + authorized regional partners (2-tier country->local).
       if (req.method === "GET" && path === "/api/admin/payouts") return json(res, 200, orders.payouts());
       if (req.method === "GET" && path === "/api/admin/agents") return json(res, 200, agents.list());
@@ -1306,6 +1360,7 @@ export function ensureReady() {
       await buyback.load();
       await reactions.load();
       await agents.load();
+      await queue.load();
     })();
   }
   return _ready;
