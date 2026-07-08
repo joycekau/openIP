@@ -154,24 +154,28 @@ async function servePage(res, file) {
   return res.end(html);
 }
 
-// Transak partner access token — exchanged from apiKey + api-secret, valid 7 days (only the latest is
-// valid). Cached in memory and refreshed proactively so we don't re-auth on every widget-url request.
+// Transak partner access token — exchanged from apiKey + api-secret. Generating a new token
+// invalidates ALL previously issued ones, so a token cached here can die at any moment (manual
+// refresh in the dashboard, another serverless instance refreshing, etc.). Callers pass
+// force=true to bypass the cache and mint a fresh token when Transak rejects the cached one.
 let _transakTok = { token: null, exp: 0 };
-async function transakAccessToken(env, apiKey, apiSecret) {
+async function transakAccessToken(env, apiKey, apiSecret, force) {
   const now = Date.now();
-  if (_transakTok.token && now < _transakTok.exp) return _transakTok.token;
+  if (!force && _transakTok.token && now < _transakTok.exp) return _transakTok.token;
   // refresh-token lives on api.transak.com (the gateway 404s it); create-widget-url is on the gateway.
   const base = env === "PRODUCTION" ? "https://api.transak.com" : "https://api-stg.transak.com";
   const r = await fetch(base + "/partners/api/v2/refresh-token", {
     method: "POST",
-    headers: { "content-type": "application/json", "api-secret": apiSecret },
+    headers: { accept: "application/json", "content-type": "application/json", "api-secret": apiSecret },
     body: JSON.stringify({ apiKey }),
   });
   const j = await r.json().catch(() => ({}));
   const token = j && (j.data?.accessToken || j.accessToken);
   if (!r.ok || !token) throw new Error((j && (j.error?.message || j.message)) || `Transak access token failed (${r.status})`);
-  // Token lives 7 days; cache for 6 to stay clear of the boundary.
-  _transakTok = { token, exp: now + 6 * 24 * 3600 * 1000 };
+  // Prefer Transak's own expiry (unix seconds), refreshing an hour early; else assume the
+  // documented 7 days and cache for 6 to stay clear of the boundary.
+  const expiresAt = Number(j.data?.expiresAt || j.expiresAt) * 1000;
+  _transakTok = { token, exp: expiresAt > now ? expiresAt - 3600 * 1000 : now + 6 * 24 * 3600 * 1000 };
   return token;
 }
 
@@ -260,14 +264,22 @@ async function handler(req, res) {
       // Prefilled a wallet? Lock the destination so funds can only reach the user's own address.
       if (widgetParams.walletAddress && widgetParams.disableWalletAddressForm == null) widgetParams.disableWalletAddressForm = true;
       try {
-        const token = await transakAccessToken(env, apiKey, apiSecret);
         const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
-        const r = await fetch(gw + "/api/v2/auth/session", {
+        // create-widget-url requires x-api-key + access-token + x-user-ip headers. No `authorization`
+        // header — that slot is for end-USER auth tokens and confuses the gateway if it carries the
+        // partner token.
+        const createSession = async (token) => fetch(gw + "/api/v2/auth/session", {
           method: "POST",
-          // create-widget-url requires x-api-key + access-token + x-user-ip headers.
-          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, authorization: `Bearer ${token}`, "x-user-ip": userIp },
+          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
           body: JSON.stringify({ widgetParams }),
         });
+        let r = await createSession(await transakAccessToken(env, apiKey, apiSecret));
+        // Transak invalidates every older access token whenever a new one is minted, so our cached
+        // token can be rejected through no fault of ours. Per Transak support: refresh the token once
+        // and immediately reuse it on create-widget-url — i.e. force a fresh token and retry.
+        if (r.status === 401 || r.status === 403) {
+          r = await createSession(await transakAccessToken(env, apiKey, apiSecret, true));
+        }
         const j = await r.json().catch(() => ({}));
         const widgetUrl = j && (j.widgetUrl || (j.data && j.data.widgetUrl));
         if (!r.ok || !widgetUrl) {
