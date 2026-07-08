@@ -260,8 +260,11 @@
     return s;
   }
   function apply(root) {
-    (root || document).querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.getAttribute("data-i18n")); });
-    (root || document).querySelectorAll("[data-i18n-ph]").forEach((el) => { el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph"))); });
+    // apply doubles as a DOMContentLoaded handler (see below), where `root` is the Event —
+    // anything without querySelectorAll falls back to document.
+    const scope = root && typeof root.querySelectorAll === "function" ? root : document;
+    scope.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.getAttribute("data-i18n")); });
+    scope.querySelectorAll("[data-i18n-ph]").forEach((el) => { el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph"))); });
   }
   function setLang(l) {
     if (!DICT[l]) return;

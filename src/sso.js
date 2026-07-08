@@ -10,12 +10,16 @@
 //     trusted (verified:false), so the whole onboarding flow is demonstrable without a shared secret
 //     (mirrors oauth's mock profiles). Wire the secret before production.
 //
-// (Asymmetric / JWKS verification — the reserved CORAX_JWT_JWKS_URL path — is a later extension:
-//  Node's crypto.createPublicKey supports `format:"jwk"` directly, so add a cached JWKS fetch here
-//  and branch on header.alg when corax moves to RS256/ES256.)
-import { createHmac, timingSafeEqual } from "node:crypto";
+// A THIRD mode covers corax's sso-issue tokens (the /apps/oneip embed handoff): those are RS256,
+// signed with corax's own keypair and published at its JWKS endpoint (sso-jwks). verifyAny() below
+// branches on header.alg — RS256 verifies against the (cached) JWKS via CORAX_JWT_JWKS_URL, HS256
+// falls through to verifyJwt(). Use verifyAny() for any token that may come from the corax embed.
+import { createHmac, createPublicKey, timingSafeEqual, verify as rsaVerify } from "node:crypto";
 
 const SECRET = process.env.CORAX_JWT_SECRET || process.env.SUPABASE_JWT_SECRET || "";
+// corax publishes its SSO public key here (supabase edge fn `sso-jwks`, CoraX project).
+const JWKS_URL = process.env.CORAX_JWT_JWKS_URL ||
+  "https://aokaupvmtakfegdpyvky.supabase.co/functions/v1/sso-jwks";
 
 export function isConfigured() {
   return Boolean(SECRET);
@@ -47,6 +51,50 @@ export function verifyJwt(token) {
   const expected = createHmac("sha256", SECRET).update(`${h}.${p}`).digest();
   const got = b64urlToBuf(sig);
   if (expected.length !== got.length || !timingSafeEqual(expected, got)) throw new Error("bad signature");
+  if (claims.exp && Math.floor(Date.now() / 1000) > Number(claims.exp)) throw new Error("token expired");
+  return { claims, verified: true };
+}
+
+// ---- RS256 (corax sso-issue tokens) --------------------------------------------------------
+// JWKS is cached for an hour; on fetch failure we keep serving a previously-good keyset.
+let _jwks = { keys: null, at: 0 };
+async function fetchJwks() {
+  if (_jwks.keys && Date.now() - _jwks.at < 3600_000) return _jwks.keys;
+  try {
+    const r = await fetch(JWKS_URL, { headers: { accept: "application/json" } });
+    if (!r.ok) throw new Error(`jwks ${r.status}`);
+    const j = await r.json();
+    if (!Array.isArray(j.keys) || !j.keys.length) throw new Error("jwks empty");
+    _jwks = { keys: j.keys, at: Date.now() };
+  } catch (e) {
+    if (_jwks.keys) return _jwks.keys; // stale beats none — keys rotate rarely
+    throw e;
+  }
+  return _jwks.keys;
+}
+
+/** Verify a corax token of EITHER kind: RS256 (sso-issue embed handoff, verified against corax's
+ *  JWKS) or HS256 (raw Supabase Auth JWT, verified with the shared secret via verifyJwt). Same
+ *  return shape: { claims, verified }. RS256 dev fallback mirrors the HS256 one — if the JWKS is
+ *  unreachable AND no HS256 secret is configured, the token is decoded untrusted (verified:false). */
+export async function verifyAny(token) {
+  const parts = String(token || "").split(".");
+  if (parts.length !== 3) throw new Error("malformed token");
+  const [h, p, sig] = parts;
+  const header = b64urlToJson(h);
+  if (header.alg !== "RS256") return verifyJwt(token);
+
+  const claims = b64urlToJson(p);
+  let keys;
+  try { keys = await fetchJwks(); }
+  catch (e) {
+    if (!SECRET) return { claims, verified: false }; // dev/mock parity with the HS256 path
+    throw new Error("corax jwks unavailable: " + e.message);
+  }
+  const jwk = (header.kid && keys.find((k) => k && k.kid === header.kid)) || keys[0];
+  const pub = createPublicKey({ key: jwk, format: "jwk" });
+  const ok = rsaVerify("RSA-SHA256", Buffer.from(`${h}.${p}`), pub, b64urlToBuf(sig));
+  if (!ok) throw new Error("bad signature");
   if (claims.exp && Math.floor(Date.now() / 1000) > Number(claims.exp)) throw new Error("token expired");
   return { claims, verified: true };
 }

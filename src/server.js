@@ -748,6 +748,32 @@ async function handler(req, res) {
       const b = JSON.parse((await readBody(req)) || "{}");
       try { return json(res, 200, accounts.bindWallet(b.token, b.wallet)); } catch (e) { return json(res, 400, { error: e.message }); }
     }
+    // CoraX SSO session: the corax embed host (/apps/oneip) hands us a short-lived corax-signed
+    // RS256 token (#sso_token, minted by corax's sso-issue). Verify it against corax's JWKS and
+    // mint a regular oneIP account session — the embedded app is signed in with no extra login.
+    // (Distinct from /api/sso/corax, which creates a LISTING; this creates a SESSION.)
+    if (req.method === "POST" && path === "/api/sso/corax/session") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      const bearer = String(req.headers["authorization"] || "").replace(/^Bearer\s+/i, "");
+      const token = bearer || b.token || "";
+      if (!token) return json(res, 400, { error: "corax sso token required" });
+      let auth;
+      try { auth = await sso.verifyAny(token); }
+      catch (e) { return json(res, 401, { error: "invalid corax token: " + e.message }); }
+      // Session minting is real auth — unverified (dev-decoded) claims are only accepted in
+      // explicit local dev (no secret configured AND not a deployed environment).
+      if (!auth.verified && (sso.isConfigured() || process.env.VERCEL || process.env.NODE_ENV === "production")) {
+        return json(res, 401, { error: "corax token could not be verified" });
+      }
+      const who = sso.creatorFromClaims(auth.claims);
+      if (!who.coraxCreatorId) return json(res, 400, { error: "token has no identity (sub)" });
+      try {
+        const a = accounts.loginWithCorax({ coraxId: who.coraxCreatorId, email: auth.claims.email || "", name: who.name });
+        // Seed the creator profile only on first creation — never clobber an existing profile.
+        if (a.created) social.setCreator(a.handle, { ...(a.email ? { email: a.email } : {}), ...(who.name ? { displayName: who.name } : {}) });
+        return json(res, 200, a);
+      } catch (e) { return json(res, 400, { error: e.message }); }
+    }
 
     // ---- legacy link-out marketplace (kept for CoraX channel feeds / older records) ----
     if (req.method === "GET" && path === "/api/shop/link-products") {
@@ -839,7 +865,7 @@ async function handler(req, res) {
       if (!token) return json(res, 400, { error: "corax auth token required (Authorization: Bearer <jwt>, or { token })" });
 
       let auth;
-      try { auth = sso.verifyJwt(token); }
+      try { auth = await sso.verifyAny(token); } // HS256 Supabase JWT or RS256 sso-issue token
       catch (e) { return json(res, 401, { error: "invalid corax token: " + e.message }); }
       const who = sso.creatorFromClaims(auth.claims);
       if (!who.coraxCreatorId) return json(res, 400, { error: "token has no creator id (sub / creator_id)" });

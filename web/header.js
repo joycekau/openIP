@@ -30,6 +30,46 @@
   window.OneipEmbedded = coraxEmbedded();
   if (window.OneipEmbedded) document.documentElement.classList.add("oneip-embed");
 
+  // ---- corax SSO auto-login ------------------------------------------------------------------
+  // The corax embed host (/apps/oneip) appends #sso_token=<short-lived corax-signed JWT> on load
+  // and re-posts renewals via postMessage({type:"corax_sso_token"}). Exchange it once for a regular
+  // oneIP account session (POST /api/sso/corax/session) so the embedded app is signed in with no
+  // extra login step. Uses the same localStorage keys as the studio sign-in (oneip_token/creator).
+  (function coraxSsoBootstrap() {
+    if (!window.OneipEmbedded) return;
+    let busy = false;
+    const exchange = async (tok) => {
+      if (!tok || busy || localStorage.getItem("oneip_token")) return; // already signed in
+      busy = true;
+      try {
+        const r = await (await fetch("/api/sso/corax/session", {
+          method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token: tok }),
+        })).json();
+        if (r && r.token && r.handle) {
+          localStorage.setItem("oneip_token", r.token);
+          localStorage.setItem("oneip_creator", r.handle);
+          window.dispatchEvent(new CustomEvent("oneip-sso-login", { detail: { handle: r.handle } }));
+          // The studio gates its dashboard on the token at boot — reload once so it picks it up.
+          if (/^\/studio/.test(location.pathname) && !sessionStorage.getItem("oneip_sso_reloaded")) {
+            sessionStorage.setItem("oneip_sso_reloaded", "1");
+            location.reload();
+          }
+        }
+      } catch (_) { /* embed stays logged out; manual sign-in still works */ }
+      busy = false;
+    };
+    const m = (location.hash || "").match(/sso_token=([^&]+)/);
+    if (m) {
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (_) { /* keep hash */ }
+      exchange(decodeURIComponent(m[1]));
+    }
+    window.addEventListener("message", (e) => {
+      if (!/corax\.live|repo-smooch-sync/i.test(e.origin || "")) return; // only the corax host
+      const d = e.data;
+      if (d && d.type === "corax_sso_token" && d.token) exchange(String(d.token));
+    });
+  })();
+
   const CSS = `
   /* global mobile safety — applied on every page that loads the header */
   img,svg,video,iframe{max-width:100%}
