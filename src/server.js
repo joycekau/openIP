@@ -206,7 +206,7 @@ async function handler(req, res) {
         const r = await fetch(gw + "/api/v2/auth/session", {
           method: "POST",
           // create-widget-url requires x-api-key + access-token + x-user-ip headers.
-          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, authorization: `Bearer ${token}`, "x-user-ip": userIp },
           body: JSON.stringify({ widgetParams }),
         });
         const j = await r.json().catch(() => ({}));
