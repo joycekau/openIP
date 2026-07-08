@@ -1,8 +1,10 @@
-// Revenue -> protocol buyback -> floor. When an order settles, 20% of the NET fiat profit is
-// converted (via the SOL float pool) and funded into that token's on-chain floor vault. Every
-// buyback is recorded with its on-chain signature so fans can publicly verify it.
+// Revenue -> protocol buyback -> token pool. When a digital order settles, its 20% pool share is
+// converted (via the SOL float pool) and routed on-chain through the token's curve — the `buy`
+// instruction itself lands ~80% in curve liquidity and ~20% in the floor vault, matching the
+// pool's locked 80/20 liquidity/floor composition. Every buyback is recorded with its on-chain
+// signature so fans can publicly verify it.
 //
-// MESSAGING (locked): only ever describe this as "revenue -> protocol buyback -> higher floor"
+// MESSAGING (locked): only ever describe this as "revenue -> protocol buyback -> value pool"
 // (a utility/protocol mechanic). NEVER "dividend / payout / holders share profit" — that framing
 // trips the securities (Howey) line.
 //
@@ -13,8 +15,6 @@ import * as treasury from "./treasury.js";
 import { loadJson, saveJson } from "../persist.js";
 
 const KEY = "buybacks";
-// 20% of net profit funds the floor — mirrors the 20% floor-vault split of every on-curve buy.
-const BUYBACK_BPS = Number(process.env.BUYBACK_BPS || 2000);
 
 let byCoin = {}; // coin(mint) -> [record...]
 let loaded = false;
@@ -28,10 +28,10 @@ function persist() { saveJson(KEY, byCoin); }
 
 const onchainEnabled = () => process.env.SOLANA_BUYBACK === "1";
 
-/** How much a given net profit would buy back (no side effects) — for quotes/previews. */
-export function quote(netProfitCents) {
-  const buybackCents = Math.max(0, Math.round((netProfitCents * BUYBACK_BPS) / 10000));
-  return { buybackCents, bps: BUYBACK_BPS, ...treasury.quoteLamports(buybackCents) };
+/** Convert a pool share (cents) to SOL terms (no side effects) — for quotes/previews. */
+export function quote(poolCents) {
+  const buybackCents = Math.max(0, Math.round(poolCents));
+  return { buybackCents, ...treasury.quoteLamports(buybackCents) };
 }
 
 /** Fund a token's floor vault with `lamports`. Lazy on-chain (MVP reuses the proven `buy` ix:
@@ -46,19 +46,20 @@ async function fundFloor({ coin, lamports }) {
   return mod.fundFloorViaBuy({ mint: coin, lamports });
 }
 
-/** Execute a buyback for a settled order. Reserves SOL from the float pool, funds the floor,
- *  records the proof. Returns the record (or { skipped } when there's no profit). */
-export async function execute({ coin, orderId, netProfitCents }) {
+/** Execute a buyback for a settled order's pool share. Reserves SOL from the float pool, routes it
+ *  through the token's curve (~80% liquidity / ~20% floor on-chain), records the proof. Returns the
+ *  record (or { skipped } when there's nothing to route). */
+export async function execute({ coin, orderId, poolCents }) {
   // A creator can sell before launching their token — the order still settles, the buyback is
-  // just skipped (TODO: escrow pre-launch 20% and apply it once they launch their value pool).
+  // just skipped (TODO: escrow pre-launch pool share and apply it once they launch).
   if (!coin) return { skipped: true, reason: "creator has no value pool (token) yet" };
-  const q = quote(netProfitCents);
-  if (q.buybackCents <= 0 || q.lamports <= 0) return { skipped: true, reason: "no net profit" };
-  // Auto-provisioned value pools have a placeholder mint ("Kol…") with no on-chain floor vault yet.
-  // ESCROW the 20% to the coin; it flushes into the real floor when the creator mints via Phantom.
-  // Real Solana mints never start with "Kol".
+  const q = quote(poolCents);
+  if (q.buybackCents <= 0 || q.lamports <= 0) return { skipped: true, reason: "no pool share" };
+  // Auto-provisioned value pools have a placeholder mint ("Kol…") with no on-chain accounts yet.
+  // ESCROW the pool share to the coin; it flushes into the real token when the creator mints via
+  // Phantom. Real Solana mints never start with "Kol".
   if (String(coin).startsWith("Kol")) {
-    const rec = { orderId, coin, ts: Date.now(), buybackCents: q.buybackCents, bps: q.bps, usd: q.usd, solUsd: q.solUsd, lamports: q.lamports, status: "escrow", sig: null, explorer: "", mock: false };
+    const rec = { orderId, coin, ts: Date.now(), buybackCents: q.buybackCents, usd: q.usd, solUsd: q.solUsd, lamports: q.lamports, status: "escrow", sig: null, explorer: "", mock: false };
     byCoin[coin] = byCoin[coin] || [];
     byCoin[coin].unshift(rec);
     persist();
@@ -66,7 +67,7 @@ export async function execute({ coin, orderId, netProfitCents }) {
   }
   const rec = {
     orderId, coin, ts: Date.now(),
-    buybackCents: q.buybackCents, bps: q.bps, usd: q.usd, solUsd: q.solUsd, lamports: q.lamports,
+    buybackCents: q.buybackCents, usd: q.usd, solUsd: q.solUsd, lamports: q.lamports,
     status: "funded", sig: null, explorer: "", mock: false,
   };
   // Try to reserve SOL from the float pool. If it's short, QUEUE the buyback (settle still

@@ -1,12 +1,21 @@
 // Order lifecycle + the money math behind the closed loop. Fans pay in FIAT; the supplier ships;
-// once the order SETTLES (delivered AND past the refund window) 20% of the NET profit funds the
-// token floor via buyback.js.
+// physical orders settle after the refund window, digital/tip/reaction settle instantly.
 //
-//   pending -> paid -> shipped -> delivered -> SETTLED ──► triggers buyback
+//   pending -> paid -> shipped -> delivered -> SETTLED ──► triggers pool buyback (digital only)
 //                                          ↘ refunded / chargeback ──► no buyback
 //
-// IRON RULE: buyback fires ONLY on settle (after the refund window), never on `paid`. A refund
-// before settle just ends the order — the floor never moves on money that might be clawed back.
+// UNIFIED SPLIT (user-locked 2026-07-08, same numbers on oneIP and corax.live channels):
+//   • DIGITAL goods & services (digital / tip / reaction / nft — the token program):
+//       sale price = 70% creator + 20% token pool + 10% platform
+//       The 20% pool splits 80% liquidity / 20% floor (matching the on-chain buy mechanics).
+//       Payment/settlement costs are ABSORBED by the platform out of its 10% (no off-the-top
+//       settlement fee) — the fan-facing math is a clean 70/20/10 of the price.
+//   • PHYSICAL goods are NOT in the token program (no pool routing). They pay the category
+//       commission (retail default 5%, min $1 — mirrors corax platform_fee_config); the creator
+//       keeps price − commission − payment fee − supplier cost.
+//
+// IRON RULE: buyback fires ONLY on settle, never on `paid`. A refund before settle just ends the
+// order — the pool never moves on money that might be clawed back.
 import { randomBytes } from "node:crypto";
 import * as source from "./source.js";
 import * as buyback from "./buyback.js";
@@ -14,20 +23,25 @@ import * as accounts from "../accounts.js";
 import { loadJson, saveJson } from "../persist.js";
 
 const KEY = "orders";
-// Payment-processor fee (Stripe-like 2.9% + 30c) deducted from gross before profit. Configurable.
+// Payment-processor fee (Stripe-like 2.9% + 30c). Informational for digital (absorbed by the
+// platform's 10%); deducted from the creator's remainder for physical (a real fulfilment cost).
 const FEE_BPS = Number(process.env.PAYMENT_FEE_BPS || 290);
 const FEE_FIXED_CENTS = Number(process.env.PAYMENT_FEE_FIXED_CENTS || 30);
-// oneIP revenue split (user-locked). Net profit = gross fiat - supplier cost - payment fee = 100%,
-// split THREE ways: 75% creator / 20% floor / 5% platform pool. (Same split for every type:
-// product/digital/tip/reaction — tips & reactions just have zero cost.)
-const FLOOR_BPS = Number(process.env.FLOOR_BPS || 2000);             // 20% of net -> floor buyback
-const PLATFORM_POOL_BPS = Number(process.env.PLATFORM_POOL_BPS || 500); // 5% of net -> platform pool
-// The 5% platform pool is itself sub-split, in bps OF NET (must sum to <= PLATFORM_POOL_BPS; the
-// platform base keeps the remainder PLUS any empty partner/referrer slots). 0.5/1.0/1.0 -> base 2.5%.
+// Digital split (bps of the sale price). Must sum to 10000.
+const CREATOR_BPS = Number(process.env.CREATOR_BPS || 7000);        // 70% creator
+const POOL_BPS = Number(process.env.POOL_BPS || 2000);              // 20% token pool
+const PLATFORM_BPS = Number(process.env.PLATFORM_BPS || 1000);      // 10% platform (absorbs settlement)
+// The 20% pool composition (matches the on-chain buy: ~80% curve liquidity / ~20% floor vault).
+const POOL_LIQ_BPS = Number(process.env.POOL_LIQ_BPS || 8000);      // 80% of pool -> liquidity
+// Physical category commission (mirrors corax platform_fee_config retail row).
+const RETAIL_COMMISSION_BPS = Number(process.env.RETAIL_COMMISSION_BPS || 500); // 5% of gross
+const RETAIL_MIN_FEE_CENTS = Number(process.env.RETAIL_MIN_FEE_CENTS || 100);  // min $1
+// The platform's take is itself sub-split among channel partners, in bps OF THE SALE PRICE
+// (empty slots fall back to the platform base — the creator/pool never pay more for the channel).
 const POOL_COUNTRY_BPS = Number(process.env.POOL_COUNTRY_BPS || 50);   // 0.5% country partner
 const POOL_LOCAL_BPS = Number(process.env.POOL_LOCAL_BPS || 100);      // 1.0% local partner
 const POOL_REFERRAL_BPS = Number(process.env.POOL_REFERRAL_BPS || 100);// 1.0% 1-gen referral
-// Days after "delivered" before money is considered un-clawbackable and the buyback may fire.
+// Days after "delivered" before money is considered un-clawbackable and a physical order may settle.
 const REFUND_WINDOW_DAYS = Number(process.env.REFUND_WINDOW_DAYS || 7);
 
 let orders = {}; // id -> order
@@ -44,37 +58,59 @@ function persist() { saveJson(KEY, orders); }
 
 const paymentFee = (gross) => Math.round((gross * FEE_BPS) / 10000) + FEE_FIXED_CENTS;
 
-/** The money math for one sale. Net profit = gross fiat - supplier cost - payment fee = 100%, then
- *  split 75% creator / 20% floor / 5% platform pool. The pool's 4-way sub-split (platform/country/
- *  local/referrer) is deferred to settle, when the parties + the 60-day referral gate are known. */
-function computeNet(priceCents, costCents = 0) {
+// Only physical goods need shipping + a refund window; digital/tip/nft/reaction settle the instant
+// payment clears, so the buyback can fund the pool immediately.
+const isInstant = (type) => type !== "physical";
+
+/** The money math for one sale.
+ *  Digital (token program): price = 70% creator + 20% pool + 10% platform, PSP fee absorbed by
+ *  the platform (recorded, informational). Physical: category commission (5%, min $1) to the
+ *  platform; creator keeps price − commission − PSP fee − supplier cost; no pool. */
+function computeSplit(priceCents, costCents, type) {
   const feeCents = paymentFee(priceCents);
-  const netProfitCents = Math.max(0, priceCents - costCents - feeCents);
-  const floorCents = Math.round((netProfitCents * FLOOR_BPS) / 10000);          // 20%
-  const platformFeeCents = Math.round((netProfitCents * PLATFORM_POOL_BPS) / 10000); // 5% pool
-  const creatorCents = netProfitCents - floorCents - platformFeeCents;          // 75% (remainder, exact)
-  return { feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents };
+  if (isInstant(type)) {
+    const poolCents = Math.round((priceCents * POOL_BPS) / 10000);
+    const platformFeeCents = Math.round((priceCents * PLATFORM_BPS) / 10000);
+    const creatorCents = priceCents - poolCents - platformFeeCents; // 70% (remainder, exact)
+    const liquidityCents = Math.round((poolCents * POOL_LIQ_BPS) / 10000);
+    return {
+      feeCents, feeAbsorbed: true,
+      netProfitCents: priceCents,      // split base (kept for back-compat with reports)
+      poolCents, liquidityCents, floorCents: poolCents - liquidityCents,
+      platformFeeCents, creatorCents,
+    };
+  }
+  const platformFeeCents = Math.max(Math.round((priceCents * RETAIL_COMMISSION_BPS) / 10000), RETAIL_MIN_FEE_CENTS);
+  const creatorCents = Math.max(0, priceCents - platformFeeCents - feeCents - (costCents || 0));
+  return {
+    feeCents, feeAbsorbed: false,
+    netProfitCents: Math.max(0, priceCents - (costCents || 0) - feeCents),
+    poolCents: 0, liquidityCents: 0, floorCents: 0,
+    platformFeeCents, creatorCents,
+  };
 }
 
-/** Split the 5% platform pool among platform / country partner / local partner / referrer, based on
- *  which parties are present for this sale. Empty slots fall back to the platform base, so the total
- *  is always exactly platformFeeCents (the merchant/creator never pay more for the channel). */
-function splitPlatformPool(netProfitCents, platformFeeCents, parties) {
-  const countryAgentCents = parties.countryAgentId ? Math.round((netProfitCents * POOL_COUNTRY_BPS) / 10000) : 0;
-  const localAgentCents = parties.localAgentId ? Math.round((netProfitCents * POOL_LOCAL_BPS) / 10000) : 0;
-  const referrerCents = parties.referrerActive ? Math.round((netProfitCents * POOL_REFERRAL_BPS) / 10000) : 0;
-  const platformBaseCents = platformFeeCents - countryAgentCents - localAgentCents - referrerCents;
+/** Split the platform take among platform / country partner / local partner / referrer, based on
+ *  which parties are present for this sale. Cuts are bps of the sale price, capped so the total is
+ *  always exactly platformFeeCents (the creator and pool never pay more for the channel). */
+function splitPlatformPool(baseCents, platformFeeCents, parties) {
+  let remaining = platformFeeCents;
+  const take = (bps, on) => {
+    if (!on) return 0;
+    const cut = Math.min(Math.round((baseCents * bps) / 10000), Math.max(0, remaining));
+    remaining -= cut;
+    return cut;
+  };
+  const countryAgentCents = take(POOL_COUNTRY_BPS, parties.countryAgentId);
+  const localAgentCents = take(POOL_LOCAL_BPS, parties.localAgentId);
+  const referrerCents = take(POOL_REFERRAL_BPS, parties.referrerActive);
   return {
     countryAgentId: parties.countryAgentId || "", countryAgentCents,
     localAgentId: parties.localAgentId || "", localAgentCents,
     referrerHandle: parties.referrerHandle || "", referrerCents,
-    platformBaseCents,
+    platformBaseCents: remaining,
   };
 }
-
-// Only physical goods need shipping + a refund window; digital/tip/nft settle the instant payment
-// clears (the money isn't clawed back), so the buyback can fund the floor immediately.
-const isInstant = (type) => type !== "physical";
 
 function blankOrder(extra) {
   return {
@@ -91,14 +127,14 @@ export function create({ productId, fan, address }) {
   if (!product) throw new Error("product not found");
   if (!product.active) throw new Error("product not available");
   const type = product.type || "physical";
-  const { feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents } = computeNet(product.priceCents, product.costCents);
+  const split = computeSplit(product.priceCents, product.costCents, type);
   const id = newId();
   orders[id] = blankOrder({
     id, type, productId, creator: product.creator, coin: product.coin,
     fan: fan || "", address: address || null,
     title: product.title, currency: product.currency,
     priceCents: product.priceCents, costCents: product.costCents,
-    feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents,
+    ...split,
     deliverPayload: type === "digital" ? product.contentUrl : "", // revealed to the buyer on delivery
     content: null, unlocked: false,
   });
@@ -106,18 +142,18 @@ export function create({ productId, fan, address }) {
   return orders[id];
 }
 
-/** Create a TIP order — ad-hoc, no catalog item. Fan picks the amount; cost is 0, so net = amount - fee. */
+/** Create a TIP order — ad-hoc, no catalog item. Digital economics: 70/20/10 of the amount. */
 export function createTip({ creator, coin, amountCents, fan, currency }) {
   if (!creator) throw new Error("creator required");
   if (!(amountCents > 0)) throw new Error("amountCents must be > 0");
   const amt = Math.round(amountCents);
-  const { feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents } = computeNet(amt, 0);
+  const split = computeSplit(amt, 0, "tip");
   const id = newId();
   orders[id] = blankOrder({
     id, type: "tip", productId: null, creator, coin: coin || "",
     fan: fan || "", address: null,
     title: "Tip", currency: currency || "USD",
-    priceCents: amt, costCents: 0, feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents,
+    priceCents: amt, costCents: 0, ...split,
     deliverPayload: "", content: null, unlocked: false,
   });
   persist();
@@ -125,20 +161,19 @@ export function createTip({ creator, coin, amountCents, fan, currency }) {
 }
 
 /** Create a paid EMOJI REACTION order — a fixed-price tip tagged with an emoji + a target
- *  (product/post/creator). Same economics as a tip: 5% platform fee + payment fee, rest → 20%
- *  floor + creator. Settles instantly like a tip. */
+ *  (product/post/creator). Digital economics: 70/20/10, settles instantly. */
 export function createReaction({ creator, coin, amountCents, emoji, target, reactionKey, fan, currency }) {
   if (!creator) throw new Error("creator required");
   if (!(amountCents > 0)) throw new Error("amountCents must be > 0");
   const amt = Math.round(amountCents);
-  const { feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents } = computeNet(amt, 0);
+  const split = computeSplit(amt, 0, "reaction");
   const id = newId();
   orders[id] = blankOrder({
     id, type: "reaction", productId: null, creator, coin: coin || "",
     fan: fan || "", address: null,
     title: emoji || "Reaction", currency: currency || "USD",
     emoji: emoji || "", target: target || "", reactionKey: reactionKey || "",
-    priceCents: amt, costCents: 0, feeCents, netProfitCents, floorCents, platformFeeCents, creatorCents,
+    priceCents: amt, costCents: 0, ...split,
     deliverPayload: "", content: null, unlocked: false,
   });
   persist();
@@ -166,8 +201,8 @@ function requireStatus(o, ...allowed) {
 }
 
 /** Fiat payment cleared. Physical -> hand to supplier for fulfillment. Instant types
- *  (digital/tip/nft) -> deliver immediately and settle (no shipping, no refund window),
- *  so the buyback funds the floor right away. Returns the (possibly settled) order. */
+ *  (digital/tip/nft/reaction) -> deliver immediately and settle (no shipping, no refund window),
+ *  so the buyback funds the pool right away. Returns the (possibly settled) order. */
 export async function markPaid(id) {
   const o = orders[id]; if (!o) throw new Error("order not found");
   requireStatus(o, "pending");
@@ -201,10 +236,10 @@ export function markDelivered(id) {
   return o;
 }
 
-/** Refund/chargeback — only valid BEFORE settle. Ends the order; the floor is never touched. */
+/** Refund/chargeback — only valid BEFORE settle. Ends the order; the pool is never touched. */
 export function refund(id, reason) {
   const o = orders[id]; if (!o) throw new Error("order not found");
-  if (o.status === "settled") throw new Error("cannot refund a settled order (buyback already funded the floor)");
+  if (o.status === "settled") throw new Error("cannot refund a settled order (buyback already funded the pool)");
   o.status = "refunded"; o.refundedAt = Date.now(); o.refundReason = reason || "";
   persist();
   return o;
@@ -215,19 +250,21 @@ export function settleEligible(o, now = Date.now()) {
   return o.status === "delivered" && o.deliveredAt && now - o.deliveredAt >= REFUND_WINDOW_DAYS * 864e5;
 }
 
-/** Settle a delivered order: 20% of net profit -> floor buyback. `force` skips the refund-window
- *  wait (used by smoke/admin). Returns the order with its buyback record attached. */
+/** Settle a delivered order: the order's 20% pool share funds the token pool via buyback (digital
+ *  only — physical is outside the token program). `force` skips the refund-window wait. */
 export async function settle(id, { force = false } = {}) {
   const o = orders[id]; if (!o) throw new Error("order not found");
   if (o.status === "settled") return o; // idempotent
   requireStatus(o, "delivered");
   if (!force && !settleEligible(o)) throw new Error(`refund window (${REFUND_WINDOW_DAYS}d) not elapsed`);
   // Resolve the channel parties + evaluate the 60-day referral gate (this mutates the creator's
-  // activity state, so it runs exactly once — settle is idempotent above). Then sub-split the 5% pool.
+  // activity state, so it runs exactly once — settle is idempotent above). Then sub-split the take.
   await accounts.ensureLoaded();
   const parties = accounts.resolveSaleParties(o.creator, Date.now());
-  o.payout = splitPlatformPool(o.netProfitCents, o.platformFeeCents || 0, parties);
-  const rec = await buyback.execute({ coin: o.coin, orderId: o.id, netProfitCents: o.netProfitCents });
+  o.payout = splitPlatformPool(o.priceCents, o.platformFeeCents || 0, parties);
+  const rec = (o.poolCents || 0) > 0
+    ? await buyback.execute({ coin: o.coin, orderId: o.id, poolCents: o.poolCents })
+    : { skipped: true, reason: "physical goods are outside the token program (no pool share)" };
   o.status = "settled"; o.settledAt = Date.now(); o.buyback = rec;
   persist();
   return o;
