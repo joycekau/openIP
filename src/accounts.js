@@ -104,6 +104,33 @@ export function resetPassword({ token, password }) {
   return { ...publicAccount(a), token: nt };
 }
 
+/** SSO login from corax.live (the caller has already VERIFIED the corax token). Finds the account
+ *  bound to this corax identity — or matches by the token's verified email, binding it — else
+ *  auto-creates a passwordless account (random unguessable hash; password login stays off until a
+ *  reset) with a handle derived from the display name / email. Returns a fresh session + `created`. */
+export function loginWithCorax({ coraxId, email, name }) {
+  coraxId = String(coraxId || "").trim();
+  if (!coraxId) throw new Error("corax identity required");
+  let a = Object.values(accounts).find((x) => x.coraxId === coraxId) || (email ? byEmail(email) : null);
+  const created = !a;
+  if (!a) {
+    const base = (String(name || "").replace(/[^A-Za-z0-9_]/g, "") ||
+      String(email || "").split("@")[0].replace(/[^A-Za-z0-9_]/g, "") || "creator").slice(0, 16);
+    let handle = base.length >= 2 ? base : `cx${base || coraxId.replace(/[^A-Za-z0-9]/g, "").slice(0, 8)}`;
+    for (let i = 2; accounts[handle]; i++) handle = `${base.slice(0, 14) || "creator"}${i}`;
+    const salt = randomBytes(16).toString("hex");
+    a = accounts[handle] = { handle, email: norm(email || ""), salt,
+      hash: hashPw(randomBytes(24).toString("hex"), salt), wallet: "",
+      referrerHandle: "", agentCountry: "", agentLocalId: "",
+      lastSettledSaleAt: 0, referralClosed: false, coraxId, createdAt: Date.now() };
+  } else if (!a.coraxId) {
+    a.coraxId = coraxId; // email matched an existing account — bind the corax identity to it
+  }
+  const token = newToken(); sessions[token] = a.handle;
+  persist();
+  return { ...publicAccount(a), token, created };
+}
+
 export function resolveToken(token) { return sessions[token] || null; }
 
 /** Guard for creator-owned writes. If `claimedHandle` is a REGISTERED account, the request MUST
