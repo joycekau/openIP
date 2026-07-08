@@ -113,6 +113,12 @@ function recomputeVerification(l, mint) {
 
 export function get(mint) { return mem[mint] || null; }
 
+// The one auto-listing that belongs to a corax creator (idempotency key for SSO onboarding).
+export function getByCoraxCreator(coraxCreatorId) {
+  if (!coraxCreatorId) return null;
+  return Object.values(mem).find((l) => l.coraxCreatorId === coraxCreatorId) || null;
+}
+
 export function setMeta(mint, patch) {
   const l = mem[mint];
   if (!l) throw new Error("launch not found");

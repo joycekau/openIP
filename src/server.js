@@ -22,6 +22,7 @@ import * as helius from "./sources/helius.js";
 import * as store from "./store.js";
 import * as launchpad from "./launchpad.js";
 import * as oauth from "./oauth.js";
+import * as sso from "./sso.js";
 import { loadJson, saveJson, saveJsonNow } from "./persist.js";
 import * as walletStore from "./wallets.js";
 import { discoverWallets } from "./discover.js";
@@ -433,6 +434,64 @@ async function handler(req, res) {
         await saveJsonNow(store, upd);
       }
       return json(res, 200, { creatorId: id, coraxChannelId: ch });
+    }
+
+    // ---- CoraX SSO auto-listing: sign up on CoraX → the system lists your token automatically ----
+    // The missing trigger behind the reserved `coraxCreatorId` seam. Corax authenticates the creator
+    // and hands us its Supabase Auth JWT (Authorization: Bearer <jwt>, or { token } in the body). We
+    // verify it, read the creator identity (+ any socials corax already OAuth-verified), and auto-create
+    // the launch record the moment the account exists — 20% floor, auto:true. Idempotent: one corax
+    // creator ⇒ one auto-listing. If ≥ 3 socials qualify it lands on the verified board immediately;
+    // otherwise it's tradable and waits for more socials. The trustless on-chain mint stays a later
+    // wallet-signed step — this creates the off-chain listing + metadata seam, not the SPL token.
+    if (req.method === "POST" && (path === "/api/creator/onboard" || path === "/api/sso/corax")) {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const bearer = String(req.headers["authorization"] || "").replace(/^Bearer\s+/i, "");
+      const token = bearer || body.token || "";
+      if (!token) return json(res, 400, { error: "corax auth token required (Authorization: Bearer <jwt>, or { token })" });
+
+      let auth;
+      try { auth = sso.verifyJwt(token); }
+      catch (e) { return json(res, 401, { error: "invalid corax token: " + e.message }); }
+      const who = sso.creatorFromClaims(auth.claims);
+      if (!who.coraxCreatorId) return json(res, 400, { error: "token has no creator id (sub / creator_id)" });
+
+      // Stable creator key: the real wallet if the account already has one, else a synthetic corax id
+      // (wallet-first launches later re-key to the real mint anyway).
+      const creator = body.creator || who.wallet || ("corax:" + who.coraxCreatorId);
+      const name = (body.name || who.name || who.coraxCreatorId).slice(0, 60);
+      const symbol = String(body.symbol || who.symbol || name).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6) || "TOKEN";
+
+      // Idempotent: reuse this corax creator's existing auto-listing instead of minting duplicates.
+      let l = launchpad.getByCoraxCreator(who.coraxCreatorId);
+      const created = !l;
+      if (!l) {
+        l = launchpad.create({
+          name, symbol, creator, coraxCreatorId: who.coraxCreatorId,
+          logo: who.logo, website: who.website, twitter: who.twitter, telegram: who.telegram,
+          description: who.description, auto: true,
+        });
+      }
+
+      // Auto-bind the socials corax already OAuth-verified → may flip the listing verified onto the board.
+      const socials = Array.isArray(body.socials) && body.socials.length ? body.socials : who.socials;
+      for (const s of socials) {
+        if (!s || !s.platform) continue;
+        try {
+          l = launchpad.bindVerifiedSocial(l.mint, {
+            platform: s.platform, handle: s.handle, followers: s.followers,
+            userId: s.userId, verifiedOwnership: s.verifiedOwnership !== false, mock: !!s.mock,
+          });
+        } catch { /* skip an unsupported platform, keep binding the rest */ }
+      }
+
+      // Stamp creator → CoraX channel so their product/shop feed resolves immediately (same as /api/creator/link).
+      if (who.channelId) {
+        const links = await loadJson("links", {});
+        if (links[creator] !== who.channelId) { links[creator] = who.channelId; await saveJsonNow("links", links); }
+      }
+
+      return json(res, 200, { created, tokenVerified: auth.verified, listing: l });
     }
     // Public feed CoraX pulls for a channel: the creator's syncCorax products (their "OneIP picks").
     if (req.method === "GET" && path === "/api/channel-products") {
