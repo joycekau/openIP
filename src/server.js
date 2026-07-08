@@ -171,6 +171,14 @@ async function transakAccessToken(env, apiKey, apiSecret, force) {
   });
   const j = await r.json().catch(() => ({}));
   const token = j && (j.data?.accessToken || j.accessToken);
+  // Diagnostic (no secrets): which env/host minted the token and what Transak said.
+  console.log("[transak] refresh-token", JSON.stringify({
+    env, host: base, status: r.status, force: !!force, gotToken: !!token,
+    tokenTail: token ? String(token).slice(-6) : null,
+    expiresAt: j?.data?.expiresAt ?? j?.expiresAt ?? null,
+    error: !token ? (j?.error?.message || j?.message || null) : null,
+    apiKeyTail: String(apiKey).slice(-4),
+  }));
   if (!r.ok || !token) throw new Error((j && (j.error?.message || j.message)) || `Transak access token failed (${r.status})`);
   // Prefer Transak's own expiry (unix seconds), refreshing an hour early; else assume the
   // documented 7 days and cache for 6 to stay clear of the boundary.
@@ -268,19 +276,28 @@ async function handler(req, res) {
         // create-widget-url requires x-api-key + access-token + x-user-ip headers. No `authorization`
         // header — that slot is for end-USER auth tokens and confuses the gateway if it carries the
         // partner token.
-        const createSession = async (token) => fetch(gw + "/api/v2/auth/session", {
-          method: "POST",
-          headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
-          body: JSON.stringify({ widgetParams }),
-        });
-        let r = await createSession(await transakAccessToken(env, apiKey, apiSecret));
+        const createSession = async (token, attempt) => {
+          const rr = await fetch(gw + "/api/v2/auth/session", {
+            method: "POST",
+            headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+            body: JSON.stringify({ widgetParams }),
+          });
+          const jj = await rr.json().catch(() => ({}));
+          // Diagnostic (no secrets): what the gateway said about this token.
+          console.log("[transak] create-widget-url", JSON.stringify({
+            env, gw, attempt, status: rr.status, tokenTail: String(token).slice(-6),
+            referrerDomain, ok: !!(jj?.widgetUrl || jj?.data?.widgetUrl),
+            error: jj?.error?.message || jj?.message || null,
+          }));
+          return { r: rr, j: jj };
+        };
+        let { r, j } = await createSession(await transakAccessToken(env, apiKey, apiSecret), 1);
         // Transak invalidates every older access token whenever a new one is minted, so our cached
         // token can be rejected through no fault of ours. Per Transak support: refresh the token once
         // and immediately reuse it on create-widget-url — i.e. force a fresh token and retry.
         if (r.status === 401 || r.status === 403) {
-          r = await createSession(await transakAccessToken(env, apiKey, apiSecret, true));
+          ({ r, j } = await createSession(await transakAccessToken(env, apiKey, apiSecret, true), 2));
         }
-        const j = await r.json().catch(() => ({}));
         const widgetUrl = j && (j.widgetUrl || (j.data && j.data.widgetUrl));
         if (!r.ok || !widgetUrl) {
           res.writeHead(r.status && r.status >= 400 ? r.status : 502, { "content-type": "application/json" });
