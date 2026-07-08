@@ -145,6 +145,18 @@ document.getElementById('createBtn').onclick=async()=>{
   const account=new URLSearchParams(location.search).get('account')||'';
   const l=await post('/api/launch',{name,symbol,creator,account,mint:chain.mint,mintTx:chain.sig,metadataUri,logo:image,website:meta.website,twitter:meta.twitter,telegram:meta.telegram,description:meta.description});
   state.mint=l.mint;
+  // 4b) flip the creator's CoraX draft token (created when they listed a product) to launched with the
+  //     real mint. Best-effort: only fires when a CoraX identity is available (embedded/SSO flow). The
+  //     server prefers a verified Bearer token; falls back to coraxCreatorId. Never blocks the launch.
+  try{
+    const qs=new URLSearchParams(location.search);
+    const coraxCreatorId=qs.get('coraxCreatorId')||(window.CORAX&&window.CORAX.creatorId)||'';
+    const coraxToken=qs.get('coraxToken')||(window.CORAX&&window.CORAX.token)||'';
+    if(coraxCreatorId||coraxToken){
+      await fetch('/api/creator/launch-complete',{method:'POST',headers:{'content-type':'application/json',...(coraxToken?{authorization:'Bearer '+coraxToken}:{})},
+        body:JSON.stringify({creatorId:coraxCreatorId,mint:chain.mint,mintTx:chain.sig,name,symbol,decimals:6})});
+    }
+  }catch(e){/* draft→launched sync is best-effort */}
   document.getElementById('createBox').innerHTML=`<div style="font-size:14px">Minted <b style="color:var(--gold)">${l.symbol}</b> on Solana · <span class="mono" style="color:var(--muted)">${l.mint.slice(0,10)}…${l.mint.slice(-4)}</span></div>
     <div style="margin-top:8px;font-size:12px"><a class="mono" style="color:var(--blue)" href="${chain.explorer}" target="_blank">view tx ↗</a> &nbsp;·&nbsp; <a class="mono" style="color:var(--blue)" href="https://explorer.solana.com/address/${l.mint}?cluster=devnet" target="_blank">view mint ↗</a></div>
     <div style="margin-top:8px;font-size:12px;color:var(--muted)">${metadataUri.startsWith('ipfs://')

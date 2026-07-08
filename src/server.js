@@ -23,6 +23,7 @@ import * as store from "./store.js";
 import * as launchpad from "./launchpad.js";
 import * as oauth from "./oauth.js";
 import * as sso from "./sso.js";
+import * as coraxdb from "./coraxdb.js";
 import { loadJson, saveJson, saveJsonNow } from "./persist.js";
 import * as walletStore from "./wallets.js";
 import { discoverWallets } from "./discover.js";
@@ -906,6 +907,50 @@ async function handler(req, res) {
       }
 
       return json(res, 200, { created, tokenVerified: auth.verified, listing: l });
+    }
+
+    // ---- Draft → launched: flip the CoraX draft token to launched once minted on-chain ----
+    // Closes the loop after the wallet-signed create_token (0.1 SOL launch fee). The creator's draft
+    // row in oneip_creator_tokens (placeholder mint 'draft:<uid>', launch_status 'draft') gets the
+    // REAL mint address and launch_status 'launched'. creator_id is taken from the verified CoraX JWT
+    // when supplied (authoritative — a creator can only launch their OWN row); else from the body (dev).
+    // Idempotent (only matches rows still in 'draft'). Also mirrors into the repo's KV launch record so
+    // the board/coin pages resolve. If the creator never had a draft (wallet-first), inserts a launched
+    // row when name+symbol are provided.
+    if (req.method === "POST" && path === "/api/creator/launch-complete") {
+      const body = JSON.parse((await readBody(req)) || "{}");
+      const mint = String(body.mint || "").trim();
+      if (!mint) return json(res, 400, { error: "mint (real Solana mint address) required" });
+
+      let creatorId = body.creatorId || "";
+      const bearer = String(req.headers["authorization"] || "").replace(/^Bearer\s+/i, "");
+      const token = bearer || body.token || "";
+      if (token) {
+        try { creatorId = sso.verifyJwt(token).claims.sub || creatorId; }
+        catch (e) { return json(res, 401, { error: "invalid corax token: " + e.message }); }
+      }
+      if (!creatorId) return json(res, 400, { error: "creatorId (or a corax Bearer token) required" });
+
+      // Mirror into the repo KV launch record too (best-effort) so /api/board + coin pages resolve.
+      try {
+        const existing = launchpad.get(mint);
+        if (!existing) launchpad.create({ ...body, mint, coraxCreatorId: creatorId, creator: body.creator || mint, onchain: true, mintTx: body.mintTx || "" });
+        else launchpad.setMeta(mint, { onchain: true, mintTx: body.mintTx || existing.mintTx });
+      } catch { /* KV mirror is best-effort */ }
+
+      if (!coraxdb.hasCoraxDb()) {
+        return json(res, 200, { devMode: true, note: "set SUPABASE_URL + SUPABASE_SERVICE_KEY to update oneip_creator_tokens", creatorId, mint });
+      }
+      try {
+        const updated = await coraxdb.markTokenLaunched({ creatorId, mint, decimals: body.decimals, totalSupply: body.totalSupply });
+        if (updated.length) return json(res, 200, { launched: true, updated: updated.length, token: updated[0] });
+        // no draft existed → insert a launched row when we have enough to satisfy NOT NULLs
+        if (body.name && body.symbol) {
+          const ins = await coraxdb.insertLaunchedToken({ creatorId, mint, name: body.name, symbol: body.symbol, decimals: body.decimals, totalSupply: body.totalSupply });
+          return json(res, 200, { launched: true, inserted: true, token: ins[0] || null });
+        }
+        return json(res, 200, { launched: false, updated: 0, note: "no draft token for this creator; pass name+symbol to insert one" });
+      } catch (e) { return json(res, 502, { error: e.message }); }
     }
     // Public feed CoraX pulls for a channel: the creator's syncCorax products (their "OneIP picks").
     if (req.method === "GET" && path === "/api/channel-products") {
