@@ -30,6 +30,7 @@ import * as ipfs from "./ipfs.js";
 import * as markets from "./sources/markets.js";
 import * as social from "./social.js";
 import * as ai from "./ai.js";
+import * as aigen from "./aigen.js";
 import * as publish from "./publish.js";
 import * as accounts from "./accounts.js";
 import * as shopSource from "./commerce/source.js";
@@ -502,12 +503,22 @@ async function handler(req, res) {
       social.markRead(b.wallet);
       return json(res, 200, { ok: true });
     }
-    // AI drafts a post in the creator's voice (free creator tool). Claude when keyed, mock otherwise.
+    // AI drafts a post in the creator's voice (free creator tool). Smart routing: prefers the Cora
+    // AI Gateway (gateway.corax.live — the same routing corax.live uses; CORAX_API_KEY), falls back
+    // to the direct Claude SDK (ANTHROPIC_API_KEY), else a mock draft so the flow always works.
     if (req.method === "POST" && path === "/api/ai/draft") {
       const b = JSON.parse((await readBody(req)) || "{}");
       if (!b.prompt) return json(res, 400, { error: "prompt required" });
+      if (aigen.hasAigen()) return json(res, 200, await aigen.generateMaterial({ kind: "post", prompt: b.prompt, creator: b.wallet || "" }));
       const text = b.wallet && ai.hasKey() ? await ai.generatePost(social.getCreator(b.wallet), b.prompt) : null;
-      return json(res, 200, { text: text || `✨ ${String(b.prompt).slice(0, 140)} — new drop on my oneIP page, come take a look!`, mock: !text });
+      return json(res, 200, text ? { text } : await aigen.generateMaterial({ kind: "post", prompt: b.prompt, creator: b.wallet || "" }));
+    }
+    // AI MATERIAL generation via the Cora gateway. Lets a creator with no works generate publishable
+    // material (post copy / product descriptions / content ideas). kind ∈ post | product | idea.
+    if (req.method === "POST" && path === "/api/ai/generate") {
+      const b = JSON.parse((await readBody(req)) || "{}");
+      if (!b.prompt) return json(res, 400, { error: "prompt required" });
+      return json(res, 200, await aigen.generateMaterial({ kind: b.kind, prompt: b.prompt, creator: b.creator || b.wallet || "" }));
     }
 
     // ---- outbound multi-platform publishing (AiToEarn hidden behind these; free creator tool).

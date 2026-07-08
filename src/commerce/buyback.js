@@ -9,12 +9,9 @@
 // On-chain is OPT-IN and LAZY (keeps the server zero-dep): with SOLANA_BUYBACK=1 + a deployer key,
 // fundFloor() dynamically imports the web3.js client (a devDependency) and funds the real vault.
 // Otherwise it mock-funds — same demonstrable flow as the rest of oneIP.
-import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
 import * as treasury from "./treasury.js";
 import { loadJson, saveJson } from "../persist.js";
 
-const __dir = dirname(fileURLToPath(import.meta.url));
 const KEY = "buybacks";
 // 20% of net profit funds the floor — mirrors the 20% floor-vault split of every on-curve buy.
 const BUYBACK_BPS = Number(process.env.BUYBACK_BPS || 2000);
@@ -43,7 +40,9 @@ async function fundFloor({ coin, lamports }) {
   if (!onchainEnabled()) {
     return { sig: `mock-buyback-${Date.now()}`, explorer: "", mock: true };
   }
-  const mod = await import(pathToFileURL(join(__dir, "..", "..", "scripts", "sol", "buyback.js")).href);
+  // Literal specifier (not a computed path) so serverless bundlers trace the client + its
+  // web3.js deps into the function bundle; still lazy — only loaded when SOLANA_BUYBACK=1.
+  const mod = await import("../../scripts/sol/buyback.js");
   return mod.fundFloorViaBuy({ mint: coin, lamports });
 }
 
@@ -81,8 +80,16 @@ export async function execute({ coin, orderId, netProfitCents }) {
     persist();
     return rec;
   }
-  const onchain = await fundFloor({ coin, lamports: q.lamports });
-  rec.sig = onchain.sig; rec.explorer = onchain.explorer || ""; rec.mock = !!onchain.mock;
+  // If the on-chain send fails (missing deployer key, RPC down, token has no launch account),
+  // NEVER fail the settle: give the reserved SOL back to the float pool and QUEUE the buyback
+  // so it can be retried once the operator fixes the cause.
+  try {
+    const onchain = await fundFloor({ coin, lamports: q.lamports });
+    rec.sig = onchain.sig; rec.explorer = onchain.explorer || ""; rec.mock = !!onchain.mock;
+  } catch (e) {
+    treasury.topUp(q.lamports, `buyback ${orderId} revert: ${String(e.message || e).slice(0, 80)}`);
+    rec.status = "queued"; rec.error = String(e.message || e).slice(0, 200);
+  }
   byCoin[coin] = byCoin[coin] || [];
   byCoin[coin].unshift(rec);
   persist();

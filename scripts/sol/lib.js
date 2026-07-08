@@ -17,6 +17,10 @@ export const RPC = process.env.SOLANA_RPC || "https://api.devnet.solana.com";
 export const connection = new Connection(RPC, "confirmed");
 
 export function loadDeployer() {
+  // Serverless-friendly: SOLANA_DEPLOYER_KEY env carries the keypair (the JSON byte array from
+  // onchain/.deployer.json, as one line). Falls back to the local file for dev machines.
+  const env = process.env.SOLANA_DEPLOYER_KEY;
+  if (env) return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(env)));
   const p = join(__dir, "..", "..", "onchain", ".deployer.json");
   return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(readFileSync(p, "utf8"))));
 }
