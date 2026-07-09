@@ -350,39 +350,50 @@ async function handler(req, res) {
       // Prefilled a wallet? Lock the destination so funds can only reach the user's own address.
       if (widgetParams.walletAddress && widgetParams.disableWalletAddressForm == null) widgetParams.disableWalletAddressForm = true;
       try {
-        const gw = env === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
-        // create-widget-url requires x-api-key + access-token + x-user-ip headers. No `authorization`
-        // header — that slot is for end-USER auth tokens and confuses the gateway if it carries the
-        // partner token.
-        const createSession = async (token, attempt) => {
-          const rr = await fetch(gw + "/api/v2/auth/session", {
-            method: "POST",
-            headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
-            body: JSON.stringify({ widgetParams }),
-          });
-          const jj = await rr.json().catch(() => ({}));
-          // Diagnostic (no secrets): what the gateway said about this token.
-          console.log("[transak] create-widget-url", JSON.stringify({
-            env, gw, attempt, status: rr.status, tokenTail: String(token).slice(-6),
-            referrerDomain, ok: !!(jj?.widgetUrl || jj?.data?.widgetUrl),
-            error: jj?.error?.message || jj?.message || null,
-          }));
-          return { r: rr, j: jj };
-        };
-        let { r, j } = await createSession(await transakAccessToken(env, apiKey, apiSecret), 1);
-        // Transak invalidates every older access token whenever a new one is minted, so our cached
-        // token can be rejected through no fault of ours. Per Transak support: refresh the token once
-        // and immediately reuse it on create-widget-url — i.e. force a fresh token and retry.
-        if (r.status === 401 || r.status === 403) {
-          ({ r, j } = await createSession(await transakAccessToken(env, apiKey, apiSecret, true), 2));
+        // Env auto-detect: Transak keys are environment-scoped. Try the configured env first, then
+        // fall back to the OTHER on a token/key rejection — so a STAGING key with TRANSAK_ENVIRONMENT
+        // left on PRODUCTION (or vice-versa) still works, as long as key+secret are a matched pair.
+        const order = env === "PRODUCTION" ? ["PRODUCTION", "STAGING"] : ["STAGING", "PRODUCTION"];
+        const attempts = [];
+        for (const e of order) {
+          const gw = e === "PRODUCTION" ? "https://api-gateway.transak.com" : "https://api-gateway-stg.transak.com";
+          // create-widget-url requires x-api-key + access-token + x-user-ip. No `authorization` header —
+          // that slot is for end-USER auth tokens and confuses the gateway if it carries the partner token.
+          const createSession = async (token, attempt) => {
+            const rr = await fetch(gw + "/api/v2/auth/session", {
+              method: "POST",
+              headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
+              body: JSON.stringify({ widgetParams }),
+            });
+            const jj = await rr.json().catch(() => ({}));
+            console.log("[transak] create-widget-url", JSON.stringify({
+              env: e, gw, attempt, status: rr.status, tokenTail: String(token).slice(-6),
+              referrerDomain, ok: !!(jj?.widgetUrl || jj?.data?.widgetUrl),
+              error: jj?.error?.message || jj?.message || null,
+            }));
+            return { r: rr, j: jj };
+          };
+          // Refresh for THIS env. If refresh itself fails (wrong-env key), record and try the next env.
+          let token;
+          try { token = await transakAccessToken(e, apiKey, apiSecret); }
+          catch (err) { attempts.push(`${e}: refresh: ${(err && err.message) || "failed"}`); continue; }
+          let { r, j } = await createSession(token, 1);
+          // Transak invalidates older tokens whenever a new one is minted, so a cached token can be
+          // rejected through no fault of ours — force a fresh token and retry once (per Transak support).
+          if (r.status === 401 || r.status === 403) {
+            ({ r, j } = await createSession(await transakAccessToken(e, apiKey, apiSecret, true), 2));
+          }
+          const widgetUrl = j && (j.widgetUrl || (j.data && j.data.widgetUrl));
+          if (r.ok && widgetUrl) {
+            res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
+            return res.end(JSON.stringify({ widgetUrl, environment: e }));
+          }
+          attempts.push(`${e}: [session ${r.status}] ${(j && (j.error?.message || j.message)) || ""}`);
+          // Only fall through to the other env on a token/key rejection; a 400 schema error repeats.
+          if (r.status !== 401 && r.status !== 403) break;
         }
-        const widgetUrl = j && (j.widgetUrl || (j.data && j.data.widgetUrl));
-        if (!r.ok || !widgetUrl) {
-          res.writeHead(r.status && r.status >= 400 ? r.status : 502, { "content-type": "application/json" });
-          return res.end(JSON.stringify({ error: (j && (j.error?.message || j.message)) || "Could not create Transak widget URL" }));
-        }
-        res.writeHead(200, { "content-type": "application/json", "cache-control": "no-store" });
-        return res.end(JSON.stringify({ widgetUrl }));
+        res.writeHead(401, { "content-type": "application/json" });
+        return res.end(JSON.stringify({ error: `Transak widget-url failed [configured=${env}]. ${attempts.join(" | ")}` }));
       } catch (e) {
         res.writeHead(502, { "content-type": "application/json" });
         return res.end(JSON.stringify({ error: (e && e.message) || "Transak request failed" }));
