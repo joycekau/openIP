@@ -293,19 +293,29 @@ async function handler(req, res) {
         const token = j1 && (j1.data?.accessToken || j1.accessToken);
         out.refresh = { status: r1.status, gotToken: !!token, error: token ? null : (j1?.error?.message || j1?.message || JSON.stringify(j1).slice(0, 200)) };
         if (token) {
-          const tryCreate = async (label) => {
+          // Decode the minted JWT's payload (no signature check — just to see what Transak put in
+          // it: issued-at, expiry, and which claim KEYS exist; values beyond timestamps redacted).
+          try {
+            const payload = JSON.parse(Buffer.from(String(token).split(".")[1], "base64").toString("utf8"));
+            out.jwt = { claimKeys: Object.keys(payload), iat: payload.iat ?? null, exp: payload.exp ?? null, ageAtMintSec: payload.iat ? Math.round(Date.now() / 1000 - payload.iat) : null };
+          } catch (e) { out.jwt = { decodeError: (e && e.message) || String(e) }; }
+          const tryCreate = async (label, tok, refDomain) => {
             const r2 = await fetch("https://api-gateway.transak.com/api/v2/auth/session", {
-              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": token, "x-user-ip": userIp },
-              body: JSON.stringify({ widgetParams: { apiKey, referrerDomain, productsAvailed: "BUY" } }),
+              method: "POST", headers: { accept: "application/json", "content-type": "application/json", "x-api-key": apiKey, "access-token": tok, "x-user-ip": userIp },
+              body: JSON.stringify({ widgetParams: { apiKey, referrerDomain: refDomain, productsAvailed: "BUY" } }),
             });
             const j2 = await r2.json().catch(() => ({}));
             const ok = !!(j2?.widgetUrl || j2?.data?.widgetUrl);
             out.attempts.push({ label, status: r2.status, gotWidgetUrl: ok, error: ok ? null : (j2?.error?.message || j2?.message || JSON.stringify(j2).slice(0, 200)) });
             return ok;
           };
-          if (!(await tryCreate("immediate"))) {
-            await sleep(3000);
-            if (!(await tryCreate("after 3s"))) { await sleep(4000); await tryCreate("after 7s"); }
+          // Control: a syntactically-valid but bogus JWT. If this returns the IDENTICAL error as the
+          // real token, the gateway is rejecting before it ever validates the token (IP/scope gate).
+          // If it returns a DIFFERENT error, our real token IS being inspected and judged invalid.
+          await tryCreate("control: garbage token", token.slice(0, -8) + "AAAAAAAA", referrerDomain);
+          // referrerDomain variants — the registered partner domain may not be oneip.io.
+          for (const d of [referrerDomain, "www.oneip.io", "corax.live", "www.corax.live", "open-ip.vercel.app"]) {
+            if (await tryCreate("real token, referrerDomain=" + d, token, d)) { out.winner = d; break; }
           }
         }
       } catch (e) { out.exception = (e && e.message) || String(e); }
