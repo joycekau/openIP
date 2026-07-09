@@ -102,126 +102,126 @@
 <main class="wrap">
   <!-- sign in -->
   <section id="signin" class="signin">
-    <h1 data-i18n="si.title">Creator Studio</h1>
-    <p class="sub" data-i18n="si.sub2">Register with your email to manage your store, content and value pool. Bind a wallet later — only when you go on-chain.</p>
+    <h1 data-t="si.title">Creator Studio</h1>
+    <p class="sub" data-t="si.sub2">Register with your email to manage your store, content and value pool. Bind a wallet later — only when you go on-chain.</p>
     <div class="panel">
       <div class="seg" id="authSeg" style="margin-bottom:4px">
-        <button data-a="register" class="sel" onclick="setAuth('register')" data-i18n="si.register">Register</button>
-        <button data-a="login" onclick="setAuth('login')" data-i18n="si.login">Log in</button>
+        <button data-a="register" class="sel" onclick="setAuth('register')" data-t="si.register">Register</button>
+        <button data-a="login" onclick="setAuth('login')" data-t="si.login">Log in</button>
       </div>
-      <div id="regFields"><label data-i18n="si.handle">Creator handle</label><input id="aHandle" placeholder="e.g. AuroraTV"></div>
-      <label id="idLabel" data-i18n="si.email">Email</label><input id="aEmail" placeholder="you@example.com">
-      <label data-i18n="si.pw">Password</label><input id="aPw" type="password" placeholder="at least 6 characters" onkeydown="if(event.key==='Enter')submitAuth()">
-      <button class="btn btn--grad btn--block" style="margin-top:16px" id="authBtn" onclick="submitAuth()" data-i18n="si.register">Register</button>
-      <div id="forgotRow" class="hide" style="margin-top:10px;text-align:center"><a href="#" onclick="forgotPw();return false" data-i18n="si.forgot" style="font-size:13px;color:var(--muted);text-decoration:underline">Forgot password?</a></div>
+      <div id="regFields"><label data-t="si.handle">Creator handle</label><input id="aHandle" placeholder="e.g. AuroraTV"></div>
+      <label id="idLabel" data-t="si.email">Email</label><input id="aEmail" placeholder="you@example.com">
+      <label data-t="si.pw">Password</label><input id="aPw" type="password" placeholder="at least 6 characters" onkeydown="if(event.key==='Enter')submitAuth()">
+      <button class="btn btn--grad btn--block" style="margin-top:16px" id="authBtn" onclick="submitAuth()" data-t="si.register">Register</button>
+      <div id="forgotRow" class="hide" style="margin-top:10px;text-align:center"><a href="#" onclick="forgotPw();return false" data-t="si.forgot" style="font-size:13px;color:var(--muted);text-decoration:underline">Forgot password?</a></div>
       <div id="resetInfo" class="hint" style="margin-top:8px"></div>
-      <div class="hint" data-i18n="si.note2">Your handle is your account across all of oneIP. No crypto needed to start.</div>
+      <div class="hint" data-t="si.note2">Your handle is your account across all of oneIP. No crypto needed to start.</div>
     </div>
   </section>
 
   <!-- dashboard -->
   <section id="dash" class="hide">
-    <h1><span data-i18n="dash.hi">Hi,</span> <span class="grad-text" id="who">creator</span> 👋</h1>
-    <p class="sub" data-i18n="dash.sub">Manage your profile, list products & content, and grow your value pool.</p>
+    <h1><span data-t="dash.hi">Hi,</span> <span class="grad-text" id="who">creator</span> 👋</h1>
+    <p class="sub" data-t="dash.sub">Manage your profile, list products & content, and grow your value pool.</p>
 
     <div class="panel" id="earnPanel">
-      <h3>💰 <span data-i18n="earn.title">Your earnings</span></h3>
+      <h3>💰 <span data-t="earn.title">Your earnings</span></h3>
       <div class="earn">
         <div class="earn-row">
-          <div class="earn-k"><span data-i18n="earn.ip">Creator / IP earnings</span><span class="earn-sub" data-i18n="earn.ip.sub">your 70% of digital & IP sales</span></div>
+          <div class="earn-k"><span data-t="earn.ip">Creator / IP earnings</span><span class="earn-sub" data-t="earn.ip.sub">your 70% of digital & IP sales</span></div>
           <div class="earn-v" id="eIp">—</div>
         </div>
         <div class="earn-row" id="eMerchRow">
-          <div class="earn-k"><span data-i18n="earn.merch">Merchant earnings</span><span class="earn-sub" data-i18n="earn.merch.sub">goods sales − category commission · managed in CoraX</span></div>
+          <div class="earn-k"><span data-t="earn.merch">Merchant earnings</span><span class="earn-sub" data-t="earn.merch.sub">goods sales − category commission · managed in CoraX</span></div>
           <div class="earn-v" id="eMerch">—</div>
         </div>
       </div>
       <div class="earn-pool">
-        <div class="earn-k"><span data-i18n="earn.pool">🌱 Value pool</span><span class="earn-sub" data-i18n="earn.pool.sub">your token's floor + liquidity — protocol backing, not withdrawable income</span></div>
+        <div class="earn-k"><span data-t="earn.pool">🌱 Value pool</span><span class="earn-sub" data-t="earn.pool.sub">your token's floor + liquidity — protocol backing, not withdrawable income</span></div>
         <div class="earn-v" id="ePool">—</div>
       </div>
-      <div class="hint" data-i18n="earn.note">Merchant goods settle by category commission (stays in CoraX). Your own digital/IP sales are the token program: 70% you · 20% value pool · 10% platform — the same wherever the sale happens.</div>
+      <div class="hint" data-t="earn.note">Merchant goods settle by category commission (stays in CoraX). Your own digital/IP sales are the token program: 70% you · 20% value pool · 10% platform — the same wherever the sale happens.</div>
     </div>
 
     <div class="panel">
-      <h3>🪪 <span data-i18n="prof.title">Your profile</span></h3>
-      <label data-i18n="prof.name">Display name</label>
+      <h3>🪪 <span data-t="prof.title">Your profile</span></h3>
+      <label data-t="prof.name">Display name</label>
       <input id="pName" placeholder="Aurora TV">
-      <label data-i18n="prof.bio">Bio</label>
+      <label data-t="prof.bio">Bio</label>
       <textarea id="pBio" placeholder="Travel + lifestyle creator…"></textarea>
-      <button class="btn btn--grad btn--sm" style="margin-top:14px" onclick="saveProfile()" data-i18n="prof.save">Save profile</button>
+      <button class="btn btn--grad btn--sm" style="margin-top:14px" onclick="saveProfile()" data-t="prof.save">Save profile</button>
     </div>
 
     <div class="panel">
-      <h3>🌱 <span data-i18n="vp.title">Your value pool</span></h3>
+      <h3>🌱 <span data-t="vp.title">Your value pool</span></h3>
       <div class="vpool" id="vpoolView"></div>
-      <label data-i18n="vp.coin">Value-pool token (Solana mint from oneIP.io)</label>
+      <label data-t="vp.coin">Value-pool token (Solana mint from oneIP.io)</label>
       <input id="pCoin" placeholder="paste your token mint, or launch one →">
       <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center">
-        <button class="btn btn--grad btn--sm" onclick="saveCoin()" data-i18n="vp.save">Link value pool</button>
-        <a class="btn btn--ghost btn--sm" id="launchLink" target="_blank" rel="noopener" data-i18n="vp.launch">Launch your token on oneIP.io →</a>
-        <button class="btn btn--ghost btn--sm" id="bindWalletBtn" onclick="bindWallet()" data-i18n="vp.bind">Bind Phantom wallet</button>
+        <button class="btn btn--grad btn--sm" onclick="saveCoin()" data-t="vp.save">Link value pool</button>
+        <a class="btn btn--ghost btn--sm" id="launchLink" target="_blank" rel="noopener" data-t="vp.launch">Launch your token on oneIP.io →</a>
+        <button class="btn btn--ghost btn--sm" id="bindWalletBtn" onclick="bindWallet()" data-t="vp.bind">Bind Phantom wallet</button>
         <span class="hint" id="walletStatus" style="margin:0"></span>
       </div>
-      <div class="hint" data-i18n="vp.note">Every digital sale, tip & reaction routes 20% into this pool (80% liquidity / 20% floor) — a transparent, on-chain mechanic. No pool yet? You can still sell; the 20% activates once you launch.</div>
+      <div class="hint" data-t="vp.note">Every digital sale, tip & reaction routes 20% into this pool (80% liquidity / 20% floor) — a transparent, on-chain mechanic. No pool yet? You can still sell; the 20% activates once you launch.</div>
     </div>
 
     <div class="panel">
-      <h3>➕ <span data-i18n="add.title">List something new</span></h3>
+      <h3>➕ <span data-t="add.title">List something new</span></h3>
       <div class="seg" id="typeSeg">
-        <button data-t="physical" class="sel" onclick="setType('physical')" data-i18n="add.physical">🛍️ Product</button>
-        <button data-t="digital" onclick="setType('digital')" data-i18n="add.digital">🎬 Video / content</button>
+        <button data-t="physical" class="sel" onclick="setType('physical')" data-t="add.physical">🛍️ Product</button>
+        <button data-t="digital" onclick="setType('digital')" data-t="add.digital">🎬 Video / content</button>
       </div>
-      <label data-i18n="add.name">Title</label>
+      <label data-t="add.name">Title</label>
       <input id="iTitle" placeholder="Onee Plush Toy">
       <div class="row">
-        <div><label data-i18n="add.price">Price (USD)</label><input id="iPrice" type="number" min="1" step="0.01" placeholder="39.90"></div>
-        <div id="costWrap"><label data-i18n="add.cost">Supplier cost (USD)</label><input id="iCost" type="number" min="0" step="0.01" placeholder="12.00"></div>
+        <div><label data-t="add.price">Price (USD)</label><input id="iPrice" type="number" min="1" step="0.01" placeholder="39.90"></div>
+        <div id="costWrap"><label data-t="add.cost">Supplier cost (USD)</label><input id="iCost" type="number" min="0" step="0.01" placeholder="12.00"></div>
       </div>
       <div id="catWrap">
-        <label data-i18n="add.cat">Business category (sets the commission)</label>
+        <label data-t="add.cat">Business category (sets the commission)</label>
         <select id="iCat">
-          <option value="retail" data-i18n="add.cat.retail">🛍️ Retail — 5% commission (min $1) · price ≥ $3</option>
-          <option value="fnb" data-i18n="add.cat.fnb">🍜 F&amp;B — 8% commission (min $5) · price ≥ $8</option>
-          <option value="education" data-i18n="add.cat.edu">📚 Education — 5% commission (min $1) · price ≥ $3</option>
+          <option value="retail" data-t="add.cat.retail">🛍️ Retail — 5% commission (min $1) · price ≥ $3</option>
+          <option value="fnb" data-t="add.cat.fnb">🍜 F&amp;B — 8% commission (min $5) · price ≥ $8</option>
+          <option value="education" data-t="add.cat.edu">📚 Education — 5% commission (min $1) · price ≥ $3</option>
         </select>
-        <div class="hint" data-i18n="add.cat.note">Merchant goods settle under a category commission and don't feed the value pool. Your own digital content/services are the token program: 70% you / 20% value pool / 10% platform.</div>
+        <div class="hint" data-t="add.cat.note">Merchant goods settle under a category commission and don't feed the value pool. Your own digital content/services are the token program: 70% you / 20% value pool / 10% platform.</div>
       </div>
-      <div id="contentWrap" class="hide"><label data-i18n="add.content">Content URL (what the fan unlocks)</label><input id="iContent" placeholder="https://… (video / download link)"></div>
-      <label data-i18n="add.image">Image URL (optional)</label><input id="iImage" placeholder="https://… — or upload ↓">
+      <div id="contentWrap" class="hide"><label data-t="add.content">Content URL (what the fan unlocks)</label><input id="iContent" placeholder="https://… (video / download link)"></div>
+      <label data-t="add.image">Image URL (optional)</label><input id="iImage" placeholder="https://… — or upload ↓">
       <input id="iImageFile" type="file" accept="image/*" onchange="uploadImg(this,'iImage')" style="margin-top:6px;font-size:12px">
-      <button class="btn btn--grad btn--block" style="margin-top:16px" onclick="publishItem()" data-i18n="add.publish">Publish</button>
+      <button class="btn btn--grad btn--block" style="margin-top:16px" onclick="publishItem()" data-t="add.publish">Publish</button>
       <div class="hint" id="addHint"></div>
     </div>
 
     <div class="panel">
-      <h3>📦 <span data-i18n="my.title">Your listings</span> <span class="pill" id="myCount" style="margin-left:auto">0</span></h3>
+      <h3>📦 <span data-t="my.title">Your listings</span> <span class="pill" id="myCount" style="margin-left:auto">0</span></h3>
       <div class="items" id="myItems"></div>
     </div>
 
     <div class="panel">
       <h3>📡 <span id="pubTitle">Publish to your platforms</span></h3>
-      <div class="hint" data-i18n="pub.sub">Connect each platform once via its official login — no passwords stored here. Then post to all in one click. Add your public @handle so fans can find you.</div>
+      <div class="hint" data-t="pub.sub">Connect each platform once via its official login — no passwords stored here. Then post to all in one click. Add your public @handle so fans can find you.</div>
       <div id="pubAccounts" class="pubacc" style="margin-top:12px"></div>
-      <div class="hint" data-i18n="pub.connecthint" style="margin-top:8px">🔒 Connect → the platform's own authorization page opens (no password here, revoke anytime). The @handle is your public profile so fans can jump to you from oneIP.</div>
-      <label data-i18n="pub.compose">Post</label>
+      <div class="hint" data-t="pub.connecthint" style="margin-top:8px">🔒 Connect → the platform's own authorization page opens (no password here, revoke anytime). The @handle is your public profile so fans can jump to you from oneIP.</div>
+      <label data-t="pub.compose">Post</label>
       <textarea id="pubText" placeholder="Share an update, drop, or behind-the-scenes…"></textarea>
-      <label data-i18n="pub.image">Image URL (optional)</label><input id="pubImg" placeholder="https://…">
-      <button class="btn btn--grad btn--block" style="margin-top:14px" onclick="publishNow()" data-i18n="pub.now">Publish to all connected</button>
+      <label data-t="pub.image">Image URL (optional)</label><input id="pubImg" placeholder="https://…">
+      <button class="btn btn--grad btn--block" style="margin-top:14px" onclick="publishNow()" data-t="pub.now">Publish to all connected</button>
       <div class="hint" id="pubStatus" style="margin-top:8px"></div>
     </div>
 
     <div class="panel">
-      <h3>💬 <span data-i18n="cx.title">Your CoraX channel</span></h3>
-      <div class="hint" data-i18n="cx.sub">Link your corax.live channel — your listings become discoverable there ("oneIP picks"), and fans can chat with you on CoraX.</div>
-      <label data-i18n="cx.id">Channel ID or URL</label>
+      <h3>💬 <span data-t="cx.title">Your CoraX channel</span></h3>
+      <div class="hint" data-t="cx.sub">Link your corax.live channel — your listings become discoverable there ("oneIP picks"), and fans can chat with you on CoraX.</div>
+      <label data-t="cx.id">Channel ID or URL</label>
       <input id="cxChannel" placeholder="corax.live/channel/… or the raw channel id">
-      <button class="btn btn--grad btn--sm" style="margin-top:14px" onclick="saveCorax()" data-i18n="cx.save">Link channel</button>
+      <button class="btn btn--grad btn--sm" style="margin-top:14px" onclick="saveCorax()" data-t="cx.save">Link channel</button>
       <span class="hint" id="cxStatus" style="margin-left:10px"></span>
     </div>
 
     <div style="text-align:center;margin:18px 0 40px">
-      <button class="btn btn--ghost btn--sm" onclick="signOut()" data-i18n="dash.switch">Switch creator</button>
+      <button class="btn btn--ghost btn--sm" onclick="signOut()" data-t="dash.switch">Switch creator</button>
     </div>
   </section>
 </main>
@@ -536,7 +536,7 @@
     curLang=(l==='zh')?'zh':'en';const d=I18N[curLang];
     document.documentElement.setAttribute('lang',curLang==='zh'?'zh-CN':'en');
     document.documentElement.setAttribute('data-lang',curLang);
-    document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.getAttribute('data-i18n');if(d[k]!=null)e.textContent=d[k]});
+    document.querySelectorAll('[data-t]').forEach(e=>{const k=e.getAttribute('data-t');if(d[k]!=null)e.textContent=d[k]});
     if(HANDLE){renderVpool();loadItems();loadPublish();}
   }
   window.onLangChange=setLang; // the shared site header drives this page body i18n
