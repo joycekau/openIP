@@ -223,6 +223,34 @@
       </div>
     </div>
   </section>
+
+  <!-- 🌐 CoraX 生态 · Explore (cross-promo to sister products) -->
+  <section class="section" id="ecosystem">
+    <div class="wrap">
+      <h2 style="text-align:center;margin-bottom:6px">Part of the <span class="grad-text">CoraX</span> ecosystem</h2>
+      <p style="text-align:center;color:#8a93a6;margin:0 0 22px;font-size:14px">OneIP is one of the CoraX family — explore the others</p>
+      <div id="ecoGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;max-width:960px;margin:0 auto"></div>
+    </div>
+  </section>
+  <script>
+  (function(){
+    // Edit this array to add/remove promoted apps. OneIP itself is intentionally omitted.
+    var ECO=[
+      { name:'StarLive', tag:'Seven-layer AI market intelligence — signals & forecasts', url:'https://starlive.com',        glyph:'✦', accent:'#f5b301' },
+      { name:'CoraX',    tag:'Web4 super-community app',                                    url:'https://corax.live',         glyph:'🌀', accent:'#6d3bff' },
+      { name:'Cora AI',  tag:'Chat with every AI model in one place — one key for Claude, OpenAI, Seedance & more', url:'https://gateway.corax.live', glyph:'🤖', accent:'#5b9dff' },
+      { name:'Qi Gate',  tag:'Qi Men · Bazi · ZiWei · Yijing readings, guided by Cora',     url:'https://qigate.corax.live',  glyph:'玄', accent:'#10b981' }
+    ];
+    var g=document.getElementById('ecoGrid'); if(!g) return;
+    g.innerHTML=ECO.map(function(a){
+      return '<a href="'+a.url+'" target="_blank" rel="noopener" style="display:flex;flex-direction:column;gap:9px;padding:16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.03);text-decoration:none;color:inherit;transition:border-color .15s,transform .15s" onmouseover="this.style.borderColor=\''+a.accent+'\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.borderColor=\'rgba(255,255,255,.1)\';this.style.transform=\'\'">'
+        +'<div style="display:flex;align-items:center;gap:11px"><span style="width:38px;height:38px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-size:19px;background:color-mix(in srgb,'+a.accent+' 20%,transparent);border:1px solid color-mix(in srgb,'+a.accent+' 42%,transparent)">'+a.glyph+'</span><b style="font-size:16px">'+a.name+'</b></div>'
+        +'<span style="font-size:13px;color:#9aa3b2;line-height:1.5">'+a.tag+'</span>'
+        +'<span style="font-size:12.5px;font-weight:700;color:'+a.accent+';margin-top:2px">Open ↗</span></a>';
+    }).join('');
+  })();
+  </script>
+
   <!-- 创业者发币流程 -->
   <div class="flow-ov" id="flowModal" onclick="if(event.target===this)closeFlow()">
     <div class="flow-card">
