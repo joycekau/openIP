@@ -4,9 +4,11 @@ Social content for **OneIP.io** — *"tokenize your influence."* A **Solana** cr
 
 ```
 marketing/
-├── social-calendar/oneip_365_social_calendar.xlsx   # 365 days: caption · hashtags · AI image prompt · platform · time
-└── scripts/build_oneip_calendar.py                  # regenerate: python3 marketing/scripts/build_oneip_calendar.py OneIP
+├── social-calendar/oneip_365_social_calendar.xlsx   # 365 days · SEPARATE X + Telegram captions & hashtags · AI image prompt
+└── scripts/build_oneip_calendar.py                  # regenerate: python3 marketing/scripts/build_oneip_calendar.py OneIP marketing/social-calendar/oneip_365_social_calendar.xlsx
 ```
+
+**Format:** each row = one day with a **separate X post** (short, ≤280, 3 hashtags) and **Telegram post** (longer, community tone, 4 hashtags), sharing theme/feature/image.
 
 ## Positioning (source of truth = this repo's README / project docs)
 Lead with **"tokenize your influence"** and the **20% floor** (the anti-rug differentiator vs meme launchpads). Segments: **creators/KOLs** (launch a coin + feed + AI clone), **traders** (gmgn-style terminal + KOL smart-money tracker), **fans/holders** (buy, hold, redeem the floor). Built for SE-Asia creator networks; dark-and-gold "noble" brand look.
