@@ -9,6 +9,8 @@
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env src/server.js",
+    "seo": "node scripts/generate-seo.mjs",
+    "seo:check": "node scripts/generate-seo.mjs --check",
     "serve": "node --env-file-if-exists=.env src/server.js",
     "feed": "node --env-file-if-exists=.env src/feed.js",
     "kol": "node --env-file-if-exists=.env src/kol.js",

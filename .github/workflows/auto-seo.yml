@@ -1,0 +1,43 @@
+name: Auto-SEO refresh
+
+# Keeps the machine-facing SEO surface fresh so search engines and AI answer
+# engines keep re-crawling: rotates the long-tail keyword/FAQ windows and rolls
+# sitemap <lastmod> forward. Deterministic per ISO week, so it only commits when
+# the week (or seo.config.mjs) actually changes.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: auto-seo-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Regenerate SEO artifacts
+        run: node scripts/generate-seo.mjs
+
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(seo): weekly auto-refresh of SEO signals"
+            git push
+          else
+            echo "SEO already fresh for this week — nothing to commit."
+          fi
