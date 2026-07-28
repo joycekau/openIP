@@ -7,9 +7,10 @@
 > **Currency:** MYR (RM) · **Prepared:** 2026-07-28 · **Status:** Draft for team
 > review · **Companion to:** `Q3-Q4-2026-Product-Rollout.md`
 >
-> *All prices below rungs 2–5 are proposed anchors — adjust to market. Rung 1 is
-> fixed per founder direction: **RM999 list / RM299 for the first 20 early-bird
-> seats** (hard scarcity cap).*
+> *Pricing is **benchmark-validated** against the MY & SG market (2026) and uses a
+> **two-door segment model**: S2 professionals pay the **standard** (HRD Corp–claimable)
+> price; S1 graduates get a **scholarship / income-share** price. Rung 1 is fixed:
+> **RM999 list / RM299 for the first 20 seats**. See §1.6 for the benchmark.*
 
 ---
 
@@ -23,29 +24,52 @@ ascends buyers up a ladder of longer, higher-value programs. Every rung bundles
 our **OPC tools** so course revenue converts into **recurring tool revenue**.
 
 > **The OPC toolchain taught in the Academy:** **Cora AI Gateway** (Chat ·
-> Cowork · **Video Studio** for short reels & daily AI work) + **openIP** (turn
-> output into income). The **AI Film Studio** business uses a separate tool,
-> **Cora AI Film Studio** — covered in the rollout plan, out of scope for the
-> Academy ladder here except as practicum for the long programs.
+> Cowork · **Video Studio**) + **openIP** (turn output into income). A separate,
+> already-built tool, **Cora AI Film Studio**, is the production-grade lane
+> (premium reels + full films) — used as practicum in the long programs.
+>
+> **Two lanes for video (good → pro):** everyday/volume reels & daily AI work →
+> **Gateway · Video Studio** (bundled, self-serve). Premium/branded reels + full
+> films → **Cora AI Film Studio** (studio-grade). Chooser: *"Just posting? →
+> Gateway. Selling it / client / cinema? → Film Studio."*
 
 ```
-  RM299*  →  RM1,799  →  RM9,900/yr  →  RM17,800  →  RM32,000
+  RM299*  →  RM3,999   →  RM18,000   →  RM32,000   →  RM48,000   (Professionals / S2 standard)
    2 hrs      2 weeks      1 year         2 years      4 years
   DISCOVER   ACTIVATE     CERTIFY       SPECIALIZE     MASTER
-  *RM999 list, RM299 for first 20 seats
+   —          —          RM18k/yr       RM16k/yr       RM12k/yr   (per-year ↓ as commitment ↑)
+  *RM999 list, RM299 first 20 seats.  Graduates (S1) scholarship: Bootcamp RM1,799 · Certificate RM12,000
      │           │            │              │             │
-     └─── each rung bundles Cora AI + openIP → recurring tool revenue ───┘
+     └── every rung bundles Cora AI Gateway (individual plan) + openIP → recurring revenue ──┘
+
+  Segments:  S1 = Graduates   ·   S2 = Professionals (35–55)   ·   S3 = Influencers / KOL
 ```
 
-## 1.2 The course ladder
+## 1.2 The course ladder — segment-based pricing & fixed bundles
 
-| Rung | Program | Duration | Format | Price (list / **early bird**) | Core outcome (the promise) | AI Tools bundled | Best-fit segment |
-|---|---|---|---|---|---|---|---|
-| **1 · Discover** | **AI & OPC Discovery** | 2 hours | Online live + on-demand replay | RM999 / **RM299 (first 20 seats)** | Understand the one-person-company model, the AI tool stack, and 3 concrete ways to monetize | 14-day Cora AI trial credits | **All** (top of funnel) |
-| **2 · Activate** | **OPC Launch Bootcamp** | 2 weeks (~25 hrs, evenings/weekend) | Online + 1 offline lab | RM2,499 / **RM1,799** | Ship your **first monetizable AI asset**; set up Cora AI + an openIP storefront | 3 months Cora AI **Starter** | S1, S2, S3 |
-| **3 · Certify** | **AI OPC Certificate** | 1 year (part-time cohort + mentorship) | Blended | RM9,900 *(or RM990/mo ×12)* | Run a functioning one-person AI business, or a job-ready AI portfolio + certificate | 12 months Cora AI **Growth** + openIP creator | S1 (career), S2 (business) |
-| **4 · Specialize** | **AI OPC Diploma** | 2 years | Blended + practicum | RM17,800 *(RM8,900/yr)* | Specialize (AI film / AI marketing / AI commerce) with a **real revenue track record** | Tools included + **Film Studio practicum** | S1, ambitious S2 |
-| **5 · Master** | **AI OPC Mastery — Founder Track** | 4 years | Blended + paid studio work | RM32,000 *(RM8,000/yr)* | Degree-alternative: graduate studio-ready, or as a **franchise / train-the-trainer partner** | Full tools + **paid Film Studio work** + trainer license | S1 (flagship) + our talent pipeline |
+**Two doors on the growth rungs** — S2 professionals pay the **standard** price
+(HRD Corp claimable, so the employer often funds it); S1 graduates get a
+**scholarship / income-share** price. S3 / KOL enter via intro → bootcamp, then
+revenue-share.
+
+**Fixed bundles** — every rung bundles the **individual (consumer) Cora AI
+Gateway plan**, *never* the $500/mo Growth tier — so the tool never costs more
+than the course and B2C margin (~70%) stays intact.
+
+*Segments: **S1 = Graduates** · **S2 = Professionals (35–55)** · **S3 = Influencers / KOL**.*
+
+| Rung (duration) | Outcome (the promise) | Professionals (S2) · standard *(HRD Corp claimable)* | Graduates (S1) · scholarship / income-share | Bundle *(individual plan)* |
+|---|---|---|---|---|
+| **1 · Discover** — AI & OPC Discovery (2 hrs) | OPC model + tool stack + 3 ways to monetize | RM999 → **RM299** (first 20 seats) | *same — top of funnel* | 14-day Gateway trial credits |
+| **2 · Activate** — OPC Launch Bootcamp (2 wks, ~25 hrs) | Ship first monetizable AI asset; set up Gateway + openIP | **RM3,999** | **RM1,799** (or income-share) | 3 months Gateway (individual) |
+| **3 · Certify** — AI OPC Certificate (1 yr) | Run a one-person AI business / job-ready portfolio + cert | **RM18,000** (RM1,500/mo) | **RM12,000** (RM1,000/mo) | 12 months Gateway (individual) + openIP creator |
+| **4 · Specialize** — AI OPC Diploma (2 yr) *(flagship for S1)* | Specialize (film / marketing / commerce) + revenue record | RM32,000 (RM16,000/yr) *(rare — most S2 stop at Certificate)* | **RM32,000 via income-share / RM16k-yr financing** | tools (individual) + Film Studio practicum |
+| **5 · Master** — AI OPC Mastery, Founder Track (4 yr) *(flagship for S1)* | Degree-alternative; studio-ready or franchise / trainer | RM48,000 (RM12,000/yr) *(rare for S2)* | **RM48,000 via income-share + paid studio work funds part of it** | full tools (individual) + paid Film Studio work + trainer license |
+
+**Who buys the long programs:** Diploma & Mastery are the **graduate (S1)
+flagship** — the career / degree-alternative track, accessed via income-share and
+(in Mastery) paid studio work that funds part of the fee. Professionals (S2)
+usually top out at the 1-year Certificate.
 
 **Why the ladder climbs the way it does**
 - **Rung 1 is a tripwire, not a profit center.** Its job is to convert a stranger
@@ -85,6 +109,10 @@ tools *fund the business*. Model the real numbers in the ops sheet.
 
 ## 1.5 Payment & access (so price isn't the blocker)
 
+- **HRD Corp claimable (Professionals / S2):** structure Bootcamp, Certificate,
+  Diploma & Mastery to be employer-claimable under the HRD Corp levy (e.g. SBL
+  scheme) — the employer funds it, so the standard price is not the learner's
+  out-of-pocket. This is why S2 carries the higher price.
 - **Monthly installments** on rungs 3–5 (already priced /mo above).
 - **Income-share / scholarship** for S1 grads on Certificate+ (defer part of fee
   against first AI income) — powerful marketing, gate carefully.
@@ -92,9 +120,27 @@ tools *fund the business*. Model the real numbers in the ops sheet.
   within a window (removes "I already paid" friction on ascension).
 - **Cohort intakes** (not always-on) to create urgency and batch delivery.
 
+## 1.6 Market benchmark (why these prices hold)
+
+Verified against the MY & SG market, 2026:
+
+| Reference point | Price | Our read |
+|---|---|---|
+| MY short corporate AI workshop (1–2 days) | RM2,000–8,000/pax (MDEC RM5,500) | Bootcamp (2 wks) **RM3,999** sits fairly above a 2-day workshop |
+| MY beginner AI course (HRDF ~70% claimable) | RM2,500–4,000 | Confirms RM3,999 standard is on-market for S2 |
+| MY diploma programs | RM15,000–30,000 | Certificate **RM18k** / Diploma **RM32k** sit inside this band |
+| MY bachelor's (e.g. UniKL AI, part-time) | RM20,000–77,000 (UniKL ≈ RM76,800) | Mastery **RM48k** = accessible degree-alternative |
+| SG short GenAI course (~21 hrs) | ~S$2,180 before funding (≈ RM7,600); nett ≈ S$650 after subsidy | SG runs 2–3× MY sticker; heavy subsidy to learner |
+
+**Takeaways:** (1) SG leans on SkillsFuture (learner-subsidised); MY leans on HRD
+Corp (employer-funded) — our S2 pricing is built for the HRD Corp path. (2) Our
+long programs sit *below* formal diplomas/degrees while delivering income during
+study (Film Studio work) — strong value framing. (3) The intro (RM299) is a
+deliberate loss-leader vs the RM2k+ workshop norm.
+
 ---
 
-## 1.6 KPIs & PERFORMANCE METRICS
+## 1.7 KPIs & PERFORMANCE METRICS
 
 We run **two scorecards** because they are two different businesses, joined by a
 **bridge**. Don't blend them — a healthy Academy can still leak a broken Tools

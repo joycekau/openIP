@@ -36,18 +36,43 @@ We are building **two revenue engines that share one AI toolchain**.
   is how creators turn output into income.*
 
 **The AI Film Studio runs on a separate, dedicated tool — Cora AI Film Studio**
-— for produced films (longer-form / client work), distinct from the Gateway's
-Video Studio (which handles short reels and everyday video). It's **already
-built** — it just isn't in this repo/stack yet (integration is Q3‑FS1). openIP
-still plays a downstream role in **monetizing** finished film IP.
+— the **production-grade** lane for premium reels **and** full films. It's
+**already built** — it just isn't in this repo/stack yet (integration is Q3‑FS1).
+openIP still plays a downstream role in **monetizing** finished film IP.
 
-> **Rule of thumb:** short reels & daily AI work → **Cora AI Gateway** (Chat /
-> Cowork / Video Studio). Produced films → **Cora AI Film Studio**. Monetize the
-> IP → **openIP**.
+> **Two video lanes (good → pro):** everyday/volume reels & daily AI work →
+> **Cora AI Gateway · Video Studio** (bundled, self-serve). Premium/branded reels
+> + full films → **Cora AI Film Studio** (studio-grade). Monetize the IP →
+> **openIP**. Chooser: *"Just posting? → Gateway. Selling it / client / cinema? →
+> Film Studio."*
 
-**The flywheel:** Academy trains OPCs → OPCs use Cora AI (recurring revenue) →
-graduates who create publish/monetize on openIP → best OPCs staff the Film
-Studio → films become case studies + marketing that fill the next cohorts.
+**Hero value prop for Cora AI Film Studio:** **up to 80% cost reduction vs
+traditional production — same top-notch film quality.** This is the headline for
+both reels and film, and the core pitch to enterprise/SME clients.
+
+### 1a. AI Film Studio — two ways to market (DFY vs DIY)
+
+Not competing offers — a **funnel + a supply chain**:
+
+| | **Option 1 — DFY: "We make your film"** | **Option 2 — DIY: "You make films"** |
+|---|---|---|
+| Audience | Enterprise / SME / busy KOL | Ambitious OPCs (S1 flagship), creators |
+| Offer | Production **service** (per-film / retainer) | **AI OPC Mastery — Founder Track** + Film Studio access |
+| Tool | Cora AI Film Studio (we operate) | Cora AI Film Studio (they operate) |
+| Revenue | Production fees + per-film funding + licensing | Tuition + their tool subscription + **they fulfil DFY work** |
+| Hook | Up to 80% cheaper, top-notch quality, no learning curve | Own the capability; earn per project; join our bench |
+
+**The synthesis:** sell **DFY** to clients now (revenue + case studies) → fulfil
+with a bench of **DIY-trained Mastery graduates** (the Founder Track's "paid Film
+Studio work + trainer license" sets this up) → scale production **without
+full-time hires**, graduates earn, and every delivered film markets the next
+Mastery cohort. Two front doors to one tool: **commission it, or become the
+person who operates it.**
+
+**The flywheel:** Academy trains OPCs → OPCs use Cora AI Gateway + openIP
+(recurring revenue) → creators publish/monetize on openIP → top OPCs graduate the
+Founder Track and staff the Film Studio (DIY fulfilling DFY) → films become case
+studies + marketing that fill the next cohorts.
 
 ---
 
