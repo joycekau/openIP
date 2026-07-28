@@ -63,13 +63,14 @@ than the course and B2C margin (~70%) stays intact.
 | **1 · Discover** — AI & OPC Discovery (2 hrs) | OPC model + tool stack + 3 ways to monetize | RM999 → **RM299** (first 20 seats) | *same — top of funnel* | 14-day Gateway trial credits |
 | **2 · Activate** — OPC Launch Bootcamp (2 wks, ~25 hrs) | Ship first monetizable AI asset; set up Gateway + openIP | **RM3,999** | **RM1,799** (or income-share) | 3 months Gateway (individual) |
 | **3 · Certify** — AI OPC Certificate (1 yr) | Run a one-person AI business / job-ready portfolio + cert | **RM18,000** (RM1,500/mo) | **RM12,000** (RM1,000/mo) | 12 months Gateway (individual) + openIP creator |
-| **4 · Specialize** — AI OPC Diploma (2 yr) *(flagship for S1)* | Specialize (film / marketing / commerce) + revenue record | RM32,000 (RM16,000/yr) *(rare — most S2 stop at Certificate)* | **RM32,000 via income-share / RM16k-yr financing** | tools (individual) + Film Studio practicum |
-| **5 · Master** — AI OPC Mastery, Founder Track (4 yr) *(flagship for S1)* | Degree-alternative; studio-ready or franchise / trainer | RM48,000 (RM12,000/yr) *(rare for S2)* | **RM48,000 via income-share + paid studio work funds part of it** | full tools (individual) + paid Film Studio work + trainer license |
+| **4 · Specialize** — AI OPC Diploma (2 yr) *(flagship for S1)* | Specialize (film / marketing / commerce) + revenue record | RM32,000 (RM16,000/yr) *(rare — most S2 stop at Certificate)* | **RM32,000 — monthly plan (access-gated) or 3rd-party financing** | tools (individual) + Film Studio practicum |
+| **5 · Master** — AI OPC Mastery, Founder Track (4 yr) *(flagship for S1)* | Degree-alternative; studio-ready or franchise / trainer | RM48,000 (RM12,000/yr) *(rare for S2)* | **RM48,000 — earn-to-learn: fees netted from paid studio work + monthly plan** | full tools (individual) + paid Film Studio work + trainer license |
 
 **Who buys the long programs:** Diploma & Mastery are the **graduate (S1)
-flagship** — the career / degree-alternative track, accessed via income-share and
-(in Mastery) paid studio work that funds part of the fee. Professionals (S2)
-usually top out at the 1-year Certificate.
+flagship** — the career / degree-alternative track. Professionals (S2) usually
+top out at the 1-year Certificate; most graduates realistically do too (RM12k at
+RM1,000/mo). The higher rungs are funded by financing / employer / earn-to-learn,
+**not** by us collecting deferred debt — see §1.5.
 
 **Why the ladder climbs the way it does**
 - **Rung 1 is a tripwire, not a profit center.** Its job is to convert a stranger
@@ -109,16 +110,36 @@ tools *fund the business*. Model the real numbers in the ops sheet.
 
 ## 1.5 Payment & access (so price isn't the blocker)
 
-- **HRD Corp claimable (Professionals / S2):** structure Bootcamp, Certificate,
-  Diploma & Mastery to be employer-claimable under the HRD Corp levy (e.g. SBL
-  scheme) — the employer funds it, so the standard price is not the learner's
-  out-of-pocket. This is why S2 carries the higher price.
-- **Monthly installments** on rungs 3–5 (already priced /mo above).
-- **Income-share / scholarship** for S1 grads on Certificate+ (defer part of fee
-  against first AI income) — powerful marketing, gate carefully.
+**How graduates (S1) actually pay — collection risk stays low.** We do **not**
+build the business on chasing deferred debt. In order of preference:
+
+1. **Monthly installments + access-gating (primary).** Auto-charge / standing
+   instruction (e.g. RM1,000–1,500/mo). Miss a payment → access is suspended,
+   like any subscription. No large debt to chase — we simply stop delivering.
+2. **Third-party education financing (for RM32k–48k rungs).** A bank / education-
+   loan / BNPL partner **pays us in full upfront and carries the collection
+   risk**; the graduate repays the financier. Clean cash for us.
+3. **Earn-to-learn / net-off (Mastery).** Fees are **deducted from the paid Film
+   Studio (DFY) work** graduates do during the program — self-collecting, no
+   external chasing.
+4. **HRD Corp / employer (Professionals / S2, and employed grads):** structure
+   Bootcamp → Mastery to be employer-claimable under the HRD Corp levy (e.g. SBL
+   scheme). This is why S2 carries the standard price.
+5. **Scholarships — limited & deliberate.** A small quota of discounted / free
+   seats funded from the **marketing budget (treat as CAC/PR)** or corporate
+   sponsors — for top talent and testimonials, not a mass mechanism.
+6. **Income-share (ISA) — optional, later.** Only if we're capitalized to float it
+   and have the legal structure; not core.
+
+**Other levers**
 - **Upgrade credit:** the price paid for a lower rung credits toward the next
   within a window (removes "I already paid" friction on ascension).
 - **Cohort intakes** (not always-on) to create urgency and batch delivery.
+
+> **Cash-flow note:** most graduates realistically top out at the **Certificate
+> (RM12k, RM1,000/mo)**, which installments + access-gating handle cleanly.
+> Diploma/Mastery lean on financing / earn-to-learn, so the business is not
+> exposed to graduate default.
 
 ## 1.6 Market benchmark (why these prices hold)
 
