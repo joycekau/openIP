@@ -1,0 +1,348 @@
+<html lang="zh-CN">
+<title>AI 学院 — 课程阶梯与 KPI</title>
+<style>
+  :root {
+    --bg: #080510; --bg-2: #0F0A1C; --panel: #150E26; --panel-2: #1B1232;
+    --line: rgba(255,255,255,.09); --line-v: rgba(168,85,247,.26);
+    --text: #F4EFFC; --muted: #A99FC0; --muted-2: #766C8E;
+    --violet: #8B5CF6; --purple: #A855F7; --magenta: #EC4899; --pink: #F472B6; --coral: #FB7185; --cyan: #22D3EE;
+    --grad: linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn: linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --violet-bg: rgba(168,85,247,.13); --magenta-bg: rgba(236,72,153,.12);
+    --emerald: #34D399; --emerald-2: #6FE0A8; --emerald-bg: rgba(52,211,153,.12);
+    --amber: #FCD34D; --amber-bg: rgba(252,211,77,.13);
+    --alert: #FB7185; --alert-bg: rgba(251,113,133,.11);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.5);
+    --disp: "Space Grotesk", "Plus Jakarta Sans", system-ui, -apple-system, "PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",sans-serif;
+    --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(680px 420px at 84% -6%, rgba(52,211,153,.13), transparent 62%),
+      radial-gradient(620px 460px at 12% 0%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(760px 520px at 50% 112%, rgba(236,72,153,.09), transparent 60%); }
+  .wrap { max-width: 1010px; margin: 0 auto; padding: 0 24px 96px; position: relative; z-index: 1; }
+  h1, h2, h3, h4, h5 { font-family: var(--disp); font-weight: 600; line-height: 1.14; text-wrap: balance; letter-spacing: -.01em; }
+  p { max-width: 70ch; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-2); }
+  .mono { font-family: var(--mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; border-radius: 8px; }
+
+  header { padding: 76px 0 38px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: clamp(32px, 5.2vw, 52px); margin: 16px 0 16px; }
+  header .lede { font-size: 18px; color: var(--muted); margin: 0 0 26px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 26px; font-family: var(--mono); font-size: 12.5px; color: var(--muted-2); }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .sec-banner { display: flex; align-items: center; gap: 16px; margin: 68px 0 8px; padding-top: 26px; border-top: 1px solid var(--line-v); }
+  .sec-banner .num { font-family: var(--disp); font-size: 42px; font-weight: 700; line-height: 1; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sec-banner h2 { font-size: clamp(26px, 4vw, 34px); margin: 0; }
+  .sub { margin-top: 42px; }
+  .sub > .eyebrow { display: block; margin-bottom: 4px; }
+  .sub > h3 { font-size: 22px; margin: 0 0 6px; }
+  .sub-note { color: var(--muted); margin: 0 0 22px; }
+
+  /* ladder */
+  .ladder { display: flex; flex-direction: column-reverse; gap: 10px; }
+  .rung { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 16px; background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .rung:nth-child(2) { margin-right: 6%; } .rung:nth-child(3) { margin-right: 12%; } .rung:nth-child(4) { margin-right: 18%; } .rung:nth-child(5) { margin-right: 24%; }
+  .rung .step { font-family: var(--disp); font-size: 26px; font-weight: 700; text-align: center; color: var(--emerald); }
+  .rung:nth-child(4) .step, .rung:nth-child(5) .step { color: var(--pink); }
+  .rung .body h4 { font-size: 17px; margin: 0 0 2px; }
+  .rung .body .stage { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2); }
+  .rung .body .dur { font-size: 13px; color: var(--muted); }
+  .rung .price { text-align: right; font-family: var(--disp); }
+  .rung .price .now { font-size: 22px; font-weight: 700; color: var(--text); }
+  .rung .price .was { font-family: var(--mono); font-size: 11.5px; color: var(--muted-2); text-decoration: line-through; display: block; }
+  .rung .price .unit { font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+  .rung .tool-chip { grid-column: 2 / 4; font-family: var(--mono); font-size: 11px; color: var(--pink); background: var(--magenta-bg); border-radius: 100px; padding: 3px 10px; justify-self: start; margin-top: 4px; }
+
+  .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; background: var(--panel-2); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { font-weight: 600; }
+  .id-cell { font-family: var(--mono); font-size: 11.5px; color: var(--muted-2); font-weight: 600; white-space: nowrap; }
+  .tgt { font-family: var(--mono); font-weight: 600; }
+  .tgt.em { color: var(--emerald); } .tgt.mg { color: var(--pink); }
+
+  .funnel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .fstep { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 12px; box-shadow: var(--shadow); text-align: center; }
+  .fstep .rate { font-family: var(--disp); font-size: 24px; font-weight: 700; color: var(--emerald); }
+  .fstep .lbl { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+
+  .scorecards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  .sc { border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; background: var(--panel); }
+  .sc .sc-head { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+  .sc.academy .sc-head { background: linear-gradient(120deg, var(--emerald-bg), transparent); }
+  .sc.tools .sc-head { background: linear-gradient(120deg, var(--magenta-bg), transparent); }
+  .sc .sc-head .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+  .sc.academy .k { color: var(--emerald); } .sc.tools .k { color: var(--pink); }
+  .sc .sc-head h4 { font-size: 18px; margin: 4px 0 0; }
+  .sc .sc-head p { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
+  .sc table { font-size: 12.5px; } .sc th, .sc td { padding: 9px 14px; }
+
+  .northstar { border-radius: 16px; padding: 22px 24px; border: 1px solid var(--line-v); background: linear-gradient(120deg, var(--emerald-bg), var(--magenta-bg)); box-shadow: var(--shadow); }
+  .northstar .k { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .northstar h4 { font-size: 20px; margin: 6px 0 6px; }
+  .northstar p { font-size: 14px; color: var(--muted); margin: 0; max-width: 78ch; }
+  .bridge { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+  .bcard { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 15px 16px; box-shadow: var(--shadow); }
+  .bcard .bid { font-family: var(--mono); font-size: 11px; color: var(--cyan); font-weight: 600; }
+  .bcard h5 { font-size: 15px; margin: 3px 0 5px; }
+  .bcard p { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .steps li { position: relative; padding: 14px 18px 14px 52px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: 14px; box-shadow: var(--shadow); }
+  .steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 15px; top: 14px; font-family: var(--mono); font-weight: 700; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; background: var(--emerald); color: #04231a; display: grid; place-items: center; }
+  .steps li b { font-weight: 600; }
+
+  .rhythm { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .rcard { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 15px 16px; box-shadow: var(--shadow); }
+  .rcard .when { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--emerald); font-weight: 700; }
+  .rcard h5 { font-size: 15px; margin: 5px 0 5px; }
+  .rcard p { font-size: 12px; color: var(--muted); margin: 0; }
+
+  .callout { border-radius: 16px; padding: 18px 22px; margin-top: 22px; border: 1px solid var(--line); border-left: 4px solid var(--magenta); background: linear-gradient(120deg, var(--magenta-bg), transparent); }
+  .callout h3 { font-size: 16px; margin: 0 0 6px; }
+  .callout p { font-size: 13.5px; color: var(--muted); margin: 0; }
+  .callout ol { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; color: var(--text); }
+  .callout li { margin: 3px 0; }
+
+  footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--muted-2); }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.em { background: var(--emerald); } .dot.mg { background: var(--grad-btn); }
+
+  @media (max-width: 760px) { .scorecards, .funnel, .bridge, .rhythm { grid-template-columns: 1fr; } .rung { margin-right: 0 !important; } .rung .tool-chip { grid-column: 1 / 4; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI 学院 · 产品与绩效计划</div>
+    <h1>我们的<span class="grad-text">课程阶梯</span>与衡量指标</h1>
+    <p class="lede">一门付费启蒙课把陌生人变成买家,再把他们引上更长课程的阶梯 —— 每个层级都捆绑我们的 AI 工具,让课程收入转化为经常性收入。两张记分卡让这两门生意各自诚实。</p>
+    <div class="meta">
+      <span><b>货币</b> 马币(RM)</span>
+      <span><b>入口</b> 2 小时启蒙课 · RM299(前 20 席)</span>
+      <span><b>工具</b> Cora AI Gateway · openIP</span>
+      <span><b>状态</b> 待评审草稿</span>
+    </div>
+  </header>
+
+  <div class="sec-banner"><span class="num">1</span><h2>产品</h2></div>
+
+  <div class="sub">
+    <span class="eyebrow">价值阶梯</span>
+    <h3>五级阶梯,一个入口</h3>
+    <p class="sub-note">启蒙课是「诱饵」—— 定价让人觉得超值,目的是预售整个阶梯。每一级在深度、价格与承诺上层层攀升,且每一级都捆绑 OPC 工具:Cora AI Gateway + openIP。</p>
+    <div class="callout" style="margin:0 0 18px;border-left-color:var(--emerald);background:linear-gradient(120deg,var(--emerald-bg),transparent)">
+      <h3>这里教授的工具链</h3>
+      <p><b style="color:var(--emerald)">Cora AI Gateway</b> —— Chat · Cowork · <b>Video Studio</b>(短视频与日常 AI 工作) &nbsp;·&nbsp; <b style="color:var(--pink)">openIP</b> —— 把产出变成收入。成片则在一件独立工具 <b style="color:var(--amber)">Cora AI Film Studio</b> 上完成(见路线图)—— 它在这里仅作为 2 年与 4 年课程中的实习出现。</p>
+    </div>
+    <div class="ladder">
+      <div class="rung">
+        <div class="step">1</div>
+        <div class="body"><span class="stage">启蒙</span><h4>AI 与 OPC 启蒙课</h4><span class="dur">2 小时 · 线上直播 + 回放</span></div>
+        <div class="price"><span class="was tnum">RM999</span><span class="now tnum">RM299</span><span class="unit">前 20 席</span></div>
+        <div class="tool-chip">+ 14 天 Cora AI Gateway 试用额度</div>
+      </div>
+      <div class="rung">
+        <div class="step">2</div>
+        <div class="body"><span class="stage">启动</span><h4>OPC 启动训练营</h4><span class="dur">2 周(约 25 小时)· 线上 + 线下实验室</span></div>
+        <div class="price"><span class="was tnum">RM2,499</span><span class="now tnum">RM1,799</span><span class="unit">早鸟价</span></div>
+        <div class="tool-chip">+ 3 个月 Cora AI Gateway Starter</div>
+      </div>
+      <div class="rung">
+        <div class="step">3</div>
+        <div class="body"><span class="stage">认证</span><h4>AI OPC 证书课程</h4><span class="dur">1 年 · 成期班 + 导师制</span></div>
+        <div class="price"><span class="now tnum">RM9,900</span><span class="unit">或 RM990/月 ×12</span></div>
+        <div class="tool-chip">+ 12 个月 Cora AI Gateway Growth + openIP 创作者</div>
+      </div>
+      <div class="rung">
+        <div class="step">4</div>
+        <div class="body"><span class="stage">专精</span><h4>AI OPC 文凭课程</h4><span class="dur">2 年 · 混合式 + 实习</span></div>
+        <div class="price"><span class="now tnum">RM17,800</span><span class="unit">RM8,900/年</span></div>
+        <div class="tool-chip">+ 含全套工具 + 影视工作室实习</div>
+      </div>
+      <div class="rung">
+        <div class="step">5</div>
+        <div class="body"><span class="stage">精通</span><h4>AI OPC 精通 —— 创始人轨道</h4><span class="dur">4 年 · 混合式 + 带薪工作室项目</span></div>
+        <div class="price"><span class="now tnum">RM32,000</span><span class="unit">RM8,000/年</span></div>
+        <div class="tool-chip">+ 全套工具 + 带薪影视工作室项目 + 培训师授权</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">分客群晋升</span>
+    <h3>并非人人爬到顶端</h3>
+    <p class="sub-note">用同一门启蒙课带出三条晋升路线 —— 各自指向该客群真正会买的上限。</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>客群</th><th>自然入口</th><th>可能上限</th><th>原因</th></tr></thead>
+        <tbody>
+          <tr><td><b>S1 — 毕业生</b></td><td>启蒙课 → 训练营</td><td class="tgt em">文凭 / 精通 · 2–4 年</td><td>职业 / 学位替代;分期 + 收入分成解锁长课程</td></tr>
+          <tr><td><b>S2 — 专业人士 35–55</b></td><td>启蒙课 → 训练营</td><td class="tgt em">证书 · 1 年</td><td>想快速见效于工作 / 生意;偏好高端 + 线下,对 4 年兴趣不大</td></tr>
+          <tr><td><b>S3 — 网红 / KOL</b></td><td>启蒙课 → 训练营(专项)</td><td class="tgt em">证书 + 收入分成</td><td>更看重变现与 AI 影片而非长期学习;导入 openIP + 工作室合作</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">阶梯经济学</span>
+    <h3>每一步的目标转化率</h3>
+    <p class="sub-note">启蒙课为获客买单;阶梯 + 工具支撑业务。请以这些目标衡量每一步。</p>
+    <div class="funnel">
+      <div class="fstep"><div class="rate tnum">5–10%</div><div class="lbl">合格线索 → <b>启蒙课</b></div></div>
+      <div class="fstep"><div class="rate tnum">20–30%</div><div class="lbl">启蒙课 → <b>训练营</b></div></div>
+      <div class="fstep"><div class="rate tnum">15–25%</div><div class="lbl">训练营 → <b>证书</b></div></div>
+      <div class="fstep"><div class="rate tnum">30–40%</div><div class="lbl">证书 → <b>文凭</b></div></div>
+      <div class="fstep"><div class="rate tnum">30–40%</div><div class="lbl">文凭 → <b>精通</b></div></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">绩效指标</span>
+    <h3>两张记分卡,一座桥梁</h3>
+    <p class="sub-note">学院与工具是两门不同的生意。让它们的记分卡各自独立 —— 再盯住连接两者的桥梁,因为战略的成败正在于此。</p>
+
+    <div class="northstar">
+      <div class="k">★ 北极星指标</div>
+      <h4>变现的毕业生 —— 用 AI 赚取收入的学员(如 ≥ RM500/月)</h4>
+      <p>它同时证明学院价值(营销)、驱动工具留存(他们持续用 Cora/openIP 赚钱)、并支撑溢价定价。财务孪生指标:<b>综合 MRR</b>(摊销课程收入 + 工具订阅)。</p>
+    </div>
+
+    <div class="scorecards" style="margin-top:18px">
+      <div class="sc academy">
+        <div class="sc-head"><div class="k">记分卡 A</div><h4>AI 学院</h4><p>教育业务经济</p></div>
+        <div class="tbl-scroll" style="border:0;border-radius:0;box-shadow:none">
+          <table>
+            <thead><tr><th>指标</th><th>目标</th></tr></thead>
+            <tbody>
+              <tr><td>启蒙课报名(付费)</td><td class="tgt em">Q3 ≥100 · Q4 ≥500</td></tr>
+              <tr><td>每位启蒙买家 CAC</td><td class="tgt em">≤ RM120</td></tr>
+              <tr><td>线索 → 启蒙 转化</td><td class="tgt em">5–10%</td></tr>
+              <tr><td><b>阶梯晋升率</b></td><td class="tgt em">按目标</td></tr>
+              <tr><td>完课率</td><td class="tgt em">≥ 70%</td></tr>
+              <tr><td>NPS</td><td class="tgt em">≥ 40</td></tr>
+              <tr><td><b>成果率</b>(就业 / 开公司 / 首笔 RM)</td><td class="tgt em">≥ 30% @ 90 天</td></tr>
+              <tr><td>退款率</td><td class="tgt em">≤ 5%</td></tr>
+              <tr><td>课程 LTV : CAC</td><td class="tgt em">≥ 3 : 1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="sc tools">
+        <div class="sc-head"><div class="k">记分卡 B</div><h4>AI 工具</h4><p>Cora AI Gateway + openIP · 经常性收入经济</p></div>
+        <div class="tbl-scroll" style="border:0;border-radius:0;box-shadow:none">
+          <table>
+            <thead><tr><th>指标</th><th>目标</th></tr></thead>
+            <tbody>
+              <tr><td><b>绑定率</b>(开通工具账户)</td><td class="tgt mg">≥ 90%</td></tr>
+              <tr><td>激活(「顿悟」)@30 天</td><td class="tgt mg">≥ 60%</td></tr>
+              <tr><td><b>捆绑期后付费转化</b></td><td class="tgt mg">≥ 40%</td></tr>
+              <tr><td>工具 MRR / ARR</td><td class="tgt mg">逐月增长</td></tr>
+              <tr><td>月流失率</td><td class="tgt mg">≤ 5%</td></tr>
+              <tr><td>净收入留存</td><td class="tgt mg">≥ 100%</td></tr>
+              <tr><td>活跃度(WAU/MAU、额度)</td><td class="tgt mg">上升</td></tr>
+              <tr><td>openIP GMV 与创作者收入</td><td class="tgt mg">逐月增长</td></tr>
+              <tr><td>毛利率</td><td class="tgt mg">约 70% B2C</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bridge">
+      <div class="bcard"><div class="bid">X1</div><h5>学员 → 付费工具订阅者</h5><p>飞轮的核心转化。此环一断,我们就只是卖课的。</p></div>
+      <div class="bcard"><div class="bid">X2</div><h5>综合 LTV</h5><p>每位学员的课程阶梯 LTV + 工具订阅 LTV。</p></div>
+      <div class="bcard"><div class="bid">X3</div><h5>毕业生赚钱比例</h5><p>降低 CAC、提升定价能力的证明性指标。</p></div>
+    </div>
+  </div>
+
+  <div class="sec-banner"><span class="num">2</span><h2>团队如何执行</h2></div>
+
+  <div class="sub">
+    <span class="eyebrow">角色</span>
+    <h3>谁负责什么</h3>
+    <p class="sub-note">指定真实人名 —— 初期一人可兼多职。</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>角色</th><th>负责</th><th>首要任务</th></tr></thead>
+        <tbody>
+          <tr><td><b>课程负责人</b></td><td>课程、讲师、交付质量</td><td>打造 2 小时启蒙课 + 训练营大纲</td></tr>
+          <tr><td><b>增长 / 营销</b></td><td>漏斗、广告、KOL 合作、招生</td><td>招满首期启蒙班</td></tr>
+          <tr><td><b>销售 / 晋升</b></td><td>现场启蒙推介、阶梯转化、分期</td><td>主抓启蒙 → 训练营成交</td></tr>
+          <tr><td><b>工具 / 产品</b></td><td>Cora AI Gateway + openIP 开通、学员模式、看板</td><td>报名即自动开通工具</td></tr>
+          <tr><td><b>运营 / 财务</b></td><td>支付、LMS、CRM、成期、KPI 看板</td><td>搭起支付 + LMS + 记分卡</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">构建顺序</span>
+    <h3>按序推进</h3>
+    <ol class="steps">
+      <li><b>先推出第 1 层。</b>2 小时启蒙课是整台引擎的点火器 —— 在做后续之前先做并卖它,并把脚本设计成<b>以训练营邀约收尾</b>。</li>
+      <li><b>铺好资金 + 交付底座:</b>支付(含分期)、LMS/网课工具、CRM,以及<b>自动工具开通</b>(报名 → 生成 Cora AI Gateway / openIP 账户 + 捆绑额度)。绑定率靠这个。</li>
+      <li><b>在启蒙班开跑期间搭建训练营(第 2 层)</b> —— 收入与工具绑定集中在这里。</li>
+      <li><b>先拟定第 3–5 层</b>,在完全建好前开放<b>候补 / 订金</b>,让需求为建设买单。</li>
+    </ol>
+    <div class="callout">
+      <h3>启蒙课上市打法(第 1 层)</h3>
+      <p>内容本身<em>就是</em>阶梯的演示 —— 先教,再现场卖出下一层:</p>
+      <ol>
+        <li>讲 OPC 理念 → 现场演示 Cora AI Gateway(Chat / Cowork / Video Studio)→ 展示一个 openIP 变现案例。</li>
+        <li>讲解 3 种变现路径。</li>
+        <li>发出训练营邀约并给即时<b>升级抵扣</b>(RM299 可抵扣)。</li>
+        <li>用硬性稀缺推动成交:<b>RM999 原价,RM299 仅限前 20 席</b> —— 展示「20 席仅剩 X」计数器;后续班给较小折扣,绝不再回到 RM299。</li>
+        <li>每周开班,可复制 —— 每场启蒙既是收入,也是漏斗顶端。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">运营节奏</span>
+    <h3>我们何时看数据</h3>
+    <div class="rhythm">
+      <div class="rcard"><div class="when">每周</div><h5>增长站会</h5><p>报名、CAC、转化;工具活跃。</p></div>
+      <div class="rcard"><div class="when">每期</div><h5>期后复盘</h5><p>晋升、完课、绑定、激活。</p></div>
+      <div class="rcard"><div class="when">每月</div><h5>业务评审</h5><p>完整记分卡 A + B + 桥梁;MRR、流失、退款。</p></div>
+      <div class="rcard"><div class="when">每季</div><h5>战略</h5><p>LTV:CAC、NRR、成果率、北极星;重新定价。</p></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">时间线</span>
+    <h3>对应 Q3–Q4 路线图</h3>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>时间</th><th>里程碑</th></tr></thead>
+        <tbody>
+          <tr><td class="id-cell">现在 → 8 月</td><td>打造并推出第 1 层启蒙课(早鸟);搭起支付 / LMS / 开通 + KPI 看板</td></tr>
+          <tr><td class="id-cell">9 月</td><td>首批付费启蒙班 + 训练营试点;衡量 启蒙 → 训练营 这一步</td></tr>
+          <tr><td class="id-cell">10–12 月</td><td>扩大启蒙节奏;训练营上量;开首期证书班;文凭 / 精通开放候补</td></tr>
+          <tr><td class="id-cell">12 月</td><td>评审记分卡 A / B / 桥梁;据真实转化数据定 2027 阶梯价</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <div class="legend">
+      <span><span class="dot em"></span> Cora AI Gateway(学院)</span>
+      <span><span class="dot mg"></span> openIP(AI 工具)</span>
+    </div>
+    <p style="margin-top:14px">第 2–5 层价格为拟定锚点 —— 请按市场调整。活文档;首批开班后请用真实数字更新目标。编制于 2026-07-28。</p>
+  </footer>
+</div>

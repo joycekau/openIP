@@ -1,0 +1,347 @@
+<title>AI Academy — Course Ladder & KPIs</title>
+<style>
+  :root {
+    --bg: #080510; --bg-2: #0F0A1C; --panel: #150E26; --panel-2: #1B1232;
+    --line: rgba(255,255,255,.09); --line-v: rgba(168,85,247,.26);
+    --text: #F4EFFC; --muted: #A99FC0; --muted-2: #766C8E;
+    --violet: #8B5CF6; --purple: #A855F7; --magenta: #EC4899; --pink: #F472B6; --coral: #FB7185; --cyan: #22D3EE;
+    --grad: linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn: linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --violet-bg: rgba(168,85,247,.13); --magenta-bg: rgba(236,72,153,.12);
+    --emerald: #34D399; --emerald-2: #6FE0A8; --emerald-bg: rgba(52,211,153,.12);
+    --amber: #FCD34D; --amber-bg: rgba(252,211,77,.13);
+    --alert: #FB7185; --alert-bg: rgba(251,113,133,.11);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.5);
+    --disp: "Space Grotesk", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(680px 420px at 84% -6%, rgba(52,211,153,.13), transparent 62%),
+      radial-gradient(620px 460px at 12% 0%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(760px 520px at 50% 112%, rgba(236,72,153,.09), transparent 60%); }
+  .wrap { max-width: 1010px; margin: 0 auto; padding: 0 24px 96px; position: relative; z-index: 1; }
+  h1, h2, h3, h4, h5 { font-family: var(--disp); font-weight: 600; line-height: 1.14; text-wrap: balance; letter-spacing: -.01em; }
+  p { max-width: 70ch; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-2); }
+  .mono { font-family: var(--mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; border-radius: 8px; }
+
+  header { padding: 76px 0 38px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: clamp(32px, 5.2vw, 52px); margin: 16px 0 16px; }
+  header .lede { font-size: 18px; color: var(--muted); margin: 0 0 26px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 26px; font-family: var(--mono); font-size: 12.5px; color: var(--muted-2); }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .sec-banner { display: flex; align-items: center; gap: 16px; margin: 68px 0 8px; padding-top: 26px; border-top: 1px solid var(--line-v); }
+  .sec-banner .num { font-family: var(--disp); font-size: 42px; font-weight: 700; line-height: 1; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sec-banner h2 { font-size: clamp(26px, 4vw, 34px); margin: 0; }
+  .sub { margin-top: 42px; }
+  .sub > .eyebrow { display: block; margin-bottom: 4px; }
+  .sub > h3 { font-size: 22px; margin: 0 0 6px; }
+  .sub-note { color: var(--muted); margin: 0 0 22px; }
+
+  /* ladder */
+  .ladder { display: flex; flex-direction: column-reverse; gap: 10px; }
+  .rung { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 16px; background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .rung:nth-child(2) { margin-right: 6%; } .rung:nth-child(3) { margin-right: 12%; } .rung:nth-child(4) { margin-right: 18%; } .rung:nth-child(5) { margin-right: 24%; }
+  .rung .step { font-family: var(--disp); font-size: 26px; font-weight: 700; text-align: center; color: var(--emerald); }
+  .rung:nth-child(4) .step, .rung:nth-child(5) .step { color: var(--pink); }
+  .rung .body h4 { font-size: 17px; margin: 0 0 2px; }
+  .rung .body .stage { font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2); }
+  .rung .body .dur { font-size: 13px; color: var(--muted); }
+  .rung .price { text-align: right; font-family: var(--disp); }
+  .rung .price .now { font-size: 22px; font-weight: 700; color: var(--text); }
+  .rung .price .was { font-family: var(--mono); font-size: 11.5px; color: var(--muted-2); text-decoration: line-through; display: block; }
+  .rung .price .unit { font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+  .rung .tool-chip { grid-column: 2 / 4; font-family: var(--mono); font-size: 11px; color: var(--pink); background: var(--magenta-bg); border-radius: 100px; padding: 3px 10px; justify-self: start; margin-top: 4px; }
+
+  .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 12px 15px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; background: var(--panel-2); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { font-weight: 600; }
+  .id-cell { font-family: var(--mono); font-size: 11.5px; color: var(--muted-2); font-weight: 600; white-space: nowrap; }
+  .tgt { font-family: var(--mono); font-weight: 600; }
+  .tgt.em { color: var(--emerald); } .tgt.mg { color: var(--pink); }
+
+  .funnel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .fstep { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 12px; box-shadow: var(--shadow); text-align: center; }
+  .fstep .rate { font-family: var(--disp); font-size: 24px; font-weight: 700; color: var(--emerald); }
+  .fstep .lbl { font-size: 11.5px; color: var(--muted); margin-top: 4px; line-height: 1.35; }
+
+  .scorecards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+  .sc { border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); overflow: hidden; background: var(--panel); }
+  .sc .sc-head { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+  .sc.academy .sc-head { background: linear-gradient(120deg, var(--emerald-bg), transparent); }
+  .sc.tools .sc-head { background: linear-gradient(120deg, var(--magenta-bg), transparent); }
+  .sc .sc-head .k { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+  .sc.academy .k { color: var(--emerald); } .sc.tools .k { color: var(--pink); }
+  .sc .sc-head h4 { font-size: 18px; margin: 4px 0 0; }
+  .sc .sc-head p { font-size: 12.5px; color: var(--muted); margin: 4px 0 0; }
+  .sc table { font-size: 12.5px; } .sc th, .sc td { padding: 9px 14px; }
+
+  .northstar { border-radius: 16px; padding: 22px 24px; border: 1px solid var(--line-v); background: linear-gradient(120deg, var(--emerald-bg), var(--magenta-bg)); box-shadow: var(--shadow); }
+  .northstar .k { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .northstar h4 { font-size: 20px; margin: 6px 0 6px; }
+  .northstar p { font-size: 14px; color: var(--muted); margin: 0; max-width: 78ch; }
+  .bridge { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 18px; }
+  .bcard { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 15px 16px; box-shadow: var(--shadow); }
+  .bcard .bid { font-family: var(--mono); font-size: 11px; color: var(--cyan); font-weight: 600; }
+  .bcard h5 { font-size: 15px; margin: 3px 0 5px; }
+  .bcard p { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .steps li { position: relative; padding: 14px 18px 14px 52px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: 14px; box-shadow: var(--shadow); }
+  .steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 15px; top: 14px; font-family: var(--mono); font-weight: 700; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; background: var(--emerald); color: #04231a; display: grid; place-items: center; }
+  .steps li b { font-weight: 600; }
+
+  .rhythm { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .rcard { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 15px 16px; box-shadow: var(--shadow); }
+  .rcard .when { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--emerald); font-weight: 700; }
+  .rcard h5 { font-size: 15px; margin: 5px 0 5px; }
+  .rcard p { font-size: 12px; color: var(--muted); margin: 0; }
+
+  .callout { border-radius: 16px; padding: 18px 22px; margin-top: 22px; border: 1px solid var(--line); border-left: 4px solid var(--magenta); background: linear-gradient(120deg, var(--magenta-bg), transparent); }
+  .callout h3 { font-size: 16px; margin: 0 0 6px; }
+  .callout p { font-size: 13.5px; color: var(--muted); margin: 0; }
+  .callout ol { margin: 8px 0 0; padding-left: 20px; font-size: 13.5px; color: var(--text); }
+  .callout li { margin: 3px 0; }
+
+  footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--muted-2); }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.em { background: var(--emerald); } .dot.mg { background: var(--grad-btn); }
+
+  @media (max-width: 760px) { .scorecards, .funnel, .bridge, .rhythm { grid-template-columns: 1fr; } .rung { margin-right: 0 !important; } .rung .tool-chip { grid-column: 1 / 4; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">AI Academy · Product &amp; performance plan</div>
+    <h1>The <span class="grad-text">Course Ladder</span> &amp; What We Measure</h1>
+    <p class="lede">A paid intro course turns strangers into buyers, then ascends them up a ladder of longer programs — each one bundling our AI Tools so course revenue becomes recurring revenue. Two scorecards keep the two businesses honest.</p>
+    <div class="meta">
+      <span><b>Currency</b> MYR (RM)</span>
+      <span><b>Entry</b> 2-hr intro · RM299 (first 20 seats)</span>
+      <span><b>Tools</b> Cora AI Gateway · openIP</span>
+      <span><b>Status</b> Draft for review</span>
+    </div>
+  </header>
+
+  <div class="sec-banner"><span class="num">1</span><h2>The Product</h2></div>
+
+  <div class="sub">
+    <span class="eyebrow">The value ladder</span>
+    <h3>Five rungs, one on-ramp</h3>
+    <p class="sub-note">The intro is a tripwire — priced to feel like a steal, built to pre-sell the ladder. Each rung climbs in depth, price, and commitment, and every rung bundles the OPC tools: Cora AI Gateway + openIP.</p>
+    <div class="callout" style="margin:0 0 18px;border-left-color:var(--emerald);background:linear-gradient(120deg,var(--emerald-bg),transparent)">
+      <h3>The toolchain taught here</h3>
+      <p><b style="color:var(--emerald)">Cora AI Gateway</b> — Chat · Cowork · <b>Video Studio</b> (short reels &amp; daily AI work) &nbsp;·&nbsp; <b style="color:var(--pink)">openIP</b> — turn output into income. Produced films run on a separate tool, <b style="color:var(--amber)">Cora AI Film Studio</b> (see the rollout plan) — it appears here only as practicum in the 2- and 4-year programs.</p>
+    </div>
+    <div class="ladder">
+      <div class="rung">
+        <div class="step">1</div>
+        <div class="body"><span class="stage">Discover</span><h4>AI &amp; OPC Discovery</h4><span class="dur">2 hours · online live + replay</span></div>
+        <div class="price"><span class="was tnum">RM999</span><span class="now tnum">RM299</span><span class="unit">first 20 seats</span></div>
+        <div class="tool-chip">+ 14-day Cora AI Gateway trial credits</div>
+      </div>
+      <div class="rung">
+        <div class="step">2</div>
+        <div class="body"><span class="stage">Activate</span><h4>OPC Launch Bootcamp</h4><span class="dur">2 weeks (~25 hrs) · online + offline lab</span></div>
+        <div class="price"><span class="was tnum">RM2,499</span><span class="now tnum">RM1,799</span><span class="unit">early bird</span></div>
+        <div class="tool-chip">+ 3 months Cora AI Gateway Starter</div>
+      </div>
+      <div class="rung">
+        <div class="step">3</div>
+        <div class="body"><span class="stage">Certify</span><h4>AI OPC Certificate</h4><span class="dur">1 year · cohort + mentorship</span></div>
+        <div class="price"><span class="now tnum">RM9,900</span><span class="unit">or RM990/mo ×12</span></div>
+        <div class="tool-chip">+ 12 months Cora AI Gateway Growth + openIP creator</div>
+      </div>
+      <div class="rung">
+        <div class="step">4</div>
+        <div class="body"><span class="stage">Specialize</span><h4>AI OPC Diploma</h4><span class="dur">2 years · blended + practicum</span></div>
+        <div class="price"><span class="now tnum">RM17,800</span><span class="unit">RM8,900/yr</span></div>
+        <div class="tool-chip">+ tools included + Film Studio practicum</div>
+      </div>
+      <div class="rung">
+        <div class="step">5</div>
+        <div class="body"><span class="stage">Master</span><h4>AI OPC Mastery — Founder Track</h4><span class="dur">4 years · blended + paid studio work</span></div>
+        <div class="price"><span class="now tnum">RM32,000</span><span class="unit">RM8,000/yr</span></div>
+        <div class="tool-chip">+ full tools + paid Film Studio work + trainer license</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">Ascension by segment</span>
+    <h3>Not everyone climbs to the top</h3>
+    <p class="sub-note">Run three ascension tracks off the same intro — each pointing at the ceiling that segment actually buys.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Segment</th><th>Natural entry</th><th>Likely ceiling</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><b>S1 — Graduates</b></td><td>Discover → Bootcamp</td><td class="tgt em">Diploma / Mastery · 2–4 yr</td><td>Career / degree alternative; financing + income-share unlock the long programs</td></tr>
+          <tr><td><b>S2 — Mid-life 35–55</b></td><td>Discover → Bootcamp</td><td class="tgt em">Certificate · 1 yr</td><td>Want fast work/business results; premium &amp; offline-friendly, less appetite for 4 yrs</td></tr>
+          <tr><td><b>S3 — Influencers / KOL</b></td><td>Discover → Bootcamp (specialized)</td><td class="tgt em">Certificate + rev-share</td><td>Value monetization &amp; AI film over long study; feed into openIP + Studio deals</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">Ladder economics</span>
+    <h3>Target conversion at each step</h3>
+    <p class="sub-note">The intro funds acquisition; the ladder + tools fund the business. Measure every step against these targets.</p>
+    <div class="funnel">
+      <div class="fstep"><div class="rate tnum">5–10%</div><div class="lbl">Qualified lead → <b>Discover</b></div></div>
+      <div class="fstep"><div class="rate tnum">20–30%</div><div class="lbl">Discover → <b>Bootcamp</b></div></div>
+      <div class="fstep"><div class="rate tnum">15–25%</div><div class="lbl">Bootcamp → <b>Certificate</b></div></div>
+      <div class="fstep"><div class="rate tnum">30–40%</div><div class="lbl">Certificate → <b>Diploma</b></div></div>
+      <div class="fstep"><div class="rate tnum">30–40%</div><div class="lbl">Diploma → <b>Mastery</b></div></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">Performance metrics</span>
+    <h3>Two scorecards, one bridge</h3>
+    <p class="sub-note">The Academy and the Tools are two different businesses. Keep their scorecards separate — then watch the bridge that connects them, because that's where the strategy lives or dies.</p>
+
+    <div class="northstar">
+      <div class="k">★ North-star metric</div>
+      <h4>Graduates monetizing — students earning income with AI (e.g. ≥ RM500/mo)</h4>
+      <p>It proves the Academy (marketing), drives Tools retention (they keep using Cora/openIP to earn), and justifies premium pricing — all at once. Financial twin: <b>blended MRR</b> (amortized course revenue + tool subscriptions).</p>
+    </div>
+
+    <div class="scorecards" style="margin-top:18px">
+      <div class="sc academy">
+        <div class="sc-head"><div class="k">Scorecard A</div><h4>AI Academy</h4><p>Education economics</p></div>
+        <div class="tbl-scroll" style="border:0;border-radius:0;box-shadow:none">
+          <table>
+            <thead><tr><th>Metric</th><th>Target</th></tr></thead>
+            <tbody>
+              <tr><td>Intro signups (paid)</td><td class="tgt em">Q3 ≥100 · Q4 ≥500</td></tr>
+              <tr><td>CAC per intro buyer</td><td class="tgt em">≤ RM120</td></tr>
+              <tr><td>Lead → intro conv.</td><td class="tgt em">5–10%</td></tr>
+              <tr><td><b>Ladder ascension rate</b></td><td class="tgt em">per targets</td></tr>
+              <tr><td>Completion rate</td><td class="tgt em">≥ 70%</td></tr>
+              <tr><td>NPS</td><td class="tgt em">≥ 40</td></tr>
+              <tr><td><b>Outcome rate</b> (job/OPC/first RM)</td><td class="tgt em">≥ 30% @ 90d</td></tr>
+              <tr><td>Refund rate</td><td class="tgt em">≤ 5%</td></tr>
+              <tr><td>Course LTV : CAC</td><td class="tgt em">≥ 3 : 1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="sc tools">
+        <div class="sc-head"><div class="k">Scorecard B</div><h4>AI Tools</h4><p>Cora AI Gateway + openIP · recurring economics</p></div>
+        <div class="tbl-scroll" style="border:0;border-radius:0;box-shadow:none">
+          <table>
+            <thead><tr><th>Metric</th><th>Target</th></tr></thead>
+            <tbody>
+              <tr><td><b>Attach rate</b> (activate tool acct)</td><td class="tgt mg">≥ 90%</td></tr>
+              <tr><td>Activation ("aha") @30d</td><td class="tgt mg">≥ 60%</td></tr>
+              <tr><td><b>Post-bundle paid conv.</b></td><td class="tgt mg">≥ 40%</td></tr>
+              <tr><td>Tool MRR / ARR</td><td class="tgt mg">grow MoM</td></tr>
+              <tr><td>Monthly churn</td><td class="tgt mg">≤ 5%</td></tr>
+              <tr><td>Net revenue retention</td><td class="tgt mg">≥ 100%</td></tr>
+              <tr><td>Engagement (WAU/MAU, credits)</td><td class="tgt mg">rising</td></tr>
+              <tr><td>openIP GMV &amp; creators earning</td><td class="tgt mg">grow MoM</td></tr>
+              <tr><td>Gross margin</td><td class="tgt mg">~70% B2C</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bridge">
+      <div class="bcard"><div class="bid">X1</div><h5>Student → paying tool subscriber</h5><p>The flywheel's core conversion. If this breaks, we're just a course seller.</p></div>
+      <div class="bcard"><div class="bid">X2</div><h5>Blended LTV</h5><p>Course ladder LTV + tool subscription LTV per student.</p></div>
+      <div class="bcard"><div class="bid">X3</div><h5>Graduate-earning rate</h5><p>The proof metric that lowers CAC and raises pricing power.</p></div>
+    </div>
+  </div>
+
+  <div class="sec-banner"><span class="num">2</span><h2>How the Team Executes</h2></div>
+
+  <div class="sub">
+    <span class="eyebrow">Roles</span>
+    <h3>Who owns what</h3>
+    <p class="sub-note">Assign real names — one person may hold several to start.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Role</th><th>Owns</th><th>First job</th></tr></thead>
+        <tbody>
+          <tr><td><b>Program lead</b></td><td>Curriculum, instructors, delivery quality</td><td>Build the 2-hr intro + Bootcamp outline</td></tr>
+          <tr><td><b>Growth / marketing</b></td><td>Funnel, ads, KOL partners, enrolment</td><td>Fill the first intro cohort</td></tr>
+          <tr><td><b>Sales / ascension</b></td><td>Live intro pitch, ladder conversions, financing</td><td>Own the intro → Bootcamp close</td></tr>
+          <tr><td><b>Tools / product</b></td><td>Cora AI Gateway + openIP provisioning, learner mode, dashboards</td><td>Auto-provision tool access on enrolment</td></tr>
+          <tr><td><b>Ops / finance</b></td><td>Payments, LMS, CRM, cohorts, KPI dashboard</td><td>Stand up payment + LMS + scorecards</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">Build sequence</span>
+    <h3>Do these in order</h3>
+    <ol class="steps">
+      <li><b>Ship Rung 1 first.</b> The 2-hr intro is the engine's ignition — build and sell it before anything downstream, and script it to <b>end with the Bootcamp offer</b>.</li>
+      <li><b>Lay the money + delivery rails:</b> payment with installments, LMS/webinar, CRM, and <b>automated tool provisioning</b> (enrol → Cora AI Gateway / openIP account + bundled credits). Attach rate depends on this.</li>
+      <li><b>Build the Bootcamp (Rung 2)</b> while intro cohorts run — that's where revenue and tool-attach concentrate.</li>
+      <li><b>Outline rungs 3–5</b> and open a <b>waitlist / deposit</b> before building them fully. Let demand fund the build.</li>
+    </ol>
+    <div class="callout">
+      <h3>The intro-course launch play (Rung 1)</h3>
+      <p>The content <em>is</em> a demo of the ladder — teach, then sell the next rung live:</p>
+      <ol>
+        <li>Teach the OPC concept → demo Cora AI Gateway live (Chat / Cowork / Video Studio) → show an openIP monetization example.</li>
+        <li>Present the 3 monetization paths.</li>
+        <li>Make the Bootcamp offer with an on-the-spot <b>upgrade credit</b> (the RM299 counts toward it).</li>
+        <li>Drive the close with hard scarcity: <b>RM999 list, RM299 for the first 20 seats only</b> — show an "X of 20 left" counter; later cohorts get a smaller discount, never back to RM299.</li>
+        <li>Run it weekly as a repeatable cohort — each intro is both revenue and top-of-funnel.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">Operating rhythm</span>
+    <h3>When we look at the numbers</h3>
+    <div class="rhythm">
+      <div class="rcard"><div class="when">Weekly</div><h5>Growth stand-up</h5><p>Signups, CAC, conversion; tool engagement.</p></div>
+      <div class="rcard"><div class="when">Per cohort</div><h5>Cohort retro</h5><p>Ascension, completion, attach, activation.</p></div>
+      <div class="rcard"><div class="when">Monthly</div><h5>Business review</h5><p>Full Scorecard A + B + Bridge; MRR, churn, refunds.</p></div>
+      <div class="rcard"><div class="when">Quarterly</div><h5>Strategy</h5><p>LTV:CAC, NRR, outcome rate, North Star; reprice.</p></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <span class="eyebrow">Timeline</span>
+    <h3>Mapped to the Q3–Q4 rollout</h3>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>When</th><th>Milestone</th></tr></thead>
+        <tbody>
+          <tr><td class="id-cell">Now → Aug</td><td>Build + launch Rung 1 intro (early bird); stand up payment / LMS / provisioning + KPI dashboard</td></tr>
+          <tr><td class="id-cell">Sep</td><td>First paid intro cohorts + Bootcamp pilot; measure Discover → Bootcamp step</td></tr>
+          <tr><td class="id-cell">Oct–Dec</td><td>Scale intro cadence; Bootcamp at volume; Certificate cohort #1; waitlists for Diploma / Mastery</td></tr>
+          <tr><td class="id-cell">Dec</td><td>Review Scorecards A / B / Bridge; set 2027 ladder pricing from real conversion data</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>
+    <div class="legend">
+      <span><span class="dot em"></span> Cora AI Gateway (Academy)</span>
+      <span><span class="dot mg"></span> openIP (AI Tools)</span>
+    </div>
+    <p style="margin-top:14px">Prices for rungs 2–5 are proposed anchors — adjust to market. Living document; update targets with real numbers after the first cohorts. Prepared 2026-07-28.</p>
+  </footer>
+</div>

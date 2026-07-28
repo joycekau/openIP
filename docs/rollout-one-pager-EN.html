@@ -1,0 +1,291 @@
+<title>Q3–Q4 2026 Rollout — AI Academy & Film Studio</title>
+<style>
+  :root {
+    /* openIP near-black violet ground */
+    --bg: #080510; --bg-2: #0F0A1C; --panel: #150E26; --panel-2: #1B1232;
+    --line: rgba(255,255,255,.09); --line-v: rgba(168,85,247,.26);
+    --text: #F4EFFC; --muted: #A99FC0; --muted-2: #766C8E;
+    /* openIP accents */
+    --violet: #8B5CF6; --purple: #A855F7; --magenta: #EC4899; --pink: #F472B6; --coral: #FB7185; --cyan: #22D3EE;
+    --grad: linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn: linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --violet-bg: rgba(168,85,247,.13); --magenta-bg: rgba(236,72,153,.12);
+    /* Cora emerald */
+    --emerald: #34D399; --emerald-2: #6FE0A8; --emerald-bg: rgba(52,211,153,.12);
+    /* Cora AI Film Studio — cinema amber */
+    --amber: #FCD34D; --amber-bg: rgba(252,211,77,.13);
+    --alert: #FB7185; --alert-bg: rgba(251,113,133,.11);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.5);
+    --disp: "Space Grotesk", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  /* openIP ambient glow */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(680px 420px at 84% -6%, rgba(236,72,153,.16), transparent 62%),
+      radial-gradient(620px 460px at 12% 0%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(760px 520px at 50% 112%, rgba(34,211,238,.09), transparent 60%);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px 96px; position: relative; z-index: 1; }
+
+  h1, h2, h3, h4 { font-family: var(--disp); font-weight: 600; line-height: 1.14; text-wrap: balance; letter-spacing: -.01em; }
+  p { max-width: 68ch; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-2); }
+  .mono { font-family: var(--mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; border-radius: 8px; }
+
+  header { padding: 76px 0 40px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: clamp(36px, 6vw, 58px); margin: 16px 0 18px; }
+  header .lede { font-size: 18px; color: var(--muted); margin: 0 0 28px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 28px; font-family: var(--mono); font-size: 12.5px; color: var(--muted-2); }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  section { padding-top: 60px; }
+  section > h2 { font-size: clamp(24px, 3.6vw, 32px); margin: 8px 0 6px; }
+  .sec-note { color: var(--muted); margin: 0 0 24px; }
+
+  .card-base { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+
+  /* engines */
+  .engines { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .engine { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .engine::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; }
+  .engine.film::before { background: var(--amber); }
+  .engine.academy::before { background: linear-gradient(180deg, var(--emerald), var(--magenta)); }
+  .engine .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 12px; font-weight: 600; }
+  .film .tag { color: var(--amber); background: var(--amber-bg); }
+  .academy .tag { color: var(--emerald); background: var(--emerald-bg); }
+  .toolrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+  .toolrow .t { font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em; padding: 3px 9px; border-radius: 7px; border: 1px solid var(--line); color: var(--muted); }
+  .toolrow .t.em { color: var(--emerald); border-color: rgba(52,211,153,.35); }
+  .toolrow .t.op { color: var(--pink); border-color: rgba(236,72,153,.35); }
+  .toolrow .t.am { color: var(--amber); border-color: rgba(252,211,77,.4); }
+  .engine h3 { font-size: 20px; margin: 0 0 10px; }
+  .engine p { font-size: 14.5px; color: var(--muted); margin: 0 0 14px; }
+  .engine dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13.5px; }
+  .engine dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); padding-top: 2px; }
+  .engine dd { margin: 0; color: var(--text); }
+
+  .flywheel { margin-top: 20px; padding: 18px 22px; background: var(--bg-2); border: 1px solid var(--line-v); border-radius: 14px; font-size: 14px; color: var(--muted); }
+  .flywheel b { color: var(--text); font-family: var(--disp); }
+
+  .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; background: var(--panel-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { font-weight: 600; }
+  .seg-num { font-family: var(--disp); font-size: 22px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .q-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+  .q-head .q { font-family: var(--disp); font-size: 30px; font-weight: 700; }
+  .q-head .theme { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; font-weight: 600; }
+  .q3 .theme { color: var(--emerald); background: var(--emerald-bg); }
+  .q4 .theme { color: var(--pink); background: var(--magenta-bg); }
+
+  .timeline { position: relative; margin-top: 24px; padding-left: 30px; }
+  .timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, var(--emerald), var(--magenta)); opacity: .5; }
+  .ms { position: relative; margin-bottom: 16px; }
+  .ms::before { content: ""; position: absolute; left: -30px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: var(--panel); border: 2px solid var(--muted-2); }
+  .ms.film::before { border-color: var(--amber); box-shadow: 0 0 12px rgba(252,211,77,.5); }
+  .ms.academy::before { border-color: var(--emerald); box-shadow: 0 0 12px rgba(52,211,153,.5); }
+  .ms.openip::before { border-color: var(--magenta); box-shadow: 0 0 12px rgba(236,72,153,.5); }
+  .ms.both::before { border: none; background: var(--grad); }
+  .card { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .card .id { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--muted-2); font-weight: 600; }
+  .card .date { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--text); background: var(--panel-2); padding: 2px 9px; border-radius: 7px; }
+  .card h4 { font-size: 17px; margin: 6px 0 8px; }
+  .card .exit { font-size: 13.5px; color: var(--muted); margin: 0; }
+  .card .exit b { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; display: block; margin-bottom: 2px; }
+
+  .callout { border-radius: 16px; padding: 20px 24px; margin-top: 24px; border: 1px solid var(--line); background: var(--panel); }
+  .callout.gate { border-left: 4px solid var(--emerald); background: linear-gradient(120deg, var(--emerald-bg), transparent); }
+  .callout.warn { border-left: 4px solid var(--coral); background: linear-gradient(120deg, var(--alert-bg), transparent); }
+  .callout h3 { font-size: 17px; margin: 0 0 8px; }
+  .callout.warn h3 { color: var(--coral); }
+  .callout p { font-size: 14px; color: var(--muted); margin: 0; max-width: 74ch; }
+  .callout.warn p { color: var(--text); }
+  .callout .crit { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .callout .crit span { font-family: var(--mono); font-size: 12px; background: var(--bg-2); border: 1px solid var(--line-v); padding: 4px 11px; border-radius: 100px; font-weight: 600; color: var(--text); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kpi { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 18px; box-shadow: var(--shadow); }
+  .kpi .n { font-family: var(--disp); font-size: 30px; font-weight: 700; letter-spacing: -.01em; color: var(--emerald); }
+  .kpi.op .n { background: var(--grad-btn); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .kpi.am .n { color: var(--amber); }
+  .kpi .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  ol.actions { counter-reset: a; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  ol.actions li { position: relative; padding: 14px 18px 14px 54px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: 14.5px; box-shadow: var(--shadow); }
+  ol.actions li::before { counter-increment: a; content: counter(a); position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-weight: 700; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; background: var(--grad-btn); color: #fff; display: grid; place-items: center; }
+
+  footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--muted-2); }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.em { background: var(--emerald); } .dot.op { background: var(--grad-btn); } .dot.am { background: var(--amber); } .dot.gr { background: var(--grad); }
+
+  @media (max-width: 720px) { .engines { grid-template-columns: 1fr; } .kpis { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Product Rollout · Internal team plan</div>
+    <h1>AI Academy &amp; <span class="grad-text">AI Film Studio</span></h1>
+    <p class="lede">How we move from tools to two revenue engines in Q3–Q4 2026 — training one-person companies to work with AI, and producing AI films — on the platforms we already own.</p>
+    <div class="meta">
+      <span><b>Owner</b> Founder</span>
+      <span><b>Horizon</b> Q3 2026 → Q4 2026</span>
+      <span><b>Tools</b> Cora AI · openIP</span>
+      <span><b>Status</b> Draft for review</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="eyebrow">The picture</div>
+    <h2>Two engines, one AI toolchain</h2>
+    <p class="sec-note">Everything we build feeds one flywheel: the Academy trains OPCs, they keep paying for the tools, the best creators publish on openIP and staff the Film Studio — and finished films become the marketing that fills the next cohort.</p>
+    <div class="engines">
+      <div class="engine academy">
+        <span class="tag">Engine A</span>
+        <h3>AI Academy — OPC training</h3>
+        <p>Online + offline classes and digital content that teach people to run as AI-powered one-person companies.</p>
+        <div class="toolrow"><span class="t em">Cora AI Gateway</span><span class="t op">openIP</span></div>
+        <dl>
+          <dt>Pays</dt><dd>Learners, then B2B / edu partners</dd>
+          <dt>Tools</dt><dd>Cora AI Gateway (Chat · Cowork · Video Studio) + openIP</dd>
+          <dt>Revenue</dt><dd>Course fees + recurring tool subscriptions</dd>
+        </dl>
+      </div>
+      <div class="engine film">
+        <span class="tag">Engine B</span>
+        <h3>AI Film Studio</h3>
+        <p>AI-made films, two paths: train OPCs to make films, and produce films for enterprise / SME with investment raised per movie.</p>
+        <div class="toolrow"><span class="t am">Cora AI Film Studio</span><span class="t op">openIP · monetize IP</span></div>
+        <dl>
+          <dt>Pays</dt><dd>Enterprise / SME clients; per-film backers</dd>
+          <dt>Tool</dt><dd>Cora AI Film Studio (separate) — openIP monetizes the IP</dd>
+          <dt>Revenue</dt><dd>Production fees + per-film funding + licensing</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="flywheel"><b>The flywheel —</b> Academy → OPCs on Cora AI Gateway + openIP (recurring) → creators publish &amp; monetize on openIP → top OPCs staff the Film Studio (Cora AI Film Studio) → films become case studies that fill the next cohort.</div>
+    <div class="flywheel" style="margin-top:10px"><b>Which tool for what —</b> short reels &amp; daily AI work → <span style="color:var(--emerald)">Cora AI Gateway</span> (Chat / Cowork / Video Studio) · produced films → <span style="color:var(--amber)">Cora AI Film Studio</span> · turn output &amp; film IP into income → <span style="color:var(--pink)">openIP</span>.</div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Who we serve</div>
+    <h2>The three OPC segments</h2>
+    <p class="sec-note">Segment 1 scales on volume and is digital-first. Segment 2 carries the margin and is offline-first. Segment 3 runs on revenue-share and feeds the Film Studio directly.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Segment</th><th>Their goal</th><th>Product path</th><th>Offer posture</th></tr></thead>
+        <tbody>
+          <tr><td><span class="seg-num">1</span></td><td><b>New graduates</b><br>Want an AI career, or no job yet</td><td>Employable AI skills, or launch a micro-business</td><td>Cora AI daily driver → openIP if they create</td><td>AI Career Accelerator — cohort, low price, high volume, scholarship / income-share</td></tr>
+          <tr><td><span class="seg-num">2</span></td><td><b>Mid-life, 35–55</b><br>New to AI, want it for work or a business</td><td>Perform at work with AI, or open a business</td><td>Cora AI for work productivity</td><td>AI for Professionals / "Second Act" — premium, hand-held, strong offline classes</td></tr>
+          <tr><td><span class="seg-num">3</span></td><td><b>Influencers / KOL</b></td><td>Monetize audience &amp; content; make AI films</td><td>openIP (tokenize / sell / AI-clone) + Cora AI</td><td>Creator Monetization + AI Studio — revenue-share, done-with-you</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="q3">
+    <div class="eyebrow">Quarter one</div>
+    <div class="q-head"><span class="q">Q3 2026 · Jul–Sep</span><span class="theme">Validate &amp; build foundation</span></div>
+    <p class="sec-note">We're already ~4 weeks in. Q3 proves demand with small <em>paid</em> pilots — not scale. Every milestone has a measurable exit.</p>
+    <div class="timeline">
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q3-M1 · Curriculum</span><span class="date">Aug 15</span></div><h4>Curriculum MVP v0 — one flagship track per segment</h4><p class="exit"><b>Done when</b>3 syllabi signed off; first 3 lessons recorded or written per track.</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q3-M2 · Cora AI</span><span class="date">Aug 22</span></div><h4>Cora AI Gateway "learner mode" — guided templates, onboarding, per-student usage</h4><p class="exit"><b>Done when</b>10 test students onboard; per-student usage dashboard live.</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q3-M3 · Cohort</span><span class="date">Sep 5–30</span></div><h4>Pilot cohort #1 (paid, small) — blended online + one offline session</h4><p class="exit"><b>Done when</b>≥30 paying pilots enrolled; ≥70% completion; NPS captured.</p></div></div>
+      <div class="ms film"><div class="card"><div class="top"><span class="id">Q3-M4 · Film</span><span class="date">Sep 15</span></div><h4>Film PoC #1 on Cora AI Film Studio — one short, script → gen → edit → publish</h4><p class="exit"><b>Done when</b>1 piece published via Cora AI Film Studio; repeatable pipeline documented with cost/min &amp; time.</p></div></div>
+      <div class="ms openip"><div class="card"><div class="top"><span class="id">Q3-M5 · openIP</span><span class="date">Sep 20</span></div><h4>openIP creator pilot — 3–5 KOLs, storefront + AI-clone live</h4><p class="exit"><b>Done when</b>3+ creators live; first real fiat sales settled.</p></div></div>
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q3-M6 · Ops</span><span class="date">Sep 30</span></div><h4>Monetization &amp; compliance base — pricing sheet + investment framing reviewed</h4><p class="exit"><b>Done when</b>Public pricing approved; compliance memo signed.</p></div></div>
+    </div>
+    <div class="callout gate">
+      <h3>Q3 exit gate → scale</h3>
+      <p>Proceed to Q4 scaling only if <em>all</em> of these clear. Miss any one, and we run an October hardening sprint before spending on growth.</p>
+      <div class="crit"><span>≥30 paying learners</span><span>≥70% completion</span><span>1 published short · known cost</span><span>3+ live openIP creators w/ sales</span><span>Compliance memo signed</span></div>
+    </div>
+  </section>
+
+  <section class="q4">
+    <div class="eyebrow">Quarter two</div>
+    <div class="q-head"><span class="q">Q4 2026 · Oct–Dec</span><span class="theme">Scale &amp; monetize</span></div>
+    <p class="sec-note">Turn validated pilots into repeatable revenue, and land the first commercial film work.</p>
+    <div class="timeline">
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q4-M1 · Curriculum</span><span class="date">Oct 24</span></div><h4>Curriculum v1 — all 3 tracks complete + certificate / credential</h4><p class="exit"><b>Done when</b>All lessons live; assessment + certificate issued to cohort #1.</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q4-M2 · Cohort</span><span class="date">Oct 15 – Dec 15</span></div><h4>Cohort #2 at scale — open enrolment, 150–300 learners</h4><p class="exit"><b>Done when</b>≥150 paid enrolments; CAC tracked; ≥60% attach a Cora AI plan.</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q4-M3 · Offline</span><span class="date">Nov</span></div><h4>Offline expansion (Segment 2) — 2–3 in-person workshops, partner venue</h4><p class="exit"><b>Done when</b>2+ offline workshops delivered; waitlist for the next.</p></div></div>
+      <div class="ms film"><div class="card"><div class="top"><span class="id">Q4-M4 · Film</span><span class="date">Nov 30</span></div><h4>Film Studio commercial pilot — deliver 2 paid client films</h4><p class="exit"><b>Done when</b>2 signed SOWs delivered &amp; paid; testimonials + case studies.</p></div></div>
+      <div class="ms film"><div class="card"><div class="top"><span class="id">Q4-M5 · Funding</span><span class="date">Dec 5</span></div><h4>Per-film investment model live — compliant structure + 1 funded film</h4><p class="exit"><b>Done when</b>Legal-approved template contract; ≥1 film funded under it.</p></div></div>
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q4-M6 · openIP</span><span class="date">Dec 12</span></div><h4>openIP × Film IP — monetize one film's IP / merch / tokens</h4><p class="exit"><b>Done when</b>1 film monetized on openIP; revenue attributed.</p></div></div>
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q4-M7 · Review</span><span class="date">Dec 20</span></div><h4>Annual review &amp; 2027 plan — metrics, unit economics, what scales</h4><p class="exit"><b>Done when</b>Team review deck done; 2027 roadmap drafted.</p></div></div>
+    </div>
+    <div class="eyebrow" style="margin-top:32px">Q4 targets</div>
+    <h2 style="font-size:22px;margin:6px 0 20px">What good looks like by December</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="n tnum">150–300</div><div class="l">Paid enrolments in cohort #2</div></div>
+      <div class="kpi"><div class="n tnum">≥60%</div><div class="l">Learners on a recurring Cora AI Gateway plan</div></div>
+      <div class="kpi am"><div class="n tnum">2 + 1</div><div class="l">Client films delivered + 1 funded via per-film model</div></div>
+      <div class="kpi op"><div class="n tnum">15+</div><div class="l">Live openIP creators, growing fiat GMV</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Guardrail</div>
+    <h2>Before we promote any per-film raise</h2>
+    <div class="callout warn">
+      <h3>Compliance gate — "investment per movie"</h3>
+      <p>Promising profit or returns from others' effort can cross into <b>securities</b> territory (the Howey line). openIP's own house rule already reflects this — we speak in terms of <b>revenue → utility / licensing</b>, never dividends, guaranteed returns, or "invest and profit." Get counsel to bless the structure (film-financing SOW, sponsorship, pre-sale, or licensing) <b>and</b> the exact marketing language before any raise. This is a hard gate (Q3-M6 → Q4-M5).</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">What could go wrong</div>
+    <h2>Top risks &amp; how we hold them</h2>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td>Academy + Film + 3 segments all at once (thin team)</td><td>Nothing ships</td><td>Q3 = one flagship track + one film PoC; sequence, don't parallelize</td></tr>
+          <tr><td>Course sells but learners don't retain on the tool</td><td>No recurring revenue</td><td>Build Cora AI attach into the curriculum from lesson 1; measure attach rate</td></tr>
+          <tr><td>Per-film "investment" framed as securities</td><td>Legal exposure</td><td>Compliance gate before any raise; counsel-approved language only</td></tr>
+          <tr><td>AI film quality / cost not repeatable</td><td>Can't quote clients</td><td>Q3-M4 must document cost/min &amp; time before selling client work</td></tr>
+          <tr><td>CAC too high for price-sensitive Segment 1</td><td>Unprofitable growth</td><td>Scholarship / income-share + organic &amp; KOL funnels; keep S1 digital-first</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">This week</div>
+    <h2>Immediate next actions</h2>
+    <ol class="actions">
+      <li>Assign a real owner to each workstream (Curriculum, Platform, Film, GTM, Ops, Legal).</li>
+      <li>Lock the <b>one</b> flagship track and <b>one</b> segment that leads Q3 — start with whoever we reach cheapest.</li>
+      <li>Book the counsel review for film-investment framing now — it's a long lead.</li>
+      <li>Stand up the learner-usage dashboard in Cora AI Gateway (blocks Q3-M2).</li>
+      <li>Confirm Cora AI Film Studio is PoC-ready and schedule Film PoC #1 production week.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <div class="legend">
+      <span><span class="dot em"></span> Cora AI Gateway</span>
+      <span><span class="dot op"></span> openIP</span>
+      <span><span class="dot am"></span> Cora AI Film Studio</span>
+      <span><span class="dot gr"></span> Cross-cutting</span>
+    </div>
+    <p style="margin-top:16px">Living document — update milestone status (done / in progress / blocked) at each weekly review. Prepared 2026-07-28.</p>
+  </footer>
+</div>

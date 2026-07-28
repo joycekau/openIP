@@ -1,0 +1,291 @@
+<title>2026 Q3–Q4 推进计划 — AI 学院与影视工作室</title>
+<style>
+  :root {
+    /* openIP near-black violet ground */
+    --bg: #080510; --bg-2: #0F0A1C; --panel: #150E26; --panel-2: #1B1232;
+    --line: rgba(255,255,255,.09); --line-v: rgba(168,85,247,.26);
+    --text: #F4EFFC; --muted: #A99FC0; --muted-2: #766C8E;
+    /* openIP accents */
+    --violet: #8B5CF6; --purple: #A855F7; --magenta: #EC4899; --pink: #F472B6; --coral: #FB7185; --cyan: #22D3EE;
+    --grad: linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --grad-btn: linear-gradient(120deg,#A855F7 0%,#EC4899 55%,#FB7185 100%);
+    --violet-bg: rgba(168,85,247,.13); --magenta-bg: rgba(236,72,153,.12);
+    /* Cora emerald */
+    --emerald: #34D399; --emerald-2: #6FE0A8; --emerald-bg: rgba(52,211,153,.12);
+    /* Cora AI Film Studio — cinema amber */
+    --amber: #FCD34D; --amber-bg: rgba(252,211,77,.13);
+    --alert: #FB7185; --alert-bg: rgba(251,113,133,.11);
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.5);
+    --disp: "Space Grotesk", "Plus Jakarta Sans", system-ui, -apple-system, "PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",sans-serif;
+    --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",sans-serif;
+    --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  /* openIP ambient glow */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(680px 420px at 84% -6%, rgba(236,72,153,.16), transparent 62%),
+      radial-gradient(620px 460px at 12% 0%, rgba(139,92,246,.16), transparent 60%),
+      radial-gradient(760px 520px at 50% 112%, rgba(34,211,238,.09), transparent 60%);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 24px 96px; position: relative; z-index: 1; }
+
+  h1, h2, h3, h4 { font-family: var(--disp); font-weight: 600; line-height: 1.14; text-wrap: balance; letter-spacing: -.01em; }
+  p { max-width: 68ch; }
+  .grad-text { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted-2); }
+  .mono { font-family: var(--mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--magenta); outline-offset: 3px; border-radius: 8px; }
+
+  header { padding: 76px 0 40px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: clamp(36px, 6vw, 58px); margin: 16px 0 18px; }
+  header .lede { font-size: 18px; color: var(--muted); margin: 0 0 28px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 28px; font-family: var(--mono); font-size: 12.5px; color: var(--muted-2); }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  section { padding-top: 60px; }
+  section > h2 { font-size: clamp(24px, 3.6vw, 32px); margin: 8px 0 6px; }
+  .sec-note { color: var(--muted); margin: 0 0 24px; }
+
+  .card-base { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+
+  /* engines */
+  .engines { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .engine { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+  .engine::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; }
+  .engine.film::before { background: var(--amber); }
+  .engine.academy::before { background: linear-gradient(180deg, var(--emerald), var(--magenta)); }
+  .engine .tag { font-family: var(--mono); font-size: 11px; letter-spacing: .13em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; display: inline-block; margin-bottom: 12px; font-weight: 600; }
+  .film .tag { color: var(--amber); background: var(--amber-bg); }
+  .academy .tag { color: var(--emerald); background: var(--emerald-bg); }
+  .toolrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; }
+  .toolrow .t { font-family: var(--mono); font-size: 10.5px; letter-spacing: .04em; padding: 3px 9px; border-radius: 7px; border: 1px solid var(--line); color: var(--muted); }
+  .toolrow .t.em { color: var(--emerald); border-color: rgba(52,211,153,.35); }
+  .toolrow .t.op { color: var(--pink); border-color: rgba(236,72,153,.35); }
+  .toolrow .t.am { color: var(--amber); border-color: rgba(252,211,77,.4); }
+  .engine h3 { font-size: 20px; margin: 0 0 10px; }
+  .engine p { font-size: 14.5px; color: var(--muted); margin: 0 0 14px; }
+  .engine dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13.5px; }
+  .engine dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); padding-top: 2px; }
+  .engine dd { margin: 0; color: var(--text); }
+
+  .flywheel { margin-top: 20px; padding: 18px 22px; background: var(--bg-2); border: 1px solid var(--line-v); border-radius: 14px; font-size: 14px; color: var(--muted); }
+  .flywheel b { color: var(--text); font-family: var(--disp); }
+
+  .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; background: var(--panel-2); }
+  tbody tr:last-child td { border-bottom: none; }
+  td b { font-weight: 600; }
+  .seg-num { font-family: var(--disp); font-size: 22px; font-weight: 700; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+  .q-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+  .q-head .q { font-family: var(--disp); font-size: 30px; font-weight: 700; }
+  .q-head .theme { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; padding: 4px 12px; border-radius: 100px; font-weight: 600; }
+  .q3 .theme { color: var(--emerald); background: var(--emerald-bg); }
+  .q4 .theme { color: var(--pink); background: var(--magenta-bg); }
+
+  .timeline { position: relative; margin-top: 24px; padding-left: 30px; }
+  .timeline::before { content: ""; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, var(--emerald), var(--magenta)); opacity: .5; }
+  .ms { position: relative; margin-bottom: 16px; }
+  .ms::before { content: ""; position: absolute; left: -30px; top: 20px; width: 12px; height: 12px; border-radius: 50%; background: var(--panel); border: 2px solid var(--muted-2); }
+  .ms.film::before { border-color: var(--amber); box-shadow: 0 0 12px rgba(252,211,77,.5); }
+  .ms.academy::before { border-color: var(--emerald); box-shadow: 0 0 12px rgba(52,211,153,.5); }
+  .ms.openip::before { border-color: var(--magenta); box-shadow: 0 0 12px rgba(236,72,153,.5); }
+  .ms.both::before { border: none; background: var(--grad); }
+  .card { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .card .id { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--muted-2); font-weight: 600; }
+  .card .date { font-family: var(--mono); font-size: 12.5px; font-weight: 600; color: var(--text); background: var(--panel-2); padding: 2px 9px; border-radius: 7px; }
+  .card h4 { font-size: 17px; margin: 6px 0 8px; }
+  .card .exit { font-size: 13.5px; color: var(--muted); margin: 0; }
+  .card .exit b { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-2); font-weight: 600; display: block; margin-bottom: 2px; }
+
+  .callout { border-radius: 16px; padding: 20px 24px; margin-top: 24px; border: 1px solid var(--line); background: var(--panel); }
+  .callout.gate { border-left: 4px solid var(--emerald); background: linear-gradient(120deg, var(--emerald-bg), transparent); }
+  .callout.warn { border-left: 4px solid var(--coral); background: linear-gradient(120deg, var(--alert-bg), transparent); }
+  .callout h3 { font-size: 17px; margin: 0 0 8px; }
+  .callout.warn h3 { color: var(--coral); }
+  .callout p { font-size: 14px; color: var(--muted); margin: 0; max-width: 74ch; }
+  .callout.warn p { color: var(--text); }
+  .callout .crit { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .callout .crit span { font-family: var(--mono); font-size: 12px; background: var(--bg-2); border: 1px solid var(--line-v); padding: 4px 11px; border-radius: 100px; font-weight: 600; color: var(--text); }
+
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .kpi { background: linear-gradient(180deg, rgba(255,255,255,.03), transparent), var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 20px 18px; box-shadow: var(--shadow); }
+  .kpi .n { font-family: var(--disp); font-size: 30px; font-weight: 700; letter-spacing: -.01em; color: var(--emerald); }
+  .kpi.op .n { background: var(--grad-btn); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .kpi.am .n { color: var(--amber); }
+  .kpi .l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  ol.actions { counter-reset: a; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  ol.actions li { position: relative; padding: 14px 18px 14px 54px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; font-size: 14.5px; box-shadow: var(--shadow); }
+  ol.actions li::before { counter-increment: a; content: counter(a); position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-weight: 700; font-size: 13px; width: 24px; height: 24px; border-radius: 50%; background: var(--grad-btn); color: #fff; display: grid; place-items: center; }
+
+  footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--muted-2); }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.em { background: var(--emerald); } .dot.op { background: var(--grad-btn); } .dot.am { background: var(--amber); } .dot.gr { background: var(--grad); }
+
+  @media (max-width: 720px) { .engines { grid-template-columns: 1fr; } .kpis { grid-template-columns: 1fr 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">产品推进 · 内部团队计划</div>
+    <h1>AI 学院与 <span class="grad-text">AI 影视工作室</span></h1>
+    <p class="lede">我们如何在 2026 Q3–Q4 从工具走向两大营收引擎 — 培训一人公司与 AI 协作,并制作 AI 影片 — 全部基于我们已拥有的平台。</p>
+    <div class="meta">
+      <span><b>负责人</b> 创始人</span>
+      <span><b>周期</b> Q3 2026 → Q4 2026</span>
+      <span><b>工具</b> Cora AI · openIP</span>
+      <span><b>状态</b> 待评审草案</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="eyebrow">全局</div>
+    <h2>两大引擎,一套 AI 工具链</h2>
+    <p class="sec-note">我们所构建的一切都汇入同一个飞轮:学院培训 OPC,他们持续为工具付费,最优秀的创作者在 openIP 发布作品并加入影视工作室 — 完成的影片又成为填满下一期招生的营销素材。</p>
+    <div class="engines">
+      <div class="engine academy">
+        <span class="tag">引擎 A</span>
+        <h3>AI 学院 — OPC 培训</h3>
+        <p>线上+线下课程与数字内容,教人以 AI 驱动的一人公司方式运营。</p>
+        <div class="toolrow"><span class="t em">Cora AI Gateway</span><span class="t op">openIP</span></div>
+        <dl>
+          <dt>付费方</dt><dd>学员,之后拓展 B2B / 教育合作方</dd>
+          <dt>工具</dt><dd>Cora AI Gateway(Chat · Cowork · Video Studio)+ openIP</dd>
+          <dt>营收</dt><dd>课程费 + 经常性工具订阅</dd>
+        </dl>
+      </div>
+      <div class="engine film">
+        <span class="tag">引擎 B</span>
+        <h3>AI 影视工作室</h3>
+        <p>AI 制作影片,两条路径:培训 OPC 自制影片;以及为企业/中小企业制作影片并按部影片募资。</p>
+        <div class="toolrow"><span class="t am">Cora AI Film Studio</span><span class="t op">openIP · IP 变现</span></div>
+        <dl>
+          <dt>付费方</dt><dd>企业/中小企业客户;单片投资方</dd>
+          <dt>工具</dt><dd>Cora AI Film Studio(独立工具)— openIP 变现影片 IP</dd>
+          <dt>营收</dt><dd>制作费 + 单片募资 + 授权</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="flywheel"><b>飞轮 —</b> 学院 → OPC 使用 Cora AI Gateway + openIP(经常性收入)→ 创作者在 openIP 发布并变现 → 顶尖 OPC 加入影视工作室(Cora AI Film Studio）→ 影片成为填满下一期招生的案例。</div>
+    <div class="flywheel" style="margin-top:10px"><b>各工具分工 —</b> 短视频与日常 AI 工作 → <span style="color:var(--emerald)">Cora AI Gateway</span>（Chat / Cowork / Video Studio)· 制作成片 → <span style="color:var(--amber)">Cora AI Film Studio</span> · 将成果与影片 IP 转化为收入 → <span style="color:var(--pink)">openIP</span>。</div>
+  </section>
+
+  <section>
+    <div class="eyebrow">服务对象</div>
+    <h2>三大 OPC 客群</h2>
+    <p class="sec-note">客群 1 以走量取胜,以线上为主。客群 2 承担利润,以线下为主。客群 3 走收入分成,并直接为影视工作室输送人才。</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>#</th><th>客群</th><th>他们的目标</th><th>产品路径</th><th>方案定位</th></tr></thead>
+        <tbody>
+          <tr><td><span class="seg-num">1</span></td><td><b>毕业生</b><br>想从事 AI 职业,或暂未就业</td><td>可就业的 AI 技能,或开创微型企业</td><td>Cora AI 日常主力 → 若创作则用 openIP</td><td>AI 职业加速营 — 同期班、低价、走量、奖学金 / 收入分成</td></tr>
+          <tr><td><span class="seg-num">2</span></td><td><b>中年人,35–55 岁</b><br>AI 新手,想用于工作或创业</td><td>用 AI 在工作中出色发挥,或开创企业</td><td>Cora AI 用于工作生产力</td><td>专业人士 AI /「第二人生」— 高端、陪跑、强线下课程</td></tr>
+          <tr><td><span class="seg-num">3</span></td><td><b>网红 / KOL</b></td><td>变现受众与内容;制作 AI 影片</td><td>openIP(代币化 / 出售 / AI 分身)+ Cora AI</td><td>创作者变现 + AI 工作室 — 收入分成、陪跑代做</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="q3">
+    <div class="eyebrow">第一季度</div>
+    <div class="q-head"><span class="q">Q3 2026 · 7–9 月</span><span class="theme">验证并打基础</span></div>
+    <p class="sec-note">我们已推进约 4 周。Q3 用小规模<em>付费</em>试点验证需求 — 而非规模化。每个里程碑都有可量化的通过标准。</p>
+    <div class="timeline">
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q3-M1 · 课程</span><span class="date">8月15日</span></div><h4>课程 MVP v0 — 每客群一条旗舰路线</h4><p class="exit"><b>达标标准</b>3 份教学大纲通过;每条路线录制或撰写好前 3 节课。</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q3-M2 · Cora AI</span><span class="date">8月22日</span></div><h4>Cora AI Gateway「学员模式」— 引导模板、上手引导、每位学员用量</h4><p class="exit"><b>达标标准</b>10 名测试学员完成上手;每位学员用量看板上线。</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q3-M3 · 班期</span><span class="date">9月5–30日</span></div><h4>首期试点班(付费、小规模)— 线上+一场线下混合</h4><p class="exit"><b>达标标准</b>≥30 名付费试点报名;完课率 ≥70%;采集 NPS。</p></div></div>
+      <div class="ms film"><div class="card"><div class="top"><span class="id">Q3-M4 · 影片</span><span class="date">9月15日</span></div><h4>Cora AI Film Studio 首个影片 PoC — 一支短片,脚本 → 生成 → 剪辑 → 发布</h4><p class="exit"><b>达标标准</b>1 支作品经 Cora AI Film Studio 发布;记录可复制的流程及每分钟成本与耗时。</p></div></div>
+      <div class="ms openip"><div class="card"><div class="top"><span class="id">Q3-M5 · openIP</span><span class="date">9月20日</span></div><h4>openIP 创作者试点 — 3–5 位 KOL,商店 + AI 分身上线</h4><p class="exit"><b>达标标准</b>3+ 位创作者上线;首批真实法币成交结算。</p></div></div>
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q3-M6 · 运营</span><span class="date">9月30日</span></div><h4>变现与合规基础 — 定价表 + 募资表述审阅</h4><p class="exit"><b>达标标准</b>公开定价获批;合规备忘录签署。</p></div></div>
+    </div>
+    <div class="callout gate">
+      <h3>Q3 通过门槛 → 规模化</h3>
+      <p>只有<em>全部</em>达标才进入 Q4 规模化。任一未达,就在 10 月做一次加固冲刺,再投入增长。</p>
+      <div class="crit"><span>≥30 名付费学员</span><span>完课率 ≥70%</span><span>1 支发布短片 · 成本已知</span><span>3+ 位有成交的 openIP 创作者</span><span>合规备忘录已签署</span></div>
+    </div>
+  </section>
+
+  <section class="q4">
+    <div class="eyebrow">第二季度</div>
+    <div class="q-head"><span class="q">Q4 2026 · 10–12 月</span><span class="theme">规模化与变现</span></div>
+    <p class="sec-note">把验证过的试点转为可复制的收入,并拿下首批商业影片项目。</p>
+    <div class="timeline">
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q4-M1 · 课程</span><span class="date">10月24日</span></div><h4>课程 v1 — 三条路线全部完成 + 证书 / 资历认证</h4><p class="exit"><b>达标标准</b>所有课程上线;向首期班发放测评 + 证书。</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q4-M2 · 班期</span><span class="date">10月15日 – 12月15日</span></div><h4>第二期规模班 — 公开招生,150–300 名学员</h4><p class="exit"><b>达标标准</b>≥150 名付费报名;追踪 CAC;≥60% 绑定 Cora AI 订阅。</p></div></div>
+      <div class="ms academy"><div class="card"><div class="top"><span class="id">Q4-M3 · 线下</span><span class="date">11月</span></div><h4>线下扩张(客群 2)— 2–3 场线下工作坊,合作场地</h4><p class="exit"><b>达标标准</b>交付 2+ 场线下工作坊;下一场已有候补名单。</p></div></div>
+      <div class="ms film"><div class="card"><div class="top"><span class="id">Q4-M4 · 影片</span><span class="date">11月30日</span></div><h4>影视工作室商业试点 — 交付 2 部付费客户影片</h4><p class="exit"><b>达标标准</b>2 份签署的 SOW 交付并收款;客户好评 + 案例。</p></div></div>
+      <div class="ms film"><div class="card"><div class="top"><span class="id">Q4-M5 · 募资</span><span class="date">12月5日</span></div><h4>单片投资模式上线 — 合规结构 + 1 部获资影片</h4><p class="exit"><b>达标标准</b>法律批准的模板合同;≥1 部影片据此获资。</p></div></div>
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q4-M6 · openIP</span><span class="date">12月12日</span></div><h4>openIP × 影片 IP — 变现一部影片的 IP / 周边 / 代币</h4><p class="exit"><b>达标标准</b>1 部影片在 openIP 变现;收入可归因。</p></div></div>
+      <div class="ms both"><div class="card"><div class="top"><span class="id">Q4-M7 · 复盘</span><span class="date">12月20日</span></div><h4>年度复盘与 2027 规划 — 指标、单位经济、可规模化项</h4><p class="exit"><b>达标标准</b>团队复盘演示完成;2027 路线图拟定。</p></div></div>
+    </div>
+    <div class="eyebrow" style="margin-top:32px">Q4 目标</div>
+    <h2 style="font-size:22px;margin:6px 0 20px">到 12 月的理想成绩</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="n tnum">150–300</div><div class="l">第二期付费报名</div></div>
+      <div class="kpi"><div class="n tnum">≥60%</div><div class="l">学员开通 Cora AI Gateway 经常性订阅</div></div>
+      <div class="kpi am"><div class="n tnum">2 + 1</div><div class="l">交付客户影片 + 1 部经单片模式募资</div></div>
+      <div class="kpi op"><div class="n tnum">15+</div><div class="l">活跃 openIP 创作者,法币 GMV 增长</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">红线</div>
+    <h2>在推广任何单片募资之前</h2>
+    <div class="callout warn">
+      <h3>合规门槛 —「单片投资」</h3>
+      <p>承诺以他人努力换取利润或回报,可能落入<b>证券</b>范畴(Howey 标准)。openIP 自身规则已体现这一点 — 我们只讲<b>收入 → 效用 / 授权</b>,绝不讲分红、保证回报或「投资获利」。任何募资前,先由律师确认结构(影片融资 SOW、赞助、预售或授权)<b>以及</b>确切的营销措辞。这是一道硬性门槛(Q3-M6 → Q4-M5)。</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">可能出错之处</div>
+    <h2>主要风险与应对</h2>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>风险</th><th>影响</th><th>应对</th></tr></thead>
+        <tbody>
+          <tr><td>学院 + 影视 + 3 客群同时推进(团队精简)</td><td>什么都做不出来</td><td>Q3 = 一条旗舰路线 + 一个影片 PoC;分步推进,勿并行</td></tr>
+          <tr><td>课程能卖,但学员不留在工具上</td><td>无经常性收入</td><td>从第一课起把 Cora AI 融入课程;衡量绑定率</td></tr>
+          <tr><td>单片「投资」被认定为证券</td><td>法律风险</td><td>任何募资前先过合规门槛;仅用律师批准的措辞</td></tr>
+          <tr><td>AI 影片品质 / 成本不可复制</td><td>无法向客户报价</td><td>Q3-M4 必须先记录每分钟成本与耗时,再销售客户项目</td></tr>
+          <tr><td>对价格敏感的客群 1,CAC 过高</td><td>增长不盈利</td><td>奖学金 / 收入分成 + 自然流量与 KOL 漏斗;S1 以线上为主</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">本周</div>
+    <h2>即刻行动</h2>
+    <ol class="actions">
+      <li>为每条工作流(课程、平台、影片、GTM、运营、法律)指定真正的负责人。</li>
+      <li>锁定引领 Q3 的<b>那一条</b>旗舰路线与<b>那一个</b>客群 — 从获客最便宜处入手。</li>
+      <li>立即预约影片募资表述的法律审查 — 周期长。</li>
+      <li>在 Cora AI Gateway 中搭建学员用量看板(阻塞 Q3-M2)。</li>
+      <li>确认 Cora AI Film Studio 已具备 PoC 条件,并排定首个影片 PoC 的制作周。</li>
+    </ol>
+  </section>
+
+  <footer>
+    <div class="legend">
+      <span><span class="dot em"></span> Cora AI Gateway</span>
+      <span><span class="dot op"></span> openIP</span>
+      <span><span class="dot am"></span> Cora AI Film Studio</span>
+      <span><span class="dot gr"></span> 跨领域</span>
+    </div>
+    <p style="margin-top:16px">动态文档 — 每周复盘时更新里程碑状态(已完成 / 进行中 / 受阻)。编制于 2026-07-28。</p>
+  </footer>
+</div>
