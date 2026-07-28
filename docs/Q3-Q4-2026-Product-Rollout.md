@@ -37,8 +37,9 @@ We are building **two revenue engines that share one AI toolchain**.
 
 **The AI Film Studio runs on a separate, dedicated tool — Cora AI Film Studio**
 — for produced films (longer-form / client work), distinct from the Gateway's
-Video Studio (which handles short reels and everyday video). openIP still plays a
-downstream role in **monetizing** finished film IP.
+Video Studio (which handles short reels and everyday video). It's **already
+built** — it just isn't in this repo/stack yet (integration is Q3‑FS1). openIP
+still plays a downstream role in **monetizing** finished film IP.
 
 > **Rule of thumb:** short reels & daily AI work → **Cora AI Gateway** (Chat /
 > Cowork / Video Studio). Produced films → **Cora AI Film Studio**. Monetize the
@@ -91,7 +92,7 @@ Because we're small, one person may own several. Assign real names before kickof
 | Q3‑M1 | **Curriculum MVP v0** — one flagship track per segment (S1 Career Accelerator, S2 AI for Professionals, S3 Creator/Film) as outlines + first 3 lessons each | **Aug 15** | 3 syllabi signed off; first 3 lessons recorded/written per track |
 | Q3‑M2 | **Cora AI "learner mode"** — guided prompts/templates, onboarding, per‑student usage visible | **Aug 22** | 10 test students complete onboarding; usage dashboard live |
 | Q3‑M3 | **Pilot cohort #1 (paid, small)** — 10–20 learners per segment, blended online + 1 offline session | **Sep 5 → Sep 30** | ≥30 paying pilots enrolled; ≥70% completion; NPS captured |
-| Q3‑FS1 | **Build Cora AI Film Studio — MVP / alpha** (the separate film tool; **blocks the Film PoC**) | **Sep 8** | Alpha runs the core loop end‑to‑end (script → generate → assemble a short); internal team can produce a piece with no external tools |
+| Q3‑FS1 | **Integrate Cora AI Film Studio into our stack** — the tool is already built; bring it into this repo, wire access/billing (**enables the Film PoC**) | **Sep 8** | Tool available in our stack; team can log in and produce a piece end‑to‑end |
 | Q3‑M4 | **Film PoC #1 on Cora AI Film Studio** — one short film end‑to‑end (script→gen→edit→publish) to prove the tool + pipeline *(needs Q3‑FS1)* | **Sep 15** | 1 finished piece published via Cora AI Film Studio; documented repeatable pipeline (time, cost/min) |
 | Q3‑M5 | **openIP creator pilot** — 3–5 KOLs onboarded, storefront + AI‑clone live, first fiat sales | **Sep 20** | 3+ creators live; first real fiat transactions settled |
 | Q3‑M6 | **Monetization & compliance base** — pricing sheet for all offers; investment/IP framing reviewed by counsel | **Sep 30** | Public pricing approved; compliance memo signed (see §6) |
@@ -117,7 +118,7 @@ Oct "hardening" sprint before spending on scale.
 | Q4‑M1 | **Curriculum v1 (full tracks)** — complete all 3 tracks + certificate/credential | **Oct 24** | All lessons live; assessment + certificate issued to cohort #1 |
 | Q4‑M2 | **Cohort #2 at scale** — open enrolment, target 150–300 learners across segments | **Oct 15 → Dec 15** | ≥150 paid enrolments; CAC & completion tracked; ≥60% attach to a Cora AI plan |
 | Q4‑M3 | **Offline expansion (Segment 2)** — 2–3 in‑person workshops in target city; partner venue/edu | **Nov** | 2+ offline workshops delivered; waitlist for next |
-| Q4‑FS2 | **Cora AI Film Studio v1 — production‑ready** (hardened for paid work; **blocks commercial films**) | **Nov 10** | v1 supports client delivery: quality, throughput, and cost/min documented and repeatable |
+| Q4‑FS2 | **Cora AI Film Studio — client-delivery ready** (productionize the existing tool for paid throughput; **blocks commercial films**) | **Nov 10** | Supports client delivery: quality, throughput, and cost/min documented and repeatable |
 | Q4‑M4 | **Film Studio commercial pilot** — deliver **2 paid client films** (enterprise/SME) *(needs Q4‑FS2)* | **Nov 30** | 2 signed SOWs delivered & paid; testimonials + case studies |
 | Q4‑M5 | **Per‑film investment model live** — compliant structure to fund films (sponsorship/pre‑sale/licensing, NOT securities) + 1 funded slate | **Dec 5** | Legal‑approved template contract; ≥1 film funded under it |
 | Q4‑M6 | **openIP × Film IP** — publish 1 film's IP/merch/creator tokens through openIP as monetization showcase | **Dec 12** | 1 film monetized on openIP; revenue attributed |
@@ -161,7 +162,7 @@ Q3‑M6 / Q4‑M5 and is a hard gate.
 | Trying to do Academy + Film + 3 segments at once (OPC = thin team) | Nothing ships | Q3 = **one** flagship track/segment + **one** film PoC; sequence, don't parallelize |
 | Course sells but learners don't retain on the tool | No recurring revenue | Design Cora AI attach into the curriculum from lesson 1; measure attach rate |
 | Film "investment" framed as securities | Legal exposure | §6 compliance gate before any raise; counsel‑approved language only |
-| **Building Cora AI Film Studio (new product) on a tight timeline** | Slips the Film PoC and client work | Scope the MVP tight (script→gen→assemble only) for the PoC; harden to v1 before selling; keep all client commitments behind Q4‑FS2 |
+| **Cora AI Film Studio built but not yet in our repo/stack** | Delays the Film PoC and client work until integrated | Prioritize the import + access wiring (Q3‑FS1); it's integration, not a from‑scratch build; keep client commitments behind Q4‑FS2 |
 | AI film quality/cost not repeatable | Can't quote clients | Q3‑M4 must produce a documented **cost/min & time** before selling client work |
 | CAC too high for Segment 1 (price‑sensitive) | Unprofitable growth | Scholarship/income‑share + organic/KOL funnels; keep S1 digital‑first |
 | Dependence on external model/ToksHub pricing | Margin swings | Cora's cost‑driven pricing already cushions; monitor at Dec review |
@@ -174,7 +175,7 @@ Q3‑M6 / Q4‑M5 and is a hard gate.
 2. Lock the **one** flagship track and **one** segment to lead Q3 (recommend: start with the segment we can reach cheapest).
 3. Book the counsel review for the film investment framing (long lead — start now).
 4. Stand up the learner‑usage dashboard in Cora AI (Q3‑M2 dependency).
-5. **Kick off the Cora AI Film Studio build (Q3‑FS1)** — it's a new tool and blocks the Film PoC; scope the MVP tight.
+5. **Bring Cora AI Film Studio into this repo/stack (Q3‑FS1)** and wire access — the tool exists; integration enables the Film PoC.
 
 ---
 
