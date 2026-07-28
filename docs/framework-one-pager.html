@@ -1,0 +1,168 @@
+<title>The Framework — AI Academy & Film Studio</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.45;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);
+    padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+
+  /* header */
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}
+  .head h1{font-size:27px;margin:6px 0 5px}
+  .head .tag{font-size:13px;color:var(--muted);max-width:52ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:17px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  /* main 3 cols */
+  .main{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:14px;align-items:stretch}
+  .col{display:flex;flex-direction:column;gap:9px}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);margin-bottom:1px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .card .t{font-family:var(--disp);font-weight:700;font-size:13.5px}
+  .card .d{font-size:11px;color:var(--muted);margin-top:1px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .b-em{border-left:3px solid var(--emerald)} .b-mg{border-left:3px solid var(--magenta)} .b-am{border-left:3px solid var(--amber)} .b-cy{border-left:3px solid var(--cyan)}
+  .status{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;padding:2px 7px;border-radius:20px;border:1px solid var(--emerald);color:var(--emerald);float:right;margin-top:1px}
+
+  /* flywheel */
+  .fly{background:linear-gradient(180deg,rgba(168,85,247,.06),transparent),var(--panel);border:1px solid var(--linev);
+    border-radius:14px;padding:12px 12px 10px;flex:1;display:flex;flex-direction:column}
+  .fly h3{font-size:14px;text-align:center;margin-bottom:9px}
+  .fly h3 span{color:var(--muted2);font-family:var(--mono);font-size:9px;letter-spacing:.14em;display:block;font-weight:400;margin-top:2px}
+  .steps{display:flex;flex-direction:column;gap:7px;flex:1;justify-content:center}
+  .step{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:7px 10px;position:relative}
+  .step .num{font-family:var(--disp);font-weight:700;font-size:14px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;color:#080510}
+  .step .txt b{font-size:12.5px;font-family:var(--disp)} .step .txt div{font-size:10.5px;color:var(--muted)}
+  .arr{position:absolute;left:20px;bottom:-8px;color:var(--muted2);font-size:11px;line-height:1;z-index:2}
+  .loop{text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--cyan);margin-top:7px;letter-spacing:.05em}
+
+  /* bottom bands */
+  .bottom{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+  .ladder{display:flex;gap:6px;align-items:flex-end}
+  .rung{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 7px;text-align:center}
+  .rung .p{font-family:var(--disp);font-weight:700;font-size:14px}
+  .rung .nm{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.2}
+  .rung .du{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-top:2px}
+  .r1 .p{color:var(--emerald)} .r2 .p{color:var(--emerald)} .r3 .p{color:var(--cyan)} .r4 .p{color:var(--magenta)} .r5 .p{color:var(--amber)}
+
+  .fin{display:flex;flex-direction:column;gap:6px}
+  .bars{display:flex;gap:12px;align-items:flex-end;height:74px;padding:0 4px}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
+  .bar .col2{width:70%;border-radius:5px 5px 0 0;background:var(--grad)}
+  .bar .v{font-family:var(--disp);font-weight:700;font-size:12px}
+  .bar .y{font-family:var(--mono);font-size:9px;color:var(--muted2)}
+
+  .engines{display:flex;gap:8px}
+  .eng{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+  .eng .h{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .eng .h.em{color:var(--emerald)} .eng .h.am{color:var(--amber)}
+  .eng .d{font-size:9.5px;color:var(--muted);margin-top:1px}
+
+  .foot{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.04em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">One-person-company · AI enablement</div>
+      <h1>AI Academy &amp; <span class="grad">AI Film Studio</span> — the framework</h1>
+      <div class="tag">Train one-person companies to work with AI, keep them on our tools, and turn the best into an AI film studio — two revenue engines on one owned toolchain.</div>
+    </div>
+    <div class="chips">
+      <div class="chip em"><div class="n">≈12×</div><div class="l">LTV : CAC</div></div>
+      <div class="chip cy"><div class="n">RM4.9→27M</div><div class="l">Revenue, Yr1→Yr3</div></div>
+      <div class="chip am"><div class="n">−80%</div><div class="l">Film cost vs traditional</div></div>
+      <div class="chip mg"><div class="n">≈RM225k</div><div class="l">Working capital to scale</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- WHO -->
+    <div class="col">
+      <div class="zt">Who we serve — 3 OPC segments</div>
+      <div class="card b-em"><div class="t">Graduates (S1)</div><div class="d">AI career / self-employment · scholarship &amp; financing</div></div>
+      <div class="card b-mg"><div class="t">Professionals 35–55 (S2)</div><div class="d">AI for work or a business · premium, HRD Corp claimable</div></div>
+      <div class="card b-am"><div class="t">Influencers / KOL (S3)</div><div class="d">Monetize audience &amp; make AI films · revenue-share</div></div>
+      <div class="zt" style="margin-top:4px">Two engines</div>
+      <div class="engines">
+        <div class="eng"><div class="h em">Engine A · Academy</div><div class="d">Course fees + recurring AI-tool subscriptions</div></div>
+        <div class="eng"><div class="h am">Engine B · Film Studio</div><div class="d">Production fees + per-film funding + licensing</div></div>
+      </div>
+    </div>
+
+    <!-- FLYWHEEL -->
+    <div class="col">
+      <div class="fly">
+        <h3>The flywheel<span>how the pieces compound</span></h3>
+        <div class="steps">
+          <div class="step"><div class="num" style="background:var(--emerald)">1</div><div class="txt"><b>Train</b><div>AI Academy — ladder from RM299 intro upward</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--emerald)">2</div><div class="txt"><b>Tool (recurring)</b><div>Students stay on Cora AI Gateway + openIP</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--magenta);color:#fff">3</div><div class="txt"><b>Monetize</b><div>Creators sell &amp; earn on openIP</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--amber)">4</div><div class="txt"><b>Produce</b><div>Film Studio: we sell DFY, grads (DIY) fulfil it</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--cyan)">5</div><div class="txt"><b>Market</b><div>Finished films fill the next cohort</div></div></div>
+        </div>
+        <div class="loop">↺ &nbsp;each film + each graduate lowers CAC and feeds the next turn</div>
+      </div>
+    </div>
+
+    <!-- TOOLS -->
+    <div class="col">
+      <div class="zt">The owned toolchain</div>
+      <div class="card b-em"><span class="status">LIVE</span><div class="t"><span class="dot" style="background:var(--emerald)"></span>Cora AI Gateway</div><div class="d">Chat · Cowork · Video Studio — daily AI work &amp; reels</div></div>
+      <div class="card b-mg"><span class="status">LIVE</span><div class="t"><span class="dot" style="background:var(--magenta)"></span>openIP</div><div class="d">Tokenize · storefront · AI-clone — turn output into income</div></div>
+      <div class="card b-am"><span class="status">BUILT</span><div class="t"><span class="dot" style="background:var(--amber)"></span>Cora AI Film Studio</div><div class="d">Premium reels + full films · up to 80% cheaper, top quality</div></div>
+      <div class="card b-cy"><div class="t">Film go-to-market</div><div class="d"><b style="color:var(--coral)">DFY</b> — we make it (enterprise/SME) &nbsp;·&nbsp; <b style="color:var(--emerald)">DIY</b> — Founder-Track grads make &amp; fulfil</div></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div>
+      <div class="zt">The value ladder — segment pricing (Professionals / S2)</div>
+      <div class="ladder">
+        <div class="rung r1"><div class="p">RM299</div><div class="nm">Discovery</div><div class="du">2 hrs</div></div>
+        <div class="rung r2"><div class="p">RM3,999</div><div class="nm">Bootcamp</div><div class="du">2 weeks</div></div>
+        <div class="rung r3"><div class="p">RM18k</div><div class="nm">Certificate</div><div class="du">1 year</div></div>
+        <div class="rung r4"><div class="p">RM32k</div><div class="nm">Diploma</div><div class="du">2 years</div></div>
+        <div class="rung r5"><div class="p">RM48k</div><div class="nm">Mastery</div><div class="du">4 years</div></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:6px">Every rung bundles the tools → recurring revenue · Graduates access upper rungs via financing / earn-to-learn (not deferred debt)</div>
+    </div>
+    <div class="fin">
+      <div class="zt">3-year trajectory (revenue, RM mil · illustrative)</div>
+      <div class="bars">
+        <div class="bar"><div class="v">4.9</div><div class="col2" style="height:18%"></div><div class="y">Yr 1</div></div>
+        <div class="bar"><div class="v">13.1</div><div class="col2" style="height:49%"></div><div class="y">Yr 2</div></div>
+        <div class="bar"><div class="v">26.9</div><div class="col2" style="height:100%"></div><div class="y">Yr 3</div></div>
+        <div style="border-left:1px solid var(--line);padding-left:12px;display:flex;flex-direction:column;justify-content:center;gap:3px">
+          <div style="font-family:var(--disp);font-weight:700;font-size:14px;color:var(--emerald)">27–48%</div>
+          <div style="font-family:var(--mono);font-size:8.5px;color:var(--muted2);letter-spacing:.06em">EBITDA MARGIN<br>(Yr1→Yr3)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">Illustrative planning framework · MYR · benchmark-validated (MY/SG 2026) · figures adjustable in the financial model</div>
+</div>
