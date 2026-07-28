@@ -1,0 +1,145 @@
+<title>框架 — AI 学院与 AI 影视工作室</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"WenQuanYi Zen Hei","Space Grotesk",system-ui,sans-serif;
+    --sans:"WenQuanYi Zen Hei",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"SF Mono","WenQuanYi Zen Hei",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.5;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;line-height:1.15}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--muted2)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}
+  .head h1{font-size:27px;margin:6px 0 5px}
+  .head .tag{font-size:13px;color:var(--muted);max-width:40ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:16px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.02em;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+  .main{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:14px;align-items:stretch}
+  .col{display:flex;flex-direction:column;gap:9px}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted2);margin-bottom:1px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .card .t{font-family:var(--disp);font-weight:700;font-size:13.5px}
+  .card .d{font-size:11px;color:var(--muted);margin-top:2px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .b-em{border-left:3px solid var(--emerald)} .b-mg{border-left:3px solid var(--magenta)} .b-am{border-left:3px solid var(--amber)} .b-cy{border-left:3px solid var(--cyan)}
+  .status{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;padding:2px 7px;border-radius:20px;border:1px solid var(--emerald);color:var(--emerald);float:right;margin-top:1px}
+  .fly{background:linear-gradient(180deg,rgba(168,85,247,.06),transparent),var(--panel);border:1px solid var(--linev);border-radius:14px;padding:12px 12px 10px;flex:1;display:flex;flex-direction:column}
+  .fly h3{font-size:14px;text-align:center;margin-bottom:9px}
+  .fly h3 span{color:var(--muted2);font-family:var(--mono);font-size:9px;letter-spacing:.06em;display:block;font-weight:400;margin-top:2px}
+  .steps{display:flex;flex-direction:column;gap:7px;flex:1;justify-content:center}
+  .step{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:7px 10px;position:relative}
+  .step .num{font-family:var(--disp);font-weight:700;font-size:14px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;color:#080510}
+  .step .txt b{font-size:12.5px;font-family:var(--disp)} .step .txt div{font-size:10.5px;color:var(--muted)}
+  .arr{position:absolute;left:20px;bottom:-8px;color:var(--muted2);font-size:11px;line-height:1;z-index:2}
+  .loop{text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--cyan);margin-top:7px;letter-spacing:.02em}
+  .bottom{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
+  .ladder{display:flex;gap:6px;align-items:flex-end}
+  .rung{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 7px;text-align:center}
+  .rung .p{font-family:var(--disp);font-weight:700;font-size:14px}
+  .rung .nm{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.2}
+  .rung .du{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-top:2px}
+  .r1 .p{color:var(--emerald)} .r2 .p{color:var(--emerald)} .r3 .p{color:var(--cyan)} .r4 .p{color:var(--magenta)} .r5 .p{color:var(--amber)}
+  .fin{display:flex;flex-direction:column;gap:6px}
+  .bars{display:flex;gap:12px;align-items:flex-end;height:74px;padding:0 4px}
+  .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
+  .bar .col2{width:70%;border-radius:5px 5px 0 0;background:var(--grad)}
+  .bar .v{font-family:var(--disp);font-weight:700;font-size:12px}
+  .bar .y{font-family:var(--mono);font-size:9px;color:var(--muted2)}
+  .foot{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.02em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">一人公司 · AI 赋能</div>
+      <h1>AI 学院 与 <span class="grad">AI 影视工作室</span> — 框架</h1>
+      <div class="tag">培训一人公司用 AI 工作、把他们留在我们的工具上,并将最优秀者培养成 AI 影视工作室 —— 一套自有工具链上的两大营收引擎。</div>
+    </div>
+    <div class="chips">
+      <div class="chip em"><div class="n">≈12×</div><div class="l">LTV : CAC(终身价值:获客)</div></div>
+      <div class="chip cy"><div class="n">RM4.9→27M</div><div class="l">营收,第1→3年</div></div>
+      <div class="chip am"><div class="n">−80%</div><div class="l">影片成本 vs 传统</div></div>
+      <div class="chip mg"><div class="n">≈RM225k</div><div class="l">扩张所需营运资金</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="col">
+      <div class="zt">服务对象 — 三大 OPC 客群</div>
+      <div class="card b-em"><div class="t">毕业生(S1)</div><div class="d">AI 职业 / 自雇 · 奖学金与分期</div></div>
+      <div class="card b-mg"><div class="t">专业人士 35–55(S2)</div><div class="d">用 AI 于工作或创业 · 高端,可 HRD Corp 报销</div></div>
+      <div class="card b-am"><div class="t">网红 / KOL(S3)</div><div class="d">变现受众并制作 AI 影片 · 收入分成</div></div>
+      <div class="zt" style="margin-top:4px">两大引擎</div>
+      <div style="display:flex;gap:8px">
+        <div class="card" style="flex:1;padding:8px 9px"><div class="t" style="font-size:11.5px;color:var(--emerald)">引擎 A · 学院</div><div class="d" style="font-size:9.5px">课程费 + 经常性 AI 工具订阅</div></div>
+        <div class="card" style="flex:1;padding:8px 9px"><div class="t" style="font-size:11.5px;color:var(--amber)">引擎 B · 影视工作室</div><div class="d" style="font-size:9.5px">制作费 + 单片募资 + 授权</div></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="fly">
+        <h3>飞轮<span>各环节如何复利</span></h3>
+        <div class="steps">
+          <div class="step"><div class="num" style="background:var(--emerald)">1</div><div class="txt"><b>培训</b><div>AI 学院 — 从 RM299 启蒙课向上的阶梯</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--emerald)">2</div><div class="txt"><b>工具(经常性)</b><div>学员留在 Cora AI Gateway + openIP</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--magenta);color:#fff">3</div><div class="txt"><b>变现</b><div>创作者在 openIP 销售并赚钱</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--amber)">4</div><div class="txt"><b>制作</b><div>影视工作室:我们卖 DFY,毕业生(DIY)承接</div></div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--cyan)">5</div><div class="txt"><b>营销</b><div>成片吸引下一期学员</div></div></div>
+        </div>
+        <div class="loop">↺ &nbsp;每部影片、每位毕业生都拉低获客成本并推动下一轮</div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="zt">自有工具链</div>
+      <div class="card b-em"><span class="status">已上线</span><div class="t"><span class="dot" style="background:var(--emerald)"></span>Cora AI Gateway</div><div class="d">Chat · Cowork · Video Studio — 日常 AI 工作与短视频</div></div>
+      <div class="card b-mg"><span class="status">已上线</span><div class="t"><span class="dot" style="background:var(--magenta)"></span>openIP</div><div class="d">代币化 · 商店 · AI 分身 — 把产出变收入</div></div>
+      <div class="card b-am"><span class="status">已构建</span><div class="t"><span class="dot" style="background:var(--amber)"></span>Cora AI Film Studio</div><div class="d">高端短片 + 成片 · 成本最高降 80%,品质顶级</div></div>
+      <div class="card b-cy"><div class="t">影视上市策略</div><div class="d"><b style="color:var(--coral)">DFY</b> — 我们制作(企业/中小企业)&nbsp;·&nbsp; <b style="color:var(--emerald)">DIY</b> — 创始人轨道毕业生制作并承接</div></div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div>
+      <div class="zt">价值阶梯 — 分客群定价(专业人士 / S2)</div>
+      <div class="ladder">
+        <div class="rung r1"><div class="p">RM299</div><div class="nm">启蒙</div><div class="du">2 小时</div></div>
+        <div class="rung r2"><div class="p">RM3,999</div><div class="nm">训练营</div><div class="du">2 周</div></div>
+        <div class="rung r3"><div class="p">RM18k</div><div class="nm">证书</div><div class="du">1 年</div></div>
+        <div class="rung r4"><div class="p">RM32k</div><div class="nm">文凭</div><div class="du">2 年</div></div>
+        <div class="rung r5"><div class="p">RM48k</div><div class="nm">精通</div><div class="du">4 年</div></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:6px">每层捆绑工具 → 经常性收入 · 毕业生通过分期 / 边做边学进入高层级(非递延欠款)</div>
+    </div>
+    <div class="fin">
+      <div class="zt">三年营收轨迹(百万 RM · 示意)</div>
+      <div class="bars">
+        <div class="bar"><div class="v">4.9</div><div class="col2" style="height:18%"></div><div class="y">第1年</div></div>
+        <div class="bar"><div class="v">13.1</div><div class="col2" style="height:49%"></div><div class="y">第2年</div></div>
+        <div class="bar"><div class="v">26.9</div><div class="col2" style="height:100%"></div><div class="y">第3年</div></div>
+        <div style="border-left:1px solid var(--line);padding-left:12px;display:flex;flex-direction:column;justify-content:center;gap:3px">
+          <div style="font-family:var(--disp);font-weight:700;font-size:14px;color:var(--emerald)">27–48%</div>
+          <div style="font-family:var(--mono);font-size:8.5px;color:var(--muted2);letter-spacing:.02em">EBITDA 利润率<br>(第1→3年)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">示意性规划框架 · 马币(RM)· 已对标马新市场(2026)· 数字可在财务模型中调整</div>
+</div>
