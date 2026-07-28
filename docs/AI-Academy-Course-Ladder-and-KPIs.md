@@ -8,7 +8,8 @@
 > review · **Companion to:** `Q3-Q4-2026-Product-Rollout.md`
 >
 > *All prices below rungs 2–5 are proposed anchors — adjust to market. Rung 1 is
-> fixed per founder direction (RM599 list / RM299 early bird).*
+> fixed per founder direction: **RM999 list / RM299 for the first 20 early-bird
+> seats** (hard scarcity cap).*
 
 ---
 
@@ -23,9 +24,10 @@ our **AI Tools** (Cora AI + openIP) so course revenue converts into **recurring
 tool revenue**.
 
 ```
-   RM299  →  RM1,799  →  RM9,900/yr  →  RM17,800  →  RM32,000
+  RM299*  →  RM1,799  →  RM9,900/yr  →  RM17,800  →  RM32,000
    2 hrs      2 weeks      1 year         2 years      4 years
   DISCOVER   ACTIVATE     CERTIFY       SPECIALIZE     MASTER
+  *RM999 list, RM299 for first 20 seats
      │           │            │              │             │
      └─── each rung bundles Cora AI + openIP → recurring tool revenue ───┘
 ```
@@ -34,7 +36,7 @@ tool revenue**.
 
 | Rung | Program | Duration | Format | Price (list / **early bird**) | Core outcome (the promise) | AI Tools bundled | Best-fit segment |
 |---|---|---|---|---|---|---|---|
-| **1 · Discover** | **AI & OPC Discovery** | 2 hours | Online live + on-demand replay | RM599 / **RM299** | Understand the one-person-company model, the AI tool stack, and 3 concrete ways to monetize | 14-day Cora AI trial credits | **All** (top of funnel) |
+| **1 · Discover** | **AI & OPC Discovery** | 2 hours | Online live + on-demand replay | RM999 / **RM299 (first 20 seats)** | Understand the one-person-company model, the AI tool stack, and 3 concrete ways to monetize | 14-day Cora AI trial credits | **All** (top of funnel) |
 | **2 · Activate** | **OPC Launch Bootcamp** | 2 weeks (~25 hrs, evenings/weekend) | Online + 1 offline lab | RM2,499 / **RM1,799** | Ship your **first monetizable AI asset**; set up Cora AI + an openIP storefront | 3 months Cora AI **Starter** | S1, S2, S3 |
 | **3 · Certify** | **AI OPC Certificate** | 1 year (part-time cohort + mentorship) | Blended | RM9,900 *(or RM990/mo ×12)* | Run a functioning one-person AI business, or a job-ready AI portfolio + certificate | 12 months Cora AI **Growth** + openIP creator | S1 (career), S2 (business) |
 | **4 · Specialize** | **AI OPC Diploma** | 2 years | Blended + practicum | RM17,800 *(RM8,900/yr)* | Specialize (AI film / AI marketing / AI commerce) with a **real revenue track record** | Tools included + **Film Studio practicum** | S1, ambitious S2 |
@@ -171,8 +173,10 @@ meeting.
 
 ## 2.3 The intro-course launch play (Rung 1)
 
-- **Offer stack:** RM599 value framing, **RM299 early bird**, deadline/urgency,
-  bonus (template pack + tool trial). Cap seats per cohort.
+- **Offer stack:** **RM999** value framing, **RM299 for the first 20 seats**
+  (hard cap → real scarcity + urgency), bonus (template pack + tool trial). A
+  visible "X of 20 seats left" counter drives the close. After 20, revert toward
+  list — later cohorts can offer a smaller discount, never back to RM299.
 - **Content = a demo of the ladder:** teach OPC concept → show Cora AI live →
   show an openIP monetization example → present the 3 monetization paths → **make
   the Bootcamp offer** with an on-the-spot upgrade credit.
