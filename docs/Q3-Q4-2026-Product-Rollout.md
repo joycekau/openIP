@@ -19,18 +19,30 @@ We are building **two revenue engines that share one AI toolchain**.
 |---|---|---|
 | What | Online + offline classes + digital content that teach people to run as AI‑powered one‑person companies | AI‑made films, two paths: (B1) train OPCs to make films, (B2) produce films for enterprise/SME + raise investment per movie |
 | Who pays | Learners (3 segments below), later B2B/edu partners | Enterprise/SME clients; per‑film investors/sponsors |
-| Tool used | **Cora AI** (learn + do AI work) | **openIP** (IP/monetization) + **Cora AI** (production) |
+| Tools | **Cora AI Gateway** (Chat · Cowork · Video Studio) + **openIP** — the OPC toolchain | **Cora AI Film Studio** — separate, dedicated film tool |
 | Revenue | Course fees + tool subscriptions | Production fees + per‑film investment + IP/licensing upside |
 
-**The toolchain (what we already own):**
+**The OPC toolchain — what students learn on (we already own both):**
 
-- **Cora AI (CoraX)** — AI gateway with smart model routing, credits & billing,
-  a B2C consumer app and a B2B/B2D API. Tiers today: Starter $50 / Growth $500 /
-  Business $2,000 per month. → *This is the tool students learn on and keep
-  paying for after the course.*
+- **Cora AI Gateway (CoraX)** — the everyday AI workbench, three modules:
+  - **Chat** — general AI assistant (smart model routing, credits/billing).
+  - **Cowork** — agentic/collaborative AI work.
+  - **Video Studio** — AI video for **short reels** and content.
+
+  B2C app + B2B/B2D API; tiers Starter $50 / Growth $500 / Business $2,000 per
+  month. → *This is the tool OPCs learn on and keep paying for after the course.*
 - **openIP (oneIP)** — creator‑IP tokenization, fiat storefront, AI‑clone
   auto‑reply, KOL terminal; built for SEA / WebTVAsia creator networks. → *This
-  is how creators (and film IP) turn output into income.*
+  is how creators turn output into income.*
+
+**The AI Film Studio runs on a separate, dedicated tool — Cora AI Film Studio**
+— for produced films (longer-form / client work), distinct from the Gateway's
+Video Studio (which handles short reels and everyday video). openIP still plays a
+downstream role in **monetizing** finished film IP.
+
+> **Rule of thumb:** short reels & daily AI work → **Cora AI Gateway** (Chat /
+> Cowork / Video Studio). Produced films → **Cora AI Film Studio**. Monetize the
+> IP → **openIP**.
 
 **The flywheel:** Academy trains OPCs → OPCs use Cora AI (recurring revenue) →
 graduates who create publish/monetize on openIP → best OPCs staff the Film
@@ -79,7 +91,7 @@ Because we're small, one person may own several. Assign real names before kickof
 | Q3‑M1 | **Curriculum MVP v0** — one flagship track per segment (S1 Career Accelerator, S2 AI for Professionals, S3 Creator/Film) as outlines + first 3 lessons each | **Aug 15** | 3 syllabi signed off; first 3 lessons recorded/written per track |
 | Q3‑M2 | **Cora AI "learner mode"** — guided prompts/templates, onboarding, per‑student usage visible | **Aug 22** | 10 test students complete onboarding; usage dashboard live |
 | Q3‑M3 | **Pilot cohort #1 (paid, small)** — 10–20 learners per segment, blended online + 1 offline session | **Sep 5 → Sep 30** | ≥30 paying pilots enrolled; ≥70% completion; NPS captured |
-| Q3‑M4 | **Film PoC #1** — one short AI film end‑to‑end (script→gen→edit→publish) using our own pipeline | **Sep 15** | 1 finished short published; documented repeatable pipeline (tools, time, cost/min) |
+| Q3‑M4 | **Film PoC #1 on Cora AI Film Studio** — one short film end‑to‑end (script→gen→edit→publish) to prove the tool + pipeline | **Sep 15** | 1 finished piece published via Cora AI Film Studio; documented repeatable pipeline (time, cost/min) |
 | Q3‑M5 | **openIP creator pilot** — 3–5 KOLs onboarded, storefront + AI‑clone live, first fiat sales | **Sep 20** | 3+ creators live; first real fiat transactions settled |
 | Q3‑M6 | **Monetization & compliance base** — pricing sheet for all offers; investment/IP framing reviewed by counsel | **Sep 30** | Public pricing approved; compliance memo signed (see §6) |
 

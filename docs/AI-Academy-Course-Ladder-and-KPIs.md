@@ -20,8 +20,13 @@
 A **paid intro course** (cheap, high-value, RM299 early bird) teaches the **OPC
 concept + the AI tool stack + how to monetize** — and becomes the on-ramp that
 ascends buyers up a ladder of longer, higher-value programs. Every rung bundles
-our **AI Tools** (Cora AI + openIP) so course revenue converts into **recurring
-tool revenue**.
+our **OPC tools** so course revenue converts into **recurring tool revenue**.
+
+> **The OPC toolchain taught in the Academy:** **Cora AI Gateway** (Chat ·
+> Cowork · **Video Studio** for short reels & daily AI work) + **openIP** (turn
+> output into income). The **AI Film Studio** business uses a separate tool,
+> **Cora AI Film Studio** — covered in the rollout plan, out of scope for the
+> Academy ladder here except as practicum for the long programs.
 
 ```
   RM299*  →  RM1,799  →  RM9,900/yr  →  RM17,800  →  RM32,000
@@ -117,7 +122,7 @@ business, and vice-versa.
 | A9 | Refund rate | Refunds ÷ enrolments | ≤ 5% | Monthly |
 | A10 | Course LTV : CAC | Blended ladder LTV ÷ CAC | ≥ 3:1 | Quarterly |
 
-### Scorecard B — AI TOOLS (Cora AI + openIP — recurring economics)
+### Scorecard B — AI TOOLS (Cora AI Gateway + openIP — recurring economics)
 
 | ID | Metric | Definition | Target (illustrative) | Cadence |
 |---|---|---|---|---|
