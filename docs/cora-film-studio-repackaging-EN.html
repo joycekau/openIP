@@ -1,0 +1,130 @@
+<title>Cora AI Film Studio — Regional Repackaging</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.45;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:15px}
+  .head h1{font-size:26px;margin:6px 0 5px}
+  .head .tag{font-size:12.5px;color:var(--muted);max-width:62ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:15px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  .main{display:grid;grid-template-columns:1fr 1.05fr 1fr;gap:13px;align-items:stretch}
+  .col{display:flex;flex-direction:column;gap:8px}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:2px}
+  .zt.p{color:var(--amber)} .zt.w{color:var(--emerald)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px 12px}
+  .card .t{font-family:var(--disp);font-weight:700;font-size:12.5px}
+  .card .d{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.5}
+  .b-am{border-left:3px solid var(--amber)} .b-em{border-left:3px solid var(--emerald)} .b-cy{border-left:3px solid var(--cyan)} .b-mg{border-left:3px solid var(--magenta)}
+
+  .syn{background:linear-gradient(180deg,rgba(34,211,238,.07),transparent),var(--panel);border:1px solid var(--linev);border-radius:13px;padding:12px 13px;flex:1;display:flex;flex-direction:column;gap:9px}
+  .syn h3{font-size:14px;text-align:center}
+  .syn h3 span{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--muted2);font-weight:400;margin-top:3px}
+  .merge{display:flex;align-items:stretch;gap:8px}
+  .mbox{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 9px;text-align:center}
+  .mbox .mt{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .mbox.oy .mt{color:var(--amber)} .mbox.cora .mt{color:var(--cyan)}
+  .mbox .md{font-size:9px;color:var(--muted);margin-top:2px;line-height:1.4}
+  .plus{display:flex;align-items:center;font-family:var(--disp);font-weight:700;font-size:16px;color:var(--muted2)}
+  .synpt{display:flex;gap:7px;align-items:flex-start;font-size:10px;color:var(--muted);line-height:1.45}
+  .synpt .d1{width:6px;height:6px;border-radius:50%;background:var(--cyan);flex:none;margin-top:4px}
+  .synpt b{color:var(--text)}
+
+  .gtm{margin-top:13px;border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+  .gtm .gl{max-width:15ch}
+  .gtm .gl h3{font-size:14px} .gtm .gl .gs{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:3px;letter-spacing:.04em}
+  .steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+  .st3{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;border-top:2px solid var(--violet);position:relative}
+  .st3.s2{border-top-color:var(--magenta)} .st3.s3{border-top-color:var(--amber)}
+  .st3 .stt{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .st3 .std{font-size:9px;color:var(--muted);margin-top:1px;line-height:1.4}
+  .deal{background:linear-gradient(180deg,rgba(168,85,247,.08),transparent),var(--panel);border:1px solid var(--linev);border-radius:10px;padding:8px 11px;max-width:20ch}
+  .deal .dt{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet)}
+  .deal .dd{font-size:9.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+  .foot{font-family:var(--mono);font-size:8.5px;color:var(--muted2);margin-top:11px;text-align:center;letter-spacing:.03em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Strategic partnership · white-label &amp; localize</div>
+      <h1>Cora AI Film Studio — <span class="grad">Regional Repackaging</span></h1>
+      <div class="tag">A partner with a proven overseas AI film studio and an <b style="color:var(--amber)">"OY" smart-routing engine</b> — the system auto-selects the best model per task, mirroring our own Cora smart routing. We repackage it as <b>Cora AI Film Studio</b> and take it to market across Malaysia, Singapore &amp; Indonesia on our owned distribution.</div>
+    </div>
+    <div class="chips">
+      <div class="chip cy"><div class="n">OY ≈ Cora</div><div class="l">Same smart routing</div></div>
+      <div class="chip am"><div class="n">−80%</div><div class="l">Film cost vs traditional</div></div>
+      <div class="chip em"><div class="n">3</div><div class="l">MY · SG · ID markets</div></div>
+      <div class="chip mg"><div class="n">DFY+DIY</div><div class="l">Owned distribution</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- PARTNER BRINGS -->
+    <div class="col">
+      <div class="zt p">Partner brings — proven overseas</div>
+      <div class="card b-am"><div class="t">Proven AI film studio</div><div class="d">Working production pipeline &amp; overseas track record — films at a fraction of traditional cost.</div></div>
+      <div class="card b-am"><div class="t">"OY" smart-routing engine</div><div class="d">Auto-selects the best AI model per shot/task → speed, cost &amp; quality, no single-model lock-in.</div></div>
+      <div class="card b-am"><div class="t">Production IP &amp; workflow</div><div class="d">Templates, tooling &amp; know-how — ready to white-label and localize for the region.</div></div>
+    </div>
+
+    <!-- SYNERGY (center) -->
+    <div class="col">
+      <div class="syn">
+        <h3>The routing synergy<span>one orchestration layer</span></h3>
+        <div class="merge">
+          <div class="mbox oy"><div class="mt">OY engine</div><div class="md">partner · routes film models</div></div>
+          <div class="plus">+</div>
+          <div class="mbox cora"><div class="mt">Cora routing</div><div class="md">ours · routes daily AI work</div></div>
+        </div>
+        <div class="synpt"><span class="d1"></span><div><b>Same core idea</b> — pick the right model for each job, automatically.</div></div>
+        <div class="synpt"><span class="d1"></span><div><b>Merge into one stack</b> — films + everyday AI on a single owned orchestration layer.</div></div>
+        <div class="synpt"><span class="d1"></span><div><b>Compounding edge</b> — lower cost, higher quality, resilient to any one model's limits.</div></div>
+        <div class="synpt"><span class="d1"></span><div><b>Defensible</b> — routing know-how + our distribution is hard for rivals to copy.</div></div>
+      </div>
+    </div>
+
+    <!-- WE ADD -->
+    <div class="col">
+      <div class="zt w">We add — Cora, regional</div>
+      <div class="card b-em"><div class="t">Cora brand + repackage</div><div class="d">Relaunched as <b>Cora AI Film Studio</b> on our owned toolchain (Cora AI Gateway + OneIP).</div></div>
+      <div class="card b-mg"><div class="t">Owned distribution</div><div class="d">AI Academy talent pipeline (DIY grads) + OneIP storefront — demand we already control.</div></div>
+      <div class="card b-cy"><div class="t">Talent (BFU) + funding</div><div class="d">Sign local actors / KOLs (their likeness) into AI films while raising per-film investment.</div></div>
+      <div class="card b-em"><div class="t">Local go-to-market</div><div class="d">MY / SG / ID access · enterprise &amp; SME (DFY) · HRD Corp / regional channels.</div></div>
+    </div>
+  </div>
+
+  <div class="gtm">
+    <div class="gl"><h3>Go-to-market</h3><div class="gs">MY · SG · ID</div></div>
+    <div class="steps3">
+      <div class="st3 s1"><div class="stt">1 · Repackage &amp; localize</div><div class="std">White-label the studio + OY engine as Cora AI Film Studio; localize language, talent &amp; pricing.</div></div>
+      <div class="st3 s2"><div class="stt">2 · Distribute</div><div class="std">DFY for enterprise/SME · DIY fulfilled by Founder-Track grads · sell through Academy + OneIP.</div></div>
+      <div class="st3 s3"><div class="stt">3 · Fund per film</div><div class="std">Each film raises its own investment with attached actors / KOLs — the BFU proposition.</div></div>
+    </div>
+    <div class="deal"><div class="dt">Deal — to define</div><div class="dd">White-label vs JV · regional exclusivity (MY/SG/ID) · rev-share · OY IP/license scope</div></div>
+  </div>
+
+  <div class="foot">Illustrative partnership framework · partner owns the studio &amp; OY engine; Cora localizes, brands &amp; distributes · terms subject to agreement</div>
+</div>
