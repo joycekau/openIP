@@ -1,0 +1,124 @@
+<title>起步路线图 — AI 学院与 AI 影视工作室</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans","PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans","PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,"PingFang SC","Microsoft YaHei",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.5;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--muted2)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:15px}
+  .head h1{font-size:27px;margin:6px 0 5px}
+  .head .tag{font-size:12.5px;color:var(--muted);max-width:56ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:16px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.02em;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  .main{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;align-items:start}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted2);margin-bottom:9px}
+
+  /* priorities (no figures) */
+  .prio{display:flex;flex-direction:column;gap:9px}
+  .prow{display:flex;align-items:flex-start;gap:10px;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent),var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+  .prow .pd1{width:8px;height:8px;border-radius:50%;flex:none;margin-top:5px}
+  .prow .pw .pt{font-family:var(--disp);font-weight:700;font-size:12px}
+  .prow .pw .ps{font-size:9.5px;color:var(--muted);margin-top:1px;line-height:1.45}
+
+  .phases{display:flex;flex-direction:column;gap:10px}
+  .ph{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;position:relative;border-left:3px solid var(--emerald)}
+  .ph.p2{border-left-color:var(--magenta)} .ph.p3{border-left-color:var(--amber)}
+  .ph .pt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .ph .pt h4{font-size:13.5px}
+  .ph .pt h4 span{font-family:var(--mono);font-size:9px;color:var(--muted2);font-weight:400;letter-spacing:.04em;margin-left:6px}
+  .ph .pd{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.55}
+  .ph .ms{font-family:var(--mono);font-size:9px;color:var(--emerald);margin-top:4px;letter-spacing:.02em}
+  .ph.p2 .ms{color:var(--coral)} .ph.p3 .ms{color:var(--amber)}
+
+  .unlock{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+  .unlock .ul{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--muted2);max-width:15ch;line-height:1.6}
+  .streams{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .stream{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;border-top:2px solid var(--emerald)}
+  .stream.s2{border-top-color:var(--magenta)} .stream.s3{border-top-color:var(--amber)}
+  .stream .st{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .stream .sd{font-size:9.5px;color:var(--muted);margin-top:1px;line-height:1.5}
+  .foot{font-family:var(--mono);font-size:8.5px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.02em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">AI 学院与 AI 影视工作室 · 起步路线图</div>
+      <h1>我们<span class="grad">如何起步</span></h1>
+      <div class="tag">分阶段搭起两大引擎 —— 先招到首批学员、做好课程、上线工具、试运营影视工作室,让学费、工具订阅与影片收入依次启动,约 6 个月内让收入开始复利。</div>
+    </div>
+    <div class="chips">
+      <div class="chip cy"><div class="n">3 阶段</div><div class="l">约 6 个月到起量</div></div>
+      <div class="chip em"><div class="n">≥500</div><div class="l">首年启蒙报名</div></div>
+      <div class="chip mg"><div class="n">3</div><div class="l">收入来源</div></div>
+      <div class="chip am"><div class="n">2</div><div class="l">营收引擎</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- PRIORITIES (no figures) -->
+    <div>
+      <div class="zt">起步重点 —— 六大工作</div>
+      <div class="prio">
+        <div class="prow"><span class="pd1" style="background:var(--cyan)"></span><div class="pw"><div class="pt">学员获取与市场营销</div><div class="ps">填满首批启蒙班,启动阶梯漏斗</div></div></div>
+        <div class="prow"><span class="pd1" style="background:var(--amber)"></span><div class="pw"><div class="pt">AI 影视工作室试点 + 签约艺人</div><div class="ps">签下演员 / KOL,交付首批作品以验证模式</div></div></div>
+        <div class="prow"><span class="pd1" style="background:var(--violet)"></span><div class="pw"><div class="pt">团队与运营</div><div class="ps">精简团队 + 讲师收入分成,压低固定成本</div></div></div>
+        <div class="prow"><span class="pd1" style="background:var(--emerald)"></span><div class="pw"><div class="pt">课程搭建与内容</div><div class="ps">启蒙 + 训练营 + 证书课程大纲与内容</div></div></div>
+        <div class="prow"><span class="pd1" style="background:var(--magenta)"></span><div class="pw"><div class="pt">工具与基础设施</div><div class="ps">Cora AI Gateway + OneIP · LMS / CRM · 支付</div></div></div>
+      </div>
+    </div>
+
+    <!-- PHASED PLAN (no spend) -->
+    <div>
+      <div class="zt">路径 —— 通往首笔收入的三个阶段</div>
+      <div class="phases">
+        <div class="ph p1">
+          <div class="pt"><h4>1 · 搭建<span>第 0–2 个月</span></h4></div>
+          <div class="pd">搭建 2 小时启蒙课 + 训练营 + 证书课程大纲;上线 Cora AI Gateway + OneIP + LMS/CRM 与支付;为工作室签下首批演员 / KOL。</div>
+          <div class="ms">✓ 平台上线 · 课程就绪 · 首批艺人签约</div>
+        </div>
+        <div class="ph p2">
+          <div class="pt"><h4>2 · 启动<span>第 2–4 个月</span></h4></div>
+          <div class="pd">营销引擎开动 —— 每周开启付费启蒙班(RM299),现场促成训练营升级;首批 Cora 工具订阅开始产生经常性收入。</div>
+          <div class="ms">✓ ≥100 启蒙买家(Q3 试点)· 首期训练营 · MRR 启动</div>
+        </div>
+        <div class="ph p3">
+          <div class="pt"><h4>3 · 复利<span>第 4–6 个月</span></h4></div>
+          <div class="pd">首期证书班;AI 影视工作室试点交付 2–3 部 DFY 作品;成片成为吸引下一期学员的营销素材 —— 飞轮开始转动。</div>
+          <div class="ms">✓ ≥500 启蒙(Q4)· 首部影片交付 · 阶梯 + MRR 复利</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="unlock">
+    <div class="ul">起步即启动三条收入来源</div>
+    <div class="streams">
+      <div class="stream s1"><div class="st">课程学费阶梯</div><div class="sd">启蒙 RM299 → 精通 RM48k · 启蒙课约可自付其获客成本</div></div>
+      <div class="stream s2"><div class="st">经常性工具订阅</div><div class="sd">每位学员持续使用 Cora AI Gateway + OneIP → 课程结束后仍持续的 MRR</div></div>
+      <div class="stream s3"><div class="st">影片制作(DFY)</div><div class="sd">工作室制作费 + 单片募资 + 授权,待试点跑通后启动</div></div>
+    </div>
+  </div>
+
+  <div class="foot">起步节奏与重点为示意 · 团队采用收入分成以压低固定成本 · 影片按单片募资,与演员 / KOL 共同参与</div>
+</div>

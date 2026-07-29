@@ -1,0 +1,127 @@
+<title>竞争分析 — 马来西亚 · 新加坡 · 印尼的 AI 课程</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans","PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans","PingFang SC","Microsoft YaHei","Hiragino Sans GB","Noto Sans CJK SC",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,"PingFang SC","Microsoft YaHei",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.5;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--muted2)}
+
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:15px}
+  .head h1{font-size:26px;margin:6px 0 5px}
+  .head .tag{font-size:12.5px;color:var(--muted);max-width:56ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:16px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.02em;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  .markets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:stretch}
+  .mkt{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 13px;display:flex;flex-direction:column}
+  .mkt.my{border-top:3px solid var(--cyan)} .mkt.sg{border-top:3px solid var(--magenta)} .mkt.id{border-top:3px solid var(--amber)}
+  .mkt .mh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+  .mkt .mh h3{font-size:16px}
+  .mkt .mh .fund{font-family:var(--mono);font-size:8.5px;color:var(--emerald);text-align:right;max-width:16ch;line-height:1.3}
+  .mkt .cur{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-bottom:8px}
+  .band{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line)}
+  .band .bl{font-size:10.5px;color:var(--muted)}
+  .band .bv{font-family:var(--disp);font-weight:700;font-size:12.5px;color:var(--text);flex:none;text-align:right}
+  .band .bv .sub{display:block;font-family:var(--mono);font-weight:400;font-size:8px;color:var(--muted2)}
+  .prov{margin-top:9px}
+  .prov .pt{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;color:var(--muted2);margin-bottom:3px}
+  .prov .pl{font-size:10px;color:var(--muted);line-height:1.6}
+  .prov .pl b{color:var(--text);font-weight:600}
+
+  .win{margin-top:14px;border-top:1px solid var(--line);padding-top:13px;display:grid;grid-template-columns:.95fr 2.05fr;gap:16px;align-items:start}
+  .win h3{font-size:15px;margin-bottom:3px}
+  .win .wlede{font-size:10.5px;color:var(--muted);line-height:1.6}
+  .wgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .wcard{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;border-left:3px solid var(--emerald)}
+  .wcard.b2{border-left-color:var(--magenta)} .wcard.b3{border-left-color:var(--amber)} .wcard.b4{border-left-color:var(--cyan)}
+  .wcard .wt{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .wcard .wd{font-size:9.5px;color:var(--muted);margin-top:1px;line-height:1.5}
+  .foot{font-family:var(--mono);font-size:8.5px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.02em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">AI 学院 · 市场定位</div>
+      <h1>竞争分析 —— <span class="grad">AI 课程</span> 市场:马来西亚 · 新加坡 · 印尼</h1>
+      <div class="tag">市场分化为「便宜但浅」的补贴短训,与「慢且贵」的学位 / 沉浸式课程 —— 中间留下巨大的「缺失的中段」。没有对手把可用的 AI 工具捆绑进收入分成模式,也没有人提供创作者 / AI 影片的变现路径。</div>
+    </div>
+    <div class="chips">
+      <div class="chip cy"><div class="n">RM299</div><div class="l">我们的启蒙切入点</div></div>
+      <div class="chip em"><div class="n">市场缺口</div><div class="l">又平价 × 又深入</div></div>
+      <div class="chip mg"><div class="n">工具捆绑</div><div class="l">收入分成 · 独有</div></div>
+      <div class="chip am"><div class="n">3</div><div class="l">三大市场,一套模式</div></div>
+    </div>
+  </div>
+
+  <div class="markets">
+    <!-- MALAYSIA -->
+    <div class="mkt my">
+      <div class="mh"><h3>🇲🇾 马来西亚</h3><div class="fund">可报 HRD Corp · MDEC · PTPTN</div></div>
+      <div class="cur">价格以 RM 计</div>
+      <div class="band"><span class="bl">企业工作坊(1–2 天)</span><span class="bv">RM2–8k</span></div>
+      <div class="band"><span class="bl">训练营(3–6 个月)</span><span class="bv">RM12–18k</span></div>
+      <div class="band"><span class="bl">证书 / 文凭</span><span class="bv">RM5–45k</span></div>
+      <div class="band"><span class="bl">大学学位(3–4 年)</span><span class="bv">RM60–105k</span></div>
+      <div class="prov"><div class="pt">代表机构</div>
+        <div class="pl"><b>iTrain</b> · <b>MDEC</b>(RM5.5k)· <b>Forward School</b>(收入分成)· <b>APU / Sunway</b>(学位)</div></div>
+    </div>
+    <!-- SINGAPORE -->
+    <div class="mkt sg">
+      <div class="mh"><h3>🇸🇬 新加坡</h3><div class="fund">SkillsFuture 补贴 50–95% · IBF(仅本地人)</div></div>
+      <div class="cur">价格以 RM 计(标价,补贴前 · S$1≈RM3.5)</div>
+      <div class="band"><span class="bl">短训 / 生成式 AI 工作坊</span><span class="bv">RM1–5k<span class="sub">补贴后约 RM0</span></span></div>
+      <div class="band"><span class="bl">训练营</span><span class="bv">RM7–56k<span class="sub">本地约 RM7–10k · 国际约 RM50k</span></span></div>
+      <div class="band"><span class="bl">证书 / 高管课</span><span class="bv">RM12–45k</span></div>
+      <div class="band"><span class="bl">硕士 / 学位</span><span class="bv">RM140k+</span></div>
+      <div class="prov"><div class="pt">代表机构</div>
+        <div class="pl"><b>Vertical Inst.</b> · <b>Heicoders</b> · <b>Inst. of Data</b> · <b>General Assembly</b> · <b>NUS-ISS / SMU</b> · <b>AI Singapore</b>(AIAP,带薪)</div></div>
+    </div>
+    <!-- INDONESIA -->
+    <div class="mkt id">
+      <div class="mh"><h3>🇮🇩 印尼</h3><div class="fund">Kartu Prakerja · Danacita 分期</div></div>
+      <div class="cur">价格以 RM 计(Rp1M≈RM295)</div>
+      <div class="band"><span class="bl">短训 / 自主学习</span><span class="bv">RM0–1.5k</span></div>
+      <div class="band"><span class="bl">训练营</span><span class="bv">RM1.5–12k<span class="sub">集中在 RM4–7k</span></span></div>
+      <div class="band"><span class="bl">证书 / 专业课</span><span class="bv">RM0.6–3.5k</span></div>
+      <div class="band"><span class="bl">大学(每学期)</span><span class="bv">RM4–9k+</span></div>
+      <div class="prov"><div class="pt">代表机构</div>
+        <div class="pl"><b>Dicoding</b> · <b>RevoU</b> · <b>Hacktiv8</b>(收入分成)· <b>Purwadhika</b> · <b>Rakamin</b> · <b>Algoritma</b> · <b>Binar</b></div></div>
+    </div>
+  </div>
+
+  <div class="win">
+    <div>
+      <div class="eyebrow" style="color:var(--emerald)">OneIP 的制胜点</div>
+      <h3>我们占据<span class="grad">缺失的中段</span>与变现空白</h3>
+      <div class="wlede">三大市场同一套阶梯 —— 不依赖政府补贴。启蒙 RM299 → 训练营 RM3,999 → 证书 RM18k → 文凭 / 精通 RM32–48k;定价低于学位,却比工作坊深入得多。</div>
+    </div>
+    <div class="wgrid">
+      <div class="wcard"><div class="wt">填补缺失的中段</div><div class="wd">又平价、又深入、又与成果挂钩;对手要么是浅层工作坊,要么是 RM50k+ 的沉浸式课程 / 学位。</div></div>
+      <div class="wcard b2"><div class="wt">工具捆绑 → 经常性收入</div><div class="wd">每一级都附带 Cora AI Gateway + OneIP 额度。没有对手能把课程变成经常性的工具收入。</div></div>
+      <div class="wcard b3"><div class="wt">收入分成 / 边做边学</div><div class="wd">毕业生奖学金价 + 分期;HRD Corp / Prakerja / 分期付款 —— 价格从不是门槛。</div></div>
+      <div class="wcard b4"><div class="wt">一条变现路径,而非一纸证书</div><div class="wd">OneIP 商店 + AI 影视工作室(DFY/DIY)—— 学员真正赚到收入,这是所有对手都没有的。</div></div>
+    </div>
+  </div>
+
+  <div class="foot">竞争扫描 · 马 / 新 / 印 2025–26 · 标价,近似且为补贴前(新加坡本地人实付低得多)· 数字为示意,对外使用前请核实</div>
+</div>
