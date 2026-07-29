@@ -1,0 +1,132 @@
+<title>Getting Started — RM250k to Launch</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.45;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:15px}
+  .head h1{font-size:26px;margin:6px 0 5px}
+  .head .tag{font-size:12.5px;color:var(--muted);max-width:60ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:16px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  .main{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;align-items:start}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
+
+  /* use of funds bars */
+  .uf{display:flex;flex-direction:column;gap:9px}
+  .ufr{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:baseline}
+  .ufr .ul{font-size:11px;color:var(--text)}
+  .ufr .uv{font-family:var(--disp);font-weight:700;font-size:12.5px;text-align:right}
+  .ufr .ubarwrap{grid-column:1 / 3;height:7px;background:var(--panel2);border-radius:6px;overflow:hidden}
+  .ufr .ubar{height:100%;border-radius:6px}
+  .tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+  .tot .tl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+  .tot .tv{font-family:var(--disp);font-weight:700;font-size:24px;color:var(--coral)}
+
+  /* phases */
+  .phases{display:flex;flex-direction:column;gap:10px}
+  .ph{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 13px;position:relative;border-left:3px solid var(--emerald)}
+  .ph.p2{border-left-color:var(--magenta)} .ph.p3{border-left-color:var(--amber)}
+  .ph .pt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .ph .pt h4{font-size:13.5px}
+  .ph .pt h4 span{font-family:var(--mono);font-size:9px;color:var(--muted2);font-weight:400;letter-spacing:.06em;text-transform:uppercase;margin-left:6px}
+  .ph .spend{font-family:var(--disp);font-weight:700;font-size:13px;color:var(--text);flex:none}
+  .ph .pd{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+  .ph .ms{font-family:var(--mono);font-size:9px;color:var(--emerald);margin-top:4px;letter-spacing:.02em}
+  .ph.p2 .ms{color:var(--coral)} .ph.p3 .ms{color:var(--amber)}
+
+  .unlock{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+  .unlock .ul{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2);max-width:16ch;line-height:1.5}
+  .streams{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .stream{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;border-top:2px solid var(--emerald)}
+  .stream.s2{border-top-color:var(--magenta)} .stream.s3{border-top-color:var(--amber)}
+  .stream .st{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .stream .sd{font-size:9.5px;color:var(--muted);margin-top:1px;line-height:1.4}
+  .foot{font-family:var(--mono);font-size:8.5px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.03em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">AI Academy &amp; AI Film Studio · getting started</div>
+      <h1>How We Start with <span class="grad">RM250k</span></h1>
+      <div class="tag">One grant + working-capital round stands up both engines and funds a ~6-month runway to first compounding revenue. Costs are front-loaded — acquire the first cohorts, build the courses, ship the tools, pilot the studio — before tuition, tool subscriptions, and film revenue turn.</div>
+    </div>
+    <div class="chips">
+      <div class="chip mg"><div class="n">RM250k</div><div class="l">Total to start</div></div>
+      <div class="chip cy"><div class="n">~6 mo</div><div class="l">Runway to traction</div></div>
+      <div class="chip em"><div class="n">≥500</div><div class="l">Intro buyers funded</div></div>
+      <div class="chip am"><div class="n">3</div><div class="l">Revenue streams on</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- USE OF FUNDS -->
+    <div>
+      <div class="zt">Use of funds</div>
+      <div class="uf">
+        <div class="ufr"><span class="ul">Learner acquisition / marketing</span><span class="uv">RM60k · 24%</span><span class="ubarwrap"><span class="ubar" style="width:24%;background:var(--cyan)"></span></span></div>
+        <div class="ufr"><span class="ul">AI Film Studio pilot + talent</span><span class="uv">RM50k · 20%</span><span class="ubarwrap"><span class="ubar" style="width:20%;background:var(--amber)"></span></span></div>
+        <div class="ufr"><span class="ul">Team &amp; operations (6-mo runway)</span><span class="uv">RM45k · 18%</span><span class="ubarwrap"><span class="ubar" style="width:18%;background:var(--violet)"></span></span></div>
+        <div class="ufr"><span class="ul">Course build &amp; content</span><span class="uv">RM40k · 16%</span><span class="ubarwrap"><span class="ubar" style="width:16%;background:var(--emerald)"></span></span></div>
+        <div class="ufr"><span class="ul">Tools &amp; infrastructure</span><span class="uv">RM35k · 14%</span><span class="ubarwrap"><span class="ubar" style="width:14%;background:var(--magenta)"></span></span></div>
+        <div class="ufr"><span class="ul">Contingency / working capital</span><span class="uv">RM20k · 8%</span><span class="ubarwrap"><span class="ubar" style="width:8%;background:var(--muted2)"></span></span></div>
+      </div>
+      <div class="tot"><span class="tl">Total capital to start</span><span class="tv">RM250k</span></div>
+    </div>
+
+    <!-- PHASED PLAN -->
+    <div>
+      <div class="zt">The path — 3 phases to first revenue</div>
+      <div class="phases">
+        <div class="ph p1">
+          <div class="pt"><h4>1 · Build<span>Month 0–2</span></h4><span class="spend">≈ RM75k</span></div>
+          <div class="pd">Build the 2-hr intro + Bootcamp + Certificate curriculum; stand up Cora AI Gateway + OneIP + LMS/CRM &amp; payments; sign the first actors / KOLs for the studio.</div>
+          <div class="ms">✓ Platform live · courses ready · first talent signed</div>
+        </div>
+        <div class="ph p2">
+          <div class="pt"><h4>2 · Launch<span>Month 2–4</span></h4><span class="spend">≈ RM90k</span></div>
+          <div class="pd">Marketing engine on — weekly paid intro cohorts (RM299) with on-the-spot Bootcamp upgrades; first Cora tool subscriptions begin recurring.</div>
+          <div class="ms">✓ ≥100 intro buyers (Q3 pilot) · Bootcamp cohort 1 · MRR starts</div>
+        </div>
+        <div class="ph p3">
+          <div class="pt"><h4>3 · Compound<span>Month 4–6</span></h4><span class="spend">≈ RM85k</span></div>
+          <div class="pd">First Certificate cohort; AI Film Studio pilot ships 2–3 DFY productions; finished films become marketing that fills the next cohort — the flywheel turns.</div>
+          <div class="ms">✓ ≥500 intro (Q4) · first film delivered · ladder + MRR compounding</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="unlock">
+    <div class="ul">RM250k switches on 3 revenue streams</div>
+    <div class="streams">
+      <div class="stream s1"><div class="st">Course tuition ladder</div><div class="sd">RM299 intro → RM48k Mastery · intro ≈ self-funds its own CAC</div></div>
+      <div class="stream s2"><div class="st">Recurring tool subscriptions</div><div class="sd">Every student stays on Cora AI Gateway + OneIP → MRR that outlives the course</div></div>
+      <div class="stream s3"><div class="st">Film production (DFY)</div><div class="sd">Studio production fees + per-film funding + licensing, once the pilot proves out</div></div>
+    </div>
+  </div>
+
+  <div class="foot">Illustrative use of funds &amp; sequencing · MYR · costs front-loaded; team on revenue-share to keep fixed cost low · figures adjustable in the financial model</div>
+</div>

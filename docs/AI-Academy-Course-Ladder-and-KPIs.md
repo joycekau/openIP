@@ -24,7 +24,7 @@ ascends buyers up a ladder of longer, higher-value programs. Every rung bundles
 our **OPC tools** so course revenue converts into **recurring tool revenue**.
 
 > **The OPC toolchain taught in the Academy:** **Cora AI Gateway** (Chat ·
-> Cowork · **Video Studio**) + **openIP** (turn output into income). A separate,
+> Cowork · **Video Studio**) + **OneIP** (turn output into income). A separate,
 > already-built tool, **Cora AI Film Studio**, is the production-grade lane
 > (premium reels + full films) — used as practicum in the long programs.
 >
@@ -40,7 +40,7 @@ our **OPC tools** so course revenue converts into **recurring tool revenue**.
    —          —          RM18k/yr       RM16k/yr       RM12k/yr   (per-year ↓ as commitment ↑)
   *RM999 list, RM299 first 20 seats.  Graduates (S1) scholarship: Bootcamp RM1,799 · Certificate RM12,000
      │           │            │              │             │
-     └── every rung bundles Cora AI Gateway (individual plan) + openIP → recurring revenue ──┘
+     └── every rung bundles Cora AI Gateway (individual plan) + OneIP → recurring revenue ──┘
 
   Segments:  S1 = Graduates   ·   S2 = Professionals (35–55)   ·   S3 = Influencers / KOL
 ```
@@ -61,8 +61,8 @@ than the course and B2C margin (~70%) stays intact.
 | Rung (duration) | Outcome (the promise) | Professionals (S2) · standard *(HRD Corp claimable)* | Graduates (S1) · scholarship / income-share | Bundle *(individual plan)* |
 |---|---|---|---|---|
 | **1 · Discover** — AI & OPC Discovery (2 hrs) | OPC model + tool stack + 3 ways to monetize | RM999 → **RM299** (first 20 seats) | *same — top of funnel* | 14-day Gateway trial credits |
-| **2 · Activate** — OPC Launch Bootcamp (2 wks, ~25 hrs) | Ship first monetizable AI asset; set up Gateway + openIP | **RM3,999** | **RM1,799** (or income-share) | 3 months Gateway (individual) |
-| **3 · Certify** — AI OPC Certificate (1 yr) | Run a one-person AI business / job-ready portfolio + cert | **RM18,000** (RM1,500/mo) | **RM12,000** (RM1,000/mo) | 12 months Gateway (individual) + openIP creator |
+| **2 · Activate** — OPC Launch Bootcamp (2 wks, ~25 hrs) | Ship first monetizable AI asset; set up Gateway + OneIP | **RM3,999** | **RM1,799** (or income-share) | 3 months Gateway (individual) |
+| **3 · Certify** — AI OPC Certificate (1 yr) | Run a one-person AI business / job-ready portfolio + cert | **RM18,000** (RM1,500/mo) | **RM12,000** (RM1,000/mo) | 12 months Gateway (individual) + OneIP creator |
 | **4 · Specialize** — AI OPC Diploma (2 yr) *(flagship for S1)* | Specialize (film / marketing / commerce) + revenue record | RM32,000 (RM16,000/yr) *(rare — most S2 stop at Certificate)* | **RM32,000 — monthly plan (access-gated) or 3rd-party financing** | tools (individual) + Film Studio practicum |
 | **5 · Master** — AI OPC Mastery, Founder Track (4 yr) *(flagship for S1)* | Degree-alternative; studio-ready or franchise / trainer | RM48,000 (RM12,000/yr) *(rare for S2)* | **RM48,000 — earn-to-learn: fees netted from paid studio work + monthly plan** | full tools (individual) + paid Film Studio work + trainer license |
 
@@ -86,7 +86,7 @@ RM1,000/mo). The higher rungs are funded by financing / employer / earn-to-learn
 |---|---|---|---|
 | **S1 — Graduates** | Discover → Bootcamp | **Diploma / Mastery (2–4 yr)** | Treat it as a career/degree alternative; financing + income-share unlock the long programs |
 | **S2 — Mid-life 35–55** | Discover → Bootcamp | **Certificate (1 yr)** | Want fast work/business results; premium & offline-friendly, but less appetite for 4 years |
-| **S3 — Influencers / KOL** | Discover → Bootcamp (specialized) | **Certificate + revenue-share** | Value monetization & AI film over long study; feed them into openIP + Studio deals |
+| **S3 — Influencers / KOL** | Discover → Bootcamp (specialized) | **Certificate + revenue-share** | Value monetization & AI film over long study; feed them into OneIP + Studio deals |
 
 **Design implication:** don't force one linear funnel. Run **three ascension
 tracks** off the same intro, each pointing at the ceiling that segment actually buys.
@@ -170,7 +170,7 @@ business, and vice-versa.
 ### North-star metric (the one number for the whole flywheel)
 > **Graduates monetizing** — number of students earning income with AI (target
 > threshold, e.g. ≥ RM500/mo) — because it simultaneously proves the Academy
-> (marketing), drives Tools retention (they keep using Cora/openIP to earn), and
+> (marketing), drives Tools retention (they keep using Cora/OneIP to earn), and
 > justifies premium pricing. Financial twin: **blended MRR** (amortized course
 > revenue + tool subscriptions).
 
@@ -189,19 +189,19 @@ business, and vice-versa.
 | A9 | Refund rate | Refunds ÷ enrolments | ≤ 5% | Monthly |
 | A10 | Course LTV : CAC | Blended ladder LTV ÷ CAC | ≥ 3:1 | Quarterly |
 
-### Scorecard B — AI TOOLS (Cora AI Gateway + openIP — recurring economics)
+### Scorecard B — AI TOOLS (Cora AI Gateway + OneIP — recurring economics)
 
 | ID | Metric | Definition | Target (illustrative) | Cadence |
 |---|---|---|---|---|
 | B1 | **Attach rate** | Students who activate a tool account ÷ enrolled | ≥ 90% (it's bundled) | Per cohort |
 | B2 | Activation ("aha") | Students reaching first meaningful use / first RM earned | ≥ 60% within 30 days | Monthly |
 | B3 | **Post-bundle paid conversion** | Still paying after the free/bundled period ÷ those whose period ended | ≥ 40% | Monthly |
-| B4 | Tool MRR / ARR | Recurring revenue from Cora AI + openIP subs | Grow MoM | Monthly |
+| B4 | Tool MRR / ARR | Recurring revenue from Cora AI + OneIP subs | Grow MoM | Monthly |
 | B5 | ARPU | Tool revenue ÷ active tool users | Grow QoQ | Monthly |
 | B6 | Monthly churn | Cancelled ÷ active at period start | ≤ 5%/mo | Monthly |
 | B7 | Net revenue retention | Expansion − churn − contraction | ≥ 100% | Quarterly |
 | B8 | Engagement | WAU/MAU; credits consumed per active user | Rising | Weekly |
-| B9 | openIP GMV & creators earning | Fiat GMV; # creators with ≥1 sale | Grow MoM | Monthly |
+| B9 | OneIP GMV & creators earning | Fiat GMV; # creators with ≥1 sale | Grow MoM | Monthly |
 | B10 | Gross margin | Per Cora pricing (~70% B2C / ~40% B2B) | Hold ≥ target | Monthly |
 
 ### Bridge metrics (do the two engines actually connect?)
@@ -228,7 +228,7 @@ meeting.
 | **Program lead** | Curriculum, instructors, delivery quality | Build the 2-hr intro + Bootcamp outline |
 | **Growth / marketing** | Funnel, ads, KOL partners, enrolment | Fill the first intro cohort |
 | **Sales / ascension** | Live intro pitch, ladder conversions, financing | Own the intro→Bootcamp close |
-| **Tools / product** | Cora AI + openIP provisioning, learner mode, dashboards | Auto-provision tool access on enrolment |
+| **Tools / product** | Cora AI + OneIP provisioning, learner mode, dashboards | Auto-provision tool access on enrolment |
 | **Ops / finance** | Payments, LMS, CRM, cohorts, the KPI dashboard | Stand up payment + LMS + scorecards |
 
 ## 2.2 Build sequence (do these in order)
@@ -236,7 +236,7 @@ meeting.
 1. **Ship Rung 1 first.** The 2-hr intro is the whole engine's ignition — build
    and sell it before anything downstream. Script it to *end with the Bootcamp offer*.
 2. **Stand up the money + delivery rails:** payment (with installments), an LMS/
-   webinar tool, a CRM, and **automated tool provisioning** (enrol → Cora/openIP
+   webinar tool, a CRM, and **automated tool provisioning** (enrol → Cora/OneIP
    account created + bundled credits granted). Attach rate (B1) depends on this.
 3. **Build the Bootcamp (Rung 2)** while the first intro cohorts run — that's where
    revenue and tool-attach concentrate.
@@ -250,7 +250,7 @@ meeting.
   visible "X of 20 seats left" counter drives the close. After 20, revert toward
   list — later cohorts can offer a smaller discount, never back to RM299.
 - **Content = a demo of the ladder:** teach OPC concept → show Cora AI live →
-  show an openIP monetization example → present the 3 monetization paths → **make
+  show an OneIP monetization example → present the 3 monetization paths → **make
   the Bootcamp offer** with an on-the-spot upgrade credit.
 - **Run it weekly** as a repeatable cohort; each intro is both revenue and the
   top of the funnel.
@@ -262,7 +262,7 @@ KOL / ads / organic  →  free lead magnet  →  RM299 Intro  →  Bootcamp
                                                    │              │
                                               (upgrade credit)  Certificate → Diploma → Mastery
 ```
-- **S3 KOLs are the cheapest top-of-funnel** — we already have openIP + the
+- **S3 KOLs are the cheapest top-of-funnel** — we already have OneIP + the
   WebTVAsia network. Start acquisition there.
 - Every intro attendee enters the CRM with a segment tag → routed to the right
   ascension track (§1.3).
@@ -304,7 +304,7 @@ and the Bridge side by side.
 
 1. **Prices for rungs 2–5** — the anchors above are proposals; confirm or adjust.
 2. **Income-share/scholarship for S1** — offer it (strong marketing) or keep it simple?
-3. **Which segment leads acquisition** — recommend **S3 / KOL** first (cheapest reach via openIP + WebTVAsia).
+3. **Which segment leads acquisition** — recommend **S3 / KOL** first (cheapest reach via OneIP + WebTVAsia).
 4. **Cohort size & cadence** for the intro (seats/week).
 
 *Living document — update targets with real numbers after the first cohorts.*

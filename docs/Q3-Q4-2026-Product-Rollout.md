@@ -3,7 +3,7 @@
 > **Purpose:** A shared plan for the team on how we move forward to build the **AI
 > training business** (online + offline classes, digital content) and the
 > **AI film‑making platform** — using our two platform tools, **Cora AI** and
-> **openIP** — to train one‑person companies (OPCs) and to produce AI films for
+> **OneIP** — to train one‑person companies (OPCs) and to produce AI films for
 > enterprise/SME clients.
 >
 > **Owner:** Founder · **Prepared:** 2026‑07‑28 · **Horizon:** Q3 2026 (Jul–Sep,
@@ -19,7 +19,7 @@ We are building **two revenue engines that share one AI toolchain**.
 |---|---|---|
 | What | Online + offline classes + digital content that teach people to run as AI‑powered one‑person companies | AI‑made films, two paths: (B1) train OPCs to make films, (B2) produce films for enterprise/SME + raise investment per movie |
 | Who pays | Learners (3 segments below), later B2B/edu partners | Enterprise/SME clients; per‑film investors/sponsors |
-| Tools | **Cora AI Gateway** (Chat · Cowork · Video Studio) + **openIP** — the OPC toolchain | **Cora AI Film Studio** — separate, dedicated film tool |
+| Tools | **Cora AI Gateway** (Chat · Cowork · Video Studio) + **OneIP** — the OPC toolchain | **Cora AI Film Studio** — separate, dedicated film tool |
 | Revenue | Course fees + tool subscriptions | Production fees + per‑film investment + IP/licensing upside |
 
 **The OPC toolchain — what students learn on (we already own both):**
@@ -31,19 +31,19 @@ We are building **two revenue engines that share one AI toolchain**.
 
   B2C app + B2B/B2D API; tiers Starter $50 / Growth $500 / Business $2,000 per
   month. → *This is the tool OPCs learn on and keep paying for after the course.*
-- **openIP (oneIP)** — creator‑IP tokenization, fiat storefront, AI‑clone
+- **OneIP (oneIP)** — creator‑IP tokenization, fiat storefront, AI‑clone
   auto‑reply, KOL terminal; built for SEA / WebTVAsia creator networks. → *This
   is how creators turn output into income.*
 
 **The AI Film Studio runs on a separate, dedicated tool — Cora AI Film Studio**
 — the **production-grade** lane for premium reels **and** full films. It's
 **already built** — it just isn't in this repo/stack yet (integration is Q3‑FS1).
-openIP still plays a downstream role in **monetizing** finished film IP.
+OneIP still plays a downstream role in **monetizing** finished film IP.
 
 > **Two video lanes (good → pro):** everyday/volume reels & daily AI work →
 > **Cora AI Gateway · Video Studio** (bundled, self-serve). Premium/branded reels
 > + full films → **Cora AI Film Studio** (studio-grade). Monetize the IP →
-> **openIP**. Chooser: *"Just posting? → Gateway. Selling it / client / cinema? →
+> **OneIP**. Chooser: *"Just posting? → Gateway. Selling it / client / cinema? →
 > Film Studio."*
 
 **Hero value prop for Cora AI Film Studio:** **up to 80% cost reduction vs
@@ -69,8 +69,8 @@ full-time hires**, graduates earn, and every delivered film markets the next
 Mastery cohort. Two front doors to one tool: **commission it, or become the
 person who operates it.**
 
-**The flywheel:** Academy trains OPCs → OPCs use Cora AI Gateway + openIP
-(recurring revenue) → creators publish/monetize on openIP → top OPCs graduate the
+**The flywheel:** Academy trains OPCs → OPCs use Cora AI Gateway + OneIP
+(recurring revenue) → creators publish/monetize on OneIP → top OPCs graduate the
 Founder Track and staff the Film Studio (DIY fulfilling DFY) → films become case
 studies + marketing that fill the next cohorts.
 
@@ -80,9 +80,9 @@ studies + marketing that fill the next cohorts.
 
 | # | Segment | Their goal | Product path | Offer / price posture |
 |---|---------|-----------|--------------|-----------------------|
-| **1** | **New graduates** — want an AI career, or no job after graduation | Employable AI skills or launch a micro‑business | Cora AI (daily driver) → openIP if they create | **AI Career Accelerator** — cohort, low price, high volume, income‑share / scholarship options |
+| **1** | **New graduates** — want an AI career, or no job after graduation | Employable AI skills or launch a micro‑business | Cora AI (daily driver) → OneIP if they create | **AI Career Accelerator** — cohort, low price, high volume, income‑share / scholarship options |
 | **2** | **Mid‑life 35–55** — don't know AI, want it for work performance or to open a business | Use AI to perform at work or start a business | Cora AI (work productivity) | **AI for Professionals / "Second Act"** — premium, hand‑held, strong **offline** classes, higher willingness to pay |
-| **3** | **Influencers / KOL** | Monetize audience & content; make AI films | openIP (tokenize/sell/AI‑clone) + Cora AI | **Creator Monetization + AI Studio** — revenue‑share, done‑with‑you |
+| **3** | **Influencers / KOL** | Monetize audience & content; make AI films | OneIP (tokenize/sell/AI‑clone) + Cora AI | **Creator Monetization + AI Studio** — revenue‑share, done‑with‑you |
 
 **Design implication:** Segment 1 = scale/volume, digital‑first. Segment 2 =
 margin/high‑touch, offline‑first. Segment 3 = partnership/revenue‑share, feeds
@@ -97,7 +97,7 @@ Because we're small, one person may own several. Assign real names before kickof
 | Workstream | Scope | Owner |
 |---|---|---|
 | **Curriculum** | Course design, digital content, instructors | _TBD_ |
-| **Platform / Product** | Cora AI + openIP readiness for learners & film | _TBD_ |
+| **Platform / Product** | Cora AI + OneIP readiness for learners & film | _TBD_ |
 | **Film Studio** | Pipeline, tooling, productions, client delivery | _TBD_ |
 | **GTM / Marketing** | Funnels, partnerships, KOL, enrolment | _TBD_ |
 | **Monetization / Ops** | Pricing, payments, support, metrics | _TBD_ |
@@ -119,13 +119,13 @@ Because we're small, one person may own several. Assign real names before kickof
 | Q3‑M3 | **Pilot cohort #1 (paid, small)** — 10–20 learners per segment, blended online + 1 offline session | **Sep 5 → Sep 30** | ≥30 paying pilots enrolled; ≥70% completion; NPS captured |
 | Q3‑FS1 | **Integrate Cora AI Film Studio into our stack** — the tool is already built; bring it into this repo, wire access/billing (**enables the Film PoC**) | **Sep 8** | Tool available in our stack; team can log in and produce a piece end‑to‑end |
 | Q3‑M4 | **Film PoC #1 on Cora AI Film Studio** — one short film end‑to‑end (script→gen→edit→publish) to prove the tool + pipeline *(needs Q3‑FS1)* | **Sep 15** | 1 finished piece published via Cora AI Film Studio; documented repeatable pipeline (time, cost/min) |
-| Q3‑M5 | **openIP creator pilot** — 3–5 KOLs onboarded, storefront + AI‑clone live, first fiat sales | **Sep 20** | 3+ creators live; first real fiat transactions settled |
+| Q3‑M5 | **OneIP creator pilot** — 3–5 KOLs onboarded, storefront + AI‑clone live, first fiat sales | **Sep 20** | 3+ creators live; first real fiat transactions settled |
 | Q3‑M6 | **Monetization & compliance base** — pricing sheet for all offers; investment/IP framing reviewed by counsel | **Sep 30** | Public pricing approved; compliance memo signed (see §6) |
 
 ### 4.2 Q3 exit gate (go/no‑go into Q4 scale)
 
 Proceed to scale only if: **≥30 paying learners**, **≥70% pilot completion**,
-**1 published AI short with known unit cost**, **3+ live openIP creators with real
+**1 published AI short with known unit cost**, **3+ live OneIP creators with real
 sales**, and **compliance memo signed**. If a criterion misses, fix in an
 Oct "hardening" sprint before spending on scale.
 
@@ -146,7 +146,7 @@ Oct "hardening" sprint before spending on scale.
 | Q4‑FS2 | **Cora AI Film Studio — client-delivery ready** (productionize the existing tool for paid throughput; **blocks commercial films**) | **Nov 10** | Supports client delivery: quality, throughput, and cost/min documented and repeatable |
 | Q4‑M4 | **Film Studio commercial pilot** — deliver **2 paid client films** (enterprise/SME) *(needs Q4‑FS2)* | **Nov 30** | 2 signed SOWs delivered & paid; testimonials + case studies |
 | Q4‑M5 | **Per‑film investment model live** — compliant structure to fund films (sponsorship/pre‑sale/licensing, NOT securities) + 1 funded slate | **Dec 5** | Legal‑approved template contract; ≥1 film funded under it |
-| Q4‑M6 | **openIP × Film IP** — publish 1 film's IP/merch/creator tokens through openIP as monetization showcase | **Dec 12** | 1 film monetized on openIP; revenue attributed |
+| Q4‑M6 | **OneIP × Film IP** — publish 1 film's IP/merch/creator tokens through OneIP as monetization showcase | **Dec 12** | 1 film monetized on OneIP; revenue attributed |
 | Q4‑M7 | **Annual review & 2027 plan** — metrics, unit economics, what scales | **Dec 20** | Board/team review deck; 2027 roadmap drafted |
 
 ### 5.2 Q4 targets (KPIs)
@@ -154,7 +154,7 @@ Oct "hardening" sprint before spending on scale.
 - **Learners:** 150–300 paid enrolments (cumulative ≥180 for the year).
 - **Recurring:** ≥60% of active learners on a Cora AI plan by Dec.
 - **Film:** 2 paid client films delivered; 1 film funded via compliant per‑film model.
-- **Creators:** 15+ live openIP creators; growing fiat GMV.
+- **Creators:** 15+ live OneIP creators; growing fiat GMV.
 - **Financial:** define target MRR + gross margin at Dec review; positive unit
   economics on cohort #2 (LTV > CAC).
 
@@ -165,13 +165,13 @@ Oct "hardening" sprint before spending on scale.
 **Revenue lines**
 1. **Course fees** — tiered by segment (S1 low/scholarship, S2 premium/offline, S3 revenue‑share).
 2. **Cora AI subscriptions** — learners graduate onto Starter/Growth plans; this is the durable recurring line.
-3. **openIP monetization** — storefront take‑rate + creator/IP tokens.
+3. **OneIP monetization** — storefront take‑rate + creator/IP tokens.
 4. **Film production fees** — enterprise/SME SOWs.
 5. **Per‑film investment / licensing** — sponsorship, pre‑sales, distribution/licensing upside.
 
 **⚠️ Compliance guardrail (must‑read for the film investment model):**
 "Investment per movie" can cross into **securities** territory if we promise
-profit/returns from others' efforts (the Howey line). openIP's own house rule
+profit/returns from others' efforts (the Howey line). OneIP's own house rule
 already reflects this — we speak in terms of **revenue → utility / licensing**,
 never dividends, guaranteed returns, or "invest and profit." **Before promoting
 any per‑film raise:** get counsel to bless the structure (film‑financing SOW,
