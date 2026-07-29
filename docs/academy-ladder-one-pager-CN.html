@@ -60,6 +60,12 @@
   .rung .price .now { font-size: 22px; font-weight: 700; color: var(--text); }
   .rung .price .was { font-family: var(--mono); font-size: 11.5px; color: var(--muted-2); text-decoration: line-through; display: block; }
   .rung .price .unit { font-family: var(--mono); font-size: 11px; color: var(--muted-2); }
+  .rung .price .ptier { margin-bottom: 7px; }
+  .rung .price .ptier:last-child { margin-bottom: 0; }
+  .rung .price .ptier .now { font-size: 20px; }
+  .rung .price .ptier .unit { display: block; }
+  .rung .price .plab { display: block; font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; color: var(--muted-2); margin-bottom: 1px; }
+  .rung .price .ptier.grad .plab, .rung .price .ptier.grad .now { color: var(--emerald); }
   .rung .tool-chip { grid-column: 2 / 4; font-family: var(--mono); font-size: 11px; color: var(--pink); background: var(--magenta-bg); border-radius: 100px; padding: 3px 10px; justify-self: start; margin-top: 4px; }
 
   .tbl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); background: var(--panel); }
@@ -142,7 +148,7 @@
   <div class="sub">
     <span class="eyebrow">价值阶梯</span>
     <h3>五级阶梯,一个入口</h3>
-    <p class="sub-note">启蒙课是「诱饵」—— 定价让人觉得超值,目的是预售整个阶梯。每一级在深度、价格与承诺上层层攀升,且每一级都捆绑 OPC 工具:Cora AI Gateway + openIP。</p>
+    <p class="sub-note">启蒙课是「诱饵」—— 定价让人觉得超值,目的是预售整个阶梯。每一级在深度、价格与承诺上层层攀升,且每一级都捆绑 OPC 工具:Cora AI Gateway + openIP。<b style="color:var(--emerald)">标准</b> = 专业人士(S2)价 · <b style="color:var(--emerald)">毕业</b> = 毕业生(S1)奖学金价 —— 收入分成 / 分期。1 年及以上课程标注月供。</p>
     <div class="callout" style="margin:0 0 18px;border-left-color:var(--emerald);background:linear-gradient(120deg,var(--emerald-bg),transparent)">
       <h3>这里教授的工具链</h3>
       <p><b style="color:var(--emerald)">Cora AI Gateway</b> —— Chat · Cowork · <b>Video Studio</b>(短视频与日常 AI 工作) &nbsp;·&nbsp; <b style="color:var(--pink)">openIP</b> —— 把产出变成收入。成片则在一件独立工具 <b style="color:var(--amber)">Cora AI Film Studio</b> 上完成(见路线图)—— 它在这里仅作为 2 年与 4 年课程中的实习出现。</p>
@@ -157,25 +163,25 @@
       <div class="rung">
         <div class="step">2</div>
         <div class="body"><span class="stage">启动</span><h4>OPC 启动训练营</h4><span class="dur">2 周(约 25 小时)· 线上 + 线下实验室</span></div>
-        <div class="price"><span class="was tnum">RM2,499</span><span class="now tnum">RM1,799</span><span class="unit">早鸟价</span></div>
+        <div class="price"><div class="ptier"><span class="plab">标准</span><span class="now tnum">RM3,999</span></div><div class="ptier grad"><span class="plab">毕业</span><span class="now tnum">RM1,799</span><span class="unit">或收入分成</span></div></div>
         <div class="tool-chip">+ 3 个月 Cora AI Gateway Starter</div>
       </div>
       <div class="rung">
         <div class="step">3</div>
         <div class="body"><span class="stage">认证</span><h4>AI OPC 证书课程</h4><span class="dur">1 年 · 成期班 + 导师制</span></div>
-        <div class="price"><span class="now tnum">RM9,900</span><span class="unit">或 RM990/月 ×12</span></div>
+        <div class="price"><div class="ptier"><span class="plab">标准</span><span class="now tnum">RM18,000</span><span class="unit">RM1,500/月 ×12</span></div><div class="ptier grad"><span class="plab">毕业</span><span class="now tnum">RM12,000</span><span class="unit">RM1,000/月 ×12</span></div></div>
         <div class="tool-chip">+ 12 个月 Cora AI Gateway Growth + openIP 创作者</div>
       </div>
       <div class="rung">
         <div class="step">4</div>
         <div class="body"><span class="stage">专精</span><h4>AI OPC 文凭课程</h4><span class="dur">2 年 · 混合式 + 实习</span></div>
-        <div class="price"><span class="now tnum">RM17,800</span><span class="unit">RM8,900/年</span></div>
+        <div class="price"><span class="now tnum">RM32,000</span><span class="unit">RM1,333/月 ×24 · 分期 / 边做边学</span></div>
         <div class="tool-chip">+ 含全套工具 + 影视工作室实习</div>
       </div>
       <div class="rung">
         <div class="step">5</div>
         <div class="body"><span class="stage">精通</span><h4>AI OPC 精通 —— 创始人轨道</h4><span class="dur">4 年 · 混合式 + 带薪工作室项目</span></div>
-        <div class="price"><span class="now tnum">RM32,000</span><span class="unit">RM8,000/年</span></div>
+        <div class="price"><span class="now tnum">RM48,000</span><span class="unit">RM1,000/月 ×48 · 边做边学</span></div>
         <div class="tool-chip">+ 全套工具 + 带薪影视工作室项目 + 培训师授权</div>
       </div>
     </div>
