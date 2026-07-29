@@ -49,18 +49,25 @@
   .arr{position:absolute;left:20px;bottom:-8px;color:var(--muted2);font-size:11px;line-height:1;z-index:2}
   .loop{text-align:center;font-family:var(--mono);font-size:9.5px;color:var(--cyan);margin-top:7px;letter-spacing:.02em}
   .bottom{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
-  .ladder{display:flex;gap:6px;align-items:flex-end}
-  .rung{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 7px;text-align:center}
-  .rung .p{font-family:var(--disp);font-weight:700;font-size:14px}
-  .rung .nm{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.2}
-  .rung .du{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-top:2px}
-  .r1 .p{color:var(--emerald)} .r2 .p{color:var(--emerald)} .r3 .p{color:var(--cyan)} .r4 .p{color:var(--magenta)} .r5 .p{color:var(--amber)}
+  .ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;align-items:stretch}
+  .rung{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 8px;display:flex;flex-direction:column;gap:1px}
+  .rung .nm{font-family:var(--disp);font-weight:700;font-size:12px;line-height:1.1}
+  .rung .du{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-bottom:3px}
+  .rung .door{display:flex;align-items:baseline;gap:4px;line-height:1.15}
+  .rung .pl{font-family:var(--mono);font-size:8px;letter-spacing:.02em;color:var(--muted2);width:22px;flex:none}
+  .rung .p{font-family:var(--disp);font-weight:700;font-size:13px}
+  .rung .mo{font-family:var(--mono);font-size:7.5px;color:var(--muted)}
+  .rung .door.grad .pl,.rung .door.grad .p{color:var(--emerald)}
+  .r1 .nm{color:var(--emerald)} .r2 .nm{color:var(--emerald)} .r3 .nm{color:var(--cyan)} .r4 .nm{color:var(--magenta)} .r5 .nm{color:var(--amber)}
   .fin{display:flex;flex-direction:column;gap:6px}
   .bars{display:flex;gap:12px;align-items:flex-end;height:74px;padding:0 4px}
   .bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;height:100%}
   .bar .col2{width:70%;border-radius:5px 5px 0 0;background:var(--grad)}
   .bar .v{font-family:var(--disp);font-weight:700;font-size:12px}
   .bar .y{font-family:var(--mono);font-size:9px;color:var(--muted2)}
+  .capnum{font-family:var(--disp);font-weight:700;font-size:27px;color:var(--coral)}
+  .uf{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .d1{width:7px;height:7px;border-radius:50%;flex:none}
   .foot{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.02em}
 </style>
 
@@ -72,10 +79,10 @@
       <div class="tag">培训一人公司用 AI 工作、把他们留在我们的工具上,并将最优秀者培养成 AI 影视工作室 —— 一套自有工具链上的两大营收引擎。</div>
     </div>
     <div class="chips">
-      <div class="chip em"><div class="n">≈12×</div><div class="l">LTV : CAC(终身价值:获客)</div></div>
-      <div class="chip cy"><div class="n">RM4.9→27M</div><div class="l">营收,第1→3年</div></div>
+      <div class="chip mg"><div class="n">≈RM225k</div><div class="l">启动所需资金</div></div>
       <div class="chip am"><div class="n">−80%</div><div class="l">影片成本 vs 传统</div></div>
-      <div class="chip mg"><div class="n">≈RM225k</div><div class="l">扩张所需营运资金</div></div>
+      <div class="chip em"><div class="n">3</div><div class="l">工具已上线 / 已构建</div></div>
+      <div class="chip cy"><div class="n">2</div><div class="l">营收引擎</div></div>
     </div>
   </div>
 
@@ -111,32 +118,43 @@
       <div class="card b-em"><span class="status">已上线</span><div class="t"><span class="dot" style="background:var(--emerald)"></span>Cora AI Gateway</div><div class="d">Chat · Cowork · Video Studio — 日常 AI 工作与短视频</div></div>
       <div class="card b-mg"><span class="status">已上线</span><div class="t"><span class="dot" style="background:var(--magenta)"></span>openIP</div><div class="d">代币化 · 商店 · AI 分身 — 把产出变收入</div></div>
       <div class="card b-am"><span class="status">已构建</span><div class="t"><span class="dot" style="background:var(--amber)"></span>Cora AI Film Studio</div><div class="d">高端短片 + 成片 · 成本最高降 80%,品质顶级</div></div>
-      <div class="card b-cy"><div class="t">影视上市策略</div><div class="d"><b style="color:var(--coral)">DFY</b> — 我们制作(企业/中小企业)&nbsp;·&nbsp; <b style="color:var(--emerald)">DIY</b> — 创始人轨道毕业生制作并承接</div></div>
+      <div class="card b-cy"><div class="t">影视上市策略</div><div class="d"><b style="color:var(--coral)">DFY</b> — 我们制作(企业/中小企业)· <b style="color:var(--emerald)">DIY</b> — 创始人轨道毕业生制作并承接。<br><b style="color:var(--coral)">BFU 主张:</b>在为影片募资的同时,与演员和 KOL 签约,用他们的面孔/形象出演 AI 影片 —— AI 改变他们的工作方式,而非让他们失业。</div></div>
     </div>
   </div>
 
   <div class="bottom">
     <div>
-      <div class="zt">价值阶梯 — 分客群定价(专业人士 / S2)</div>
+      <div class="zt">价值阶梯 — 两扇门(标准 = 专业人士 S2 · 毕业 = 毕业生 S1)· 1 年及以上标注月供</div>
       <div class="ladder">
-        <div class="rung r1"><div class="p">RM299</div><div class="nm">启蒙</div><div class="du">2 小时</div></div>
-        <div class="rung r2"><div class="p">RM3,999</div><div class="nm">训练营</div><div class="du">2 周</div></div>
-        <div class="rung r3"><div class="p">RM18k</div><div class="nm">证书</div><div class="du">1 年</div></div>
-        <div class="rung r4"><div class="p">RM32k</div><div class="nm">文凭</div><div class="du">2 年</div></div>
-        <div class="rung r5"><div class="p">RM48k</div><div class="nm">精通</div><div class="du">4 年</div></div>
+        <div class="rung r1"><div class="nm">启蒙</div><div class="du">2 小时</div>
+          <div class="door"><span class="pl">标准</span><span class="p">RM299</span></div>
+          <div class="door grad"><span class="pl">毕业</span><span class="p">RM299</span></div></div>
+        <div class="rung r2"><div class="nm">训练营</div><div class="du">2 周</div>
+          <div class="door"><span class="pl">标准</span><span class="p">RM3,999</span></div>
+          <div class="door grad"><span class="pl">毕业</span><span class="p">RM1,799</span></div></div>
+        <div class="rung r3"><div class="nm">证书</div><div class="du">1 年</div>
+          <div class="door"><span class="pl">标准</span><span class="p">RM18k</span><span class="mo">RM1.5k/月</span></div>
+          <div class="door grad"><span class="pl">毕业</span><span class="p">RM12k</span><span class="mo">RM1k/月</span></div></div>
+        <div class="rung r4"><div class="nm">文凭</div><div class="du">2 年</div>
+          <div class="door"><span class="pl">标准</span><span class="p">RM32k</span><span class="mo">RM1.33k/月</span></div>
+          <div class="door grad"><span class="pl">毕业</span><span class="p">RM32k</span><span class="mo">分期</span></div></div>
+        <div class="rung r5"><div class="nm">精通</div><div class="du">4 年</div>
+          <div class="door"><span class="pl">标准</span><span class="p">RM48k</span><span class="mo">RM1k/月</span></div>
+          <div class="door grad"><span class="pl">毕业</span><span class="p">RM48k</span><span class="mo">边做边学</span></div></div>
       </div>
       <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:6px">每层捆绑工具 → 经常性收入 · 毕业生通过分期 / 边做边学进入高层级(非递延欠款)</div>
     </div>
     <div class="fin">
-      <div class="zt">三年营收轨迹(百万 RM · 示意)</div>
-      <div class="bars">
-        <div class="bar"><div class="v">4.9</div><div class="col2" style="height:18%"></div><div class="y">第1年</div></div>
-        <div class="bar"><div class="v">13.1</div><div class="col2" style="height:49%"></div><div class="y">第2年</div></div>
-        <div class="bar"><div class="v">26.9</div><div class="col2" style="height:100%"></div><div class="y">第3年</div></div>
-        <div style="border-left:1px solid var(--line);padding-left:12px;display:flex;flex-direction:column;justify-content:center;gap:3px">
-          <div style="font-family:var(--disp);font-weight:700;font-size:14px;color:var(--emerald)">27–48%</div>
-          <div style="font-family:var(--mono);font-size:8.5px;color:var(--muted2);letter-spacing:.02em">EBITDA 利润率<br>(第1→3年)</div>
-        </div>
+      <div class="zt">启动资金 —— 我们需要获得的</div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin:4px 0 9px">
+        <div class="capnum">≈RM225k</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);line-height:1.4">拨款 + 启动<br>营运资金</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div class="uf"><span class="d1" style="background:var(--emerald)"></span>搭建并启动学院 —— 课程 + 首批班级</div>
+        <div class="uf"><span class="d1" style="background:var(--magenta)"></span>建好自有工具链 —— Gateway · openIP</div>
+        <div class="uf"><span class="d1" style="background:var(--amber)"></span>试运营 AI 影视工作室 —— 签约演员 + 首批作品</div>
+        <div class="uf"><span class="d1" style="background:var(--cyan)"></span>支撑至首笔收入的营运资金</div>
       </div>
     </div>
   </div>

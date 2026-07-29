@@ -1,0 +1,194 @@
+<title>AI Academy — Course Ladder & KPIs</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.45;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);
+    padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+
+  /* header */
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;
+    border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px}
+  .head h1{font-size:27px;margin:6px 0 5px}
+  .head .tag{font-size:13px;color:var(--muted);max-width:54ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:17px}
+  .chip .l{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  /* main 3 cols */
+  .main{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:14px;align-items:stretch}
+  .col{display:flex;flex-direction:column;gap:9px}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);margin-bottom:1px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel);
+    border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .card .t{font-family:var(--disp);font-weight:700;font-size:13px}
+  .card .d{font-size:10.5px;color:var(--muted);margin-top:1px}
+  .card .t .cap{float:right;font-family:var(--mono);font-size:9px;font-weight:400;color:var(--emerald)}
+  .status{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;padding:2px 7px;border-radius:20px;border:1px solid var(--emerald);color:var(--emerald);float:right;margin-top:1px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
+  .b-em{border-left:3px solid var(--emerald)} .b-mg{border-left:3px solid var(--magenta)} .b-am{border-left:3px solid var(--amber)} .b-cy{border-left:3px solid var(--cyan)}
+
+  /* funnel (center) */
+  .fly{background:linear-gradient(180deg,rgba(168,85,247,.06),transparent),var(--panel);border:1px solid var(--linev);
+    border-radius:14px;padding:12px 12px 10px;flex:1;display:flex;flex-direction:column}
+  .fly h3{font-size:14px;text-align:center;margin-bottom:9px}
+  .fly h3 span{color:var(--muted2);font-family:var(--mono);font-size:9px;letter-spacing:.14em;display:block;font-weight:400;margin-top:2px}
+  .steps{display:flex;flex-direction:column;gap:7px;flex:1;justify-content:center}
+  .step{display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px 10px;position:relative}
+  .step .num{font-family:var(--disp);font-weight:700;font-size:13px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none;color:#080510}
+  .step .txt{flex:1} .step .txt b{font-size:12px;font-family:var(--disp)} .step .txt div{font-size:10px;color:var(--muted)}
+  .step .cv{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--cyan);flex:none}
+  .arr{position:absolute;left:20px;bottom:-8px;color:var(--muted2);font-size:11px;line-height:1;z-index:2}
+  .loop{text-align:center;font-family:var(--mono);font-size:9px;color:var(--cyan);margin-top:7px;letter-spacing:.03em}
+
+  /* metrics list */
+  .mrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:3px 0;border-bottom:1px dashed var(--line)}
+  .mrow:last-child{border-bottom:0}
+  .mrow .k{font-size:10.5px;color:var(--muted)}
+  .mrow .v{font-family:var(--disp);font-weight:700;font-size:12px;color:var(--text);flex:none}
+  .mrow .v.em{color:var(--emerald)} .mrow .v.cy{color:var(--cyan)}
+
+  /* bottom ladder band */
+  .bottom{margin-top:14px;border-top:1px solid var(--line);padding-top:13px}
+  .ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:stretch}
+  .lrung{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px 10px;display:flex;flex-direction:column;gap:5px}
+  .lrung .top{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+  .lrung .nm{font-family:var(--disp);font-weight:700;font-size:13px}
+  .lrung .du{font-family:var(--mono);font-size:8.5px;color:var(--muted2)}
+  .lrung .st{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+  .lrung .pr{display:flex;align-items:baseline;gap:6px}
+  .lrung .pl{font-family:var(--mono);font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);width:30px;flex:none}
+  .lrung .p{font-family:var(--disp);font-weight:700;font-size:15px}
+  .lrung .mo{font-family:var(--mono);font-size:8.5px;color:var(--muted)}
+  .lrung .grad .pl,.lrung .grad .p{color:var(--emerald)}
+  .lrung .tool{font-family:var(--mono);font-size:8px;color:var(--coral);margin-top:1px;line-height:1.3}
+  .r1 .nm{color:var(--emerald)} .r2 .nm{color:var(--emerald)} .r3 .nm{color:var(--cyan)} .r4 .nm{color:var(--magenta)} .r5 .nm{color:var(--amber)}
+  .lgnd{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:8px;letter-spacing:.03em;text-align:center}
+  .lgnd b.e{color:var(--emerald)} .lgnd b.t{color:var(--coral)}
+
+  .foot{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.04em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">AI Academy · Course ladder &amp; KPIs</div>
+      <h1>The <span class="grad">Course Ladder</span> &amp; What We Measure</h1>
+      <div class="tag">A paid intro turns strangers into buyers, then ascends them a ladder of longer programs — each rung bundles our AI tools so course revenue becomes recurring revenue. Two doors: professional (S2) price and graduate (S1) scholarship.</div>
+    </div>
+    <div class="chips">
+      <div class="chip em"><div class="n">≥3:1</div><div class="l">Course LTV : CAC</div></div>
+      <div class="chip cy"><div class="n">≤RM120</div><div class="l">CAC / intro buyer</div></div>
+      <div class="chip am"><div class="n">≥500</div><div class="l">Q4 intro signups</div></div>
+      <div class="chip mg"><div class="n">~70%</div><div class="l">B2C gross margin</div></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- WHO -->
+    <div class="col">
+      <div class="zt">Who climbs — 3 tracks off one intro</div>
+      <div class="card b-em"><div class="t">Graduates (S1)</div><div class="d">Ceiling: <b style="color:var(--text)">Diploma / Mastery (2–4 yr)</b> · career/degree alternative — financing + income-share unlock the long programs</div></div>
+      <div class="card b-mg"><div class="t">Professionals 35–55 (S2)</div><div class="d">Ceiling: <b style="color:var(--text)">Certificate (1 yr)</b> · fast work/business results, premium &amp; offline-friendly · HRD Corp claimable</div></div>
+      <div class="card b-am"><div class="t">Influencers / KOL (S3)</div><div class="d">Ceiling: <b style="color:var(--text)">Certificate + rev-share</b> · value monetization &amp; AI film — feed openIP + Studio deals</div></div>
+      <div class="zt" style="margin-top:4px">Payment &amp; access — price is never the barrier</div>
+      <div class="card b-cy"><div class="d" style="color:var(--muted)">Monthly installment + pause-on-default · 3rd-party education loan for RM32k–48k · earn-as-you-learn (Mastery) · HRD Corp / employer for S2</div></div>
+    </div>
+
+    <!-- FUNNEL -->
+    <div class="col">
+      <div class="fly">
+        <h3>The academy funnel<span>conversion assumptions · §1.4</span></h3>
+        <div class="steps">
+          <div class="step"><div class="num" style="background:var(--muted2);color:#080510">·</div><div class="txt"><b>Qualified lead</b><div>KOL · ads · organic</div></div><div class="cv">5–10%</div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--emerald)">1</div><div class="txt"><b>Intro (RM299)</b><div>paid tripwire · first 20 seats</div></div><div class="cv">20–30%</div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--emerald)">2</div><div class="txt"><b>Bootcamp</b><div>on-the-spot upgrade close</div></div><div class="cv">15–25%</div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--cyan)">3</div><div class="txt"><b>Certificate</b><div>proof + mentorship close</div></div><div class="cv">30–40%</div><div class="arr">▼</div></div>
+          <div class="step"><div class="num" style="background:var(--magenta);color:#fff">4</div><div class="txt"><b>Diploma → Mastery</b><div>studio practicum pulls up</div></div><div class="cv">30–40%</div></div>
+        </div>
+        <div class="loop">↺ &nbsp;intro pays for acquisition · ladder + tools carry the margin</div>
+      </div>
+    </div>
+
+    <!-- MEASURE -->
+    <div class="col">
+      <div class="zt">What we measure — two scorecards</div>
+      <div class="card b-em"><div class="t">North star <span class="cap">X3</span></div><div class="d"><b style="color:var(--text)">Graduates monetizing</b> — students earning with AI (≥ RM500/mo). Proves lower CAC + pricing power.</div></div>
+      <div class="card b-cy"><div class="t">A · Academy engine</div>
+        <div class="mrow"><span class="k">Intro signups (Q3 → Q4)</span><span class="v cy">≥100 → ≥500</span></div>
+        <div class="mrow"><span class="k">CAC per intro buyer</span><span class="v em">≤ RM120</span></div>
+        <div class="mrow"><span class="k">Ladder progression</span><span class="v">per §1.4</span></div>
+        <div class="mrow"><span class="k">Course LTV : CAC</span><span class="v em">≥ 3 : 1</span></div>
+      </div>
+      <div class="card b-mg"><div class="t">B · Tool P&amp;L</div>
+        <div class="mrow"><span class="k">Blended MRR / ARR</span><span class="v">grow QoQ</span></div>
+        <div class="mrow"><span class="k">Net revenue retention</span><span class="v em">&gt; 100%</span></div>
+        <div class="mrow"><span class="k">Gross margin (B2C / B2B)</span><span class="v">~70% / ~40%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="zt">The value ladder — two doors (Std = professional S2 · Grad = graduate S1) · programs of 1 yr+ show the monthly plan</div>
+    <div class="ladder">
+      <div class="lrung r1">
+        <div class="top"><span class="nm">Discovery</span><span class="du">2 hrs</span></div>
+        <div class="st">Discover · intro</div>
+        <div class="pr"><span class="pl">Std</span><span class="p">RM299</span></div>
+        <div class="pr grad"><span class="pl">Grad</span><span class="p">RM299</span></div>
+        <div class="tool">RM999 list · first 20 seats · +14-day Gateway trial</div>
+      </div>
+      <div class="lrung r2">
+        <div class="top"><span class="nm">Bootcamp</span><span class="du">2 weeks</span></div>
+        <div class="st">Activate</div>
+        <div class="pr"><span class="pl">Std</span><span class="p">RM3,999</span></div>
+        <div class="pr grad"><span class="pl">Grad</span><span class="p">RM1,799</span><span class="mo">or rev-share</span></div>
+        <div class="tool">+3 mo Cora AI Gateway Starter</div>
+      </div>
+      <div class="lrung r3">
+        <div class="top"><span class="nm">Certificate</span><span class="du">1 year</span></div>
+        <div class="st">Certify</div>
+        <div class="pr"><span class="pl">Std</span><span class="p">RM18k</span><span class="mo">RM1,500/mo ×12</span></div>
+        <div class="pr grad"><span class="pl">Grad</span><span class="p">RM12k</span><span class="mo">RM1,000/mo ×12</span></div>
+        <div class="tool">+12 mo Gateway Growth + openIP creator</div>
+      </div>
+      <div class="lrung r4">
+        <div class="top"><span class="nm">Diploma</span><span class="du">2 years</span></div>
+        <div class="st">Specialize · S1 flagship</div>
+        <div class="pr"><span class="pl">Std</span><span class="p">RM32k</span><span class="mo">RM1,333/mo ×24</span></div>
+        <div class="pr grad"><span class="pl">Grad</span><span class="p">RM32k</span><span class="mo">financing / earn</span></div>
+        <div class="tool">+tools + Film Studio practicum</div>
+      </div>
+      <div class="lrung r5">
+        <div class="top"><span class="nm">Mastery</span><span class="du">4 years</span></div>
+        <div class="st">Master · Founder track</div>
+        <div class="pr"><span class="pl">Std</span><span class="p">RM48k</span><span class="mo">RM1,000/mo ×48</span></div>
+        <div class="pr grad"><span class="pl">Grad</span><span class="p">RM48k</span><span class="mo">earn-as-you-learn</span></div>
+        <div class="tool">+full tools + paid studio + trainer license</div>
+      </div>
+    </div>
+    <div class="lgnd">Every rung bundles the tools → recurring revenue · <b class="e">Grad</b> access to upper rungs via financing / earn-to-learn (not deferred debt) · <b class="t">coral</b> = bundled tools &amp; practicum</div>
+  </div>
+
+  <div class="foot">AI Academy course ladder · MYR · benchmark-validated (MY/SG 2026) · pricing &amp; conversion figures adjustable in the financial model</div>
+</div>

@@ -61,12 +61,16 @@
 
   /* bottom bands */
   .bottom{display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-top:14px;border-top:1px solid var(--line);padding-top:14px}
-  .ladder{display:flex;gap:6px;align-items:flex-end}
-  .rung{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 7px;text-align:center}
-  .rung .p{font-family:var(--disp);font-weight:700;font-size:14px}
-  .rung .nm{font-size:9.5px;color:var(--muted);margin-top:2px;line-height:1.2}
-  .rung .du{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-top:2px}
-  .r1 .p{color:var(--emerald)} .r2 .p{color:var(--emerald)} .r3 .p{color:var(--cyan)} .r4 .p{color:var(--magenta)} .r5 .p{color:var(--amber)}
+  .ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;align-items:stretch}
+  .rung{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 8px;display:flex;flex-direction:column;gap:1px}
+  .rung .nm{font-family:var(--disp);font-weight:700;font-size:11.5px;line-height:1.1}
+  .rung .du{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-bottom:3px}
+  .rung .door{display:flex;align-items:baseline;gap:4px;line-height:1.15}
+  .rung .pl{font-family:var(--mono);font-size:7.5px;letter-spacing:.03em;color:var(--muted2);width:22px;flex:none}
+  .rung .p{font-family:var(--disp);font-weight:700;font-size:13px}
+  .rung .mo{font-family:var(--mono);font-size:7.5px;color:var(--muted)}
+  .rung .door.grad .pl,.rung .door.grad .p{color:var(--emerald)}
+  .r1 .nm{color:var(--emerald)} .r2 .nm{color:var(--emerald)} .r3 .nm{color:var(--cyan)} .r4 .nm{color:var(--magenta)} .r5 .nm{color:var(--amber)}
 
   .fin{display:flex;flex-direction:column;gap:6px}
   .bars{display:flex;gap:12px;align-items:flex-end;height:74px;padding:0 4px}
@@ -81,6 +85,9 @@
   .eng .h.em{color:var(--emerald)} .eng .h.am{color:var(--amber)}
   .eng .d{font-size:9.5px;color:var(--muted);margin-top:1px}
 
+  .capnum{font-family:var(--disp);font-weight:700;font-size:27px;color:var(--coral)}
+  .uf{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .d1{width:7px;height:7px;border-radius:50%;flex:none}
   .foot{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.04em}
 </style>
 
@@ -92,10 +99,10 @@
       <div class="tag">Train one-person companies to work with AI, keep them on our tools, and turn the best into an AI film studio — two revenue engines on one owned toolchain.</div>
     </div>
     <div class="chips">
-      <div class="chip em"><div class="n">≈12×</div><div class="l">LTV : CAC</div></div>
-      <div class="chip cy"><div class="n">RM4.9→27M</div><div class="l">Revenue, Yr1→Yr3</div></div>
+      <div class="chip mg"><div class="n">≈RM225k</div><div class="l">Capital to start</div></div>
       <div class="chip am"><div class="n">−80%</div><div class="l">Film cost vs traditional</div></div>
-      <div class="chip mg"><div class="n">≈RM225k</div><div class="l">Working capital to scale</div></div>
+      <div class="chip em"><div class="n">3</div><div class="l">Tools live &amp; built</div></div>
+      <div class="chip cy"><div class="n">2</div><div class="l">Revenue engines</div></div>
     </div>
   </div>
 
@@ -134,32 +141,43 @@
       <div class="card b-em"><span class="status">LIVE</span><div class="t"><span class="dot" style="background:var(--emerald)"></span>Cora AI Gateway</div><div class="d">Chat · Cowork · Video Studio — daily AI work &amp; reels</div></div>
       <div class="card b-mg"><span class="status">LIVE</span><div class="t"><span class="dot" style="background:var(--magenta)"></span>openIP</div><div class="d">Tokenize · storefront · AI-clone — turn output into income</div></div>
       <div class="card b-am"><span class="status">BUILT</span><div class="t"><span class="dot" style="background:var(--amber)"></span>Cora AI Film Studio</div><div class="d">Premium reels + full films · up to 80% cheaper, top quality</div></div>
-      <div class="card b-cy"><div class="t">Film go-to-market</div><div class="d"><b style="color:var(--coral)">DFY</b> — we make it (enterprise/SME) &nbsp;·&nbsp; <b style="color:var(--emerald)">DIY</b> — Founder-Track grads make &amp; fulfil</div></div>
+      <div class="card b-cy"><div class="t">Film go-to-market</div><div class="d"><b style="color:var(--coral)">DFY</b> — we make it (enterprise/SME) · <b style="color:var(--emerald)">DIY</b> — Founder-Track grads make &amp; fulfil.<br><b style="color:var(--coral)">BFU:</b> sign actors &amp; KOLs to star (their face/likeness) in the AI films while we raise per-film investment — AI changes how they work, not out of a job.</div></div>
     </div>
   </div>
 
   <div class="bottom">
     <div>
-      <div class="zt">The value ladder — segment pricing (Professionals / S2)</div>
+      <div class="zt">The value ladder — two doors (Std = professional S2 · Grad = graduate S1) · 1 yr+ shows monthly</div>
       <div class="ladder">
-        <div class="rung r1"><div class="p">RM299</div><div class="nm">Discovery</div><div class="du">2 hrs</div></div>
-        <div class="rung r2"><div class="p">RM3,999</div><div class="nm">Bootcamp</div><div class="du">2 weeks</div></div>
-        <div class="rung r3"><div class="p">RM18k</div><div class="nm">Certificate</div><div class="du">1 year</div></div>
-        <div class="rung r4"><div class="p">RM32k</div><div class="nm">Diploma</div><div class="du">2 years</div></div>
-        <div class="rung r5"><div class="p">RM48k</div><div class="nm">Mastery</div><div class="du">4 years</div></div>
+        <div class="rung r1"><div class="nm">Discovery</div><div class="du">2 hrs</div>
+          <div class="door"><span class="pl">Std</span><span class="p">RM299</span></div>
+          <div class="door grad"><span class="pl">Grad</span><span class="p">RM299</span></div></div>
+        <div class="rung r2"><div class="nm">Bootcamp</div><div class="du">2 weeks</div>
+          <div class="door"><span class="pl">Std</span><span class="p">RM3,999</span></div>
+          <div class="door grad"><span class="pl">Grad</span><span class="p">RM1,799</span></div></div>
+        <div class="rung r3"><div class="nm">Certificate</div><div class="du">1 year</div>
+          <div class="door"><span class="pl">Std</span><span class="p">RM18k</span><span class="mo">RM1.5k/mo</span></div>
+          <div class="door grad"><span class="pl">Grad</span><span class="p">RM12k</span><span class="mo">RM1k/mo</span></div></div>
+        <div class="rung r4"><div class="nm">Diploma</div><div class="du">2 years</div>
+          <div class="door"><span class="pl">Std</span><span class="p">RM32k</span><span class="mo">RM1.33k/mo</span></div>
+          <div class="door grad"><span class="pl">Grad</span><span class="p">RM32k</span><span class="mo">financing</span></div></div>
+        <div class="rung r5"><div class="nm">Mastery</div><div class="du">4 years</div>
+          <div class="door"><span class="pl">Std</span><span class="p">RM48k</span><span class="mo">RM1k/mo</span></div>
+          <div class="door grad"><span class="pl">Grad</span><span class="p">RM48k</span><span class="mo">earn-to-learn</span></div></div>
       </div>
       <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:6px">Every rung bundles the tools → recurring revenue · Graduates access upper rungs via financing / earn-to-learn (not deferred debt)</div>
     </div>
     <div class="fin">
-      <div class="zt">3-year trajectory (revenue, RM mil · illustrative)</div>
-      <div class="bars">
-        <div class="bar"><div class="v">4.9</div><div class="col2" style="height:18%"></div><div class="y">Yr 1</div></div>
-        <div class="bar"><div class="v">13.1</div><div class="col2" style="height:49%"></div><div class="y">Yr 2</div></div>
-        <div class="bar"><div class="v">26.9</div><div class="col2" style="height:100%"></div><div class="y">Yr 3</div></div>
-        <div style="border-left:1px solid var(--line);padding-left:12px;display:flex;flex-direction:column;justify-content:center;gap:3px">
-          <div style="font-family:var(--disp);font-weight:700;font-size:14px;color:var(--emerald)">27–48%</div>
-          <div style="font-family:var(--mono);font-size:8.5px;color:var(--muted2);letter-spacing:.06em">EBITDA MARGIN<br>(Yr1→Yr3)</div>
-        </div>
+      <div class="zt">Capital to start — what we need to receive</div>
+      <div style="display:flex;align-items:baseline;gap:10px;margin:4px 0 9px">
+        <div class="capnum">≈RM225k</div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--muted2);line-height:1.35">grant + working<br>capital to launch</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div class="uf"><span class="d1" style="background:var(--emerald)"></span>Build &amp; launch the Academy — curriculum + first cohorts</div>
+        <div class="uf"><span class="d1" style="background:var(--magenta)"></span>Stand up the owned toolchain — Gateway · openIP</div>
+        <div class="uf"><span class="d1" style="background:var(--amber)"></span>Pilot the AI Film Studio — sign talent + first productions</div>
+        <div class="uf"><span class="d1" style="background:var(--cyan)"></span>Working-capital runway to first revenue</div>
       </div>
     </div>
   </div>
