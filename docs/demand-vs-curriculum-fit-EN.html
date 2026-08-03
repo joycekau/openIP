@@ -1,0 +1,140 @@
+<title>Demand vs Curriculum Fit — AI Courses</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.4;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:24px 30px 22px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:13px;margin-bottom:13px}
+  .head h1{font-size:25px;margin:6px 0 5px}
+  .head .tag{font-size:12px;color:var(--muted);max-width:64ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:6px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:15px}
+  .chip .l{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  .body{display:grid;grid-template-columns:1.62fr 1fr;gap:16px;align-items:start}
+  .zt{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:7px}
+
+  table{border-collapse:collapse;width:100%}
+  th{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted2);text-align:left;padding:0 8px 6px;font-weight:400}
+  th.c,td.c{text-align:center}
+  td{padding:6px 8px;border-top:1px solid var(--line);vertical-align:middle;font-size:11px}
+  tr:first-child td{border-top:0}
+  .dc{font-family:var(--disp);font-weight:700;font-size:11.5px}
+  .kw{font-size:9px;color:var(--muted2);font-family:var(--mono)}
+  .dem{font-family:var(--disp);font-weight:700;font-size:10px}
+  .dem.hi{color:var(--coral)} .dem.mh{color:var(--amber)} .dem.md{color:var(--muted)}
+  .skew{font-family:var(--mono);font-size:8.5px;color:var(--muted2)}
+  .cov{font-family:var(--disp);font-weight:700;font-size:10px}
+  .badge{display:inline-block;width:20px;height:20px;line-height:20px;border-radius:50%;text-align:center;font-size:11px;font-weight:700}
+  .yes{background:rgba(52,211,153,.16);color:var(--emerald);border:1px solid var(--emerald)}
+  .part{background:rgba(252,211,77,.14);color:var(--amber);border:1px solid var(--amber)}
+  .no{background:rgba(251,113,133,.14);color:var(--coral);border:1px solid var(--coral)}
+  tr.gap td{background:rgba(251,113,133,.05)}
+
+  .rail{display:flex;flex-direction:column;gap:9px}
+  .rc{border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent),var(--panel)}
+  .rc.v{border-left:3px solid var(--emerald)} .rc.g{border-left:3px solid var(--coral)} .rc.a{border-left:3px solid var(--violet)}
+  .rc h4{font-size:12.5px} .rc h4 .s{float:right;font-family:var(--mono);font-size:8.5px;font-weight:400;color:var(--muted2)}
+  .rc p{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5}
+  .rc .li{font-size:10px;color:var(--muted);line-height:1.45;display:flex;gap:6px;margin-top:4px}
+  .rc .li b{color:var(--text)}
+  .rc .li .d{flex:none;margin-top:4px;width:6px;height:6px;border-radius:50%}
+  .split{display:flex;gap:8px}
+  .sp{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+  .sp .spt{font-family:var(--disp);font-weight:700;font-size:11px}
+  .sp.win{border-top:2px solid var(--emerald)} .sp.win .spt{color:var(--emerald)}
+  .sp.weak{border-top:2px solid var(--coral)} .sp.weak .spt{color:var(--coral)}
+  .sp .spd{font-size:9px;color:var(--muted);margin-top:1px;line-height:1.4}
+
+  .legend{display:flex;gap:14px;justify-content:flex-end;margin-top:9px;font-family:var(--mono);font-size:8.5px;color:var(--muted2)}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .pull{margin-top:12px;background:linear-gradient(120deg,rgba(52,211,153,.11),rgba(168,85,247,.06));border:1px solid var(--linev);border-radius:11px;padding:9px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .pull .pl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--emerald);flex:none}
+  .pull .pt{font-size:10.5px;color:var(--muted)}
+  .pull .pt b{color:var(--text)}
+  .foot{font-family:var(--mono);font-size:8px;color:var(--muted2);margin-top:10px;text-align:center;letter-spacing:.03em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Market research · demand vs curriculum</div>
+      <h1>Demand vs Curriculum Fit — <span class="grad">does the partner content match search demand?</span></h1>
+      <div class="tag">Top AI-learning &amp; AI-business search clusters (2025–26, MY/SG/ID-weighted) mapped against the partner's A/B/C courses. Strong on the SEA commerce wave — but three high-demand clusters are uncovered.</div>
+    </div>
+    <div class="chips">
+      <div class="chip em"><div class="n">MY · ID</div><div class="l">Strong fit</div></div>
+      <div class="chip mg"><div class="n">Singapore</div><div class="l">Weak fit</div></div>
+      <div class="chip am"><div class="n">3 gaps</div><div class="l">High-demand, uncovered</div></div>
+      <div class="chip cy"><div class="n">+2</div><div class="l">Tracks to add</div></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div>
+      <div class="zt">Search-demand clusters × partner coverage</div>
+      <table>
+        <thead><tr><th>Demand cluster</th><th>Demand</th><th class="c">By</th><th class="c">Fit</th></tr></thead>
+        <tbody>
+          <tr><td><div class="dc">Sell on TikTok Shop / live selling</div><div class="kw">cara jualan tiktok · live selling</div></td><td><span class="dem hi">HIGH</span><div class="skew">ID · MY</div></td><td class="c cov">B</td><td class="c"><span class="badge yes">✓</span></td></tr>
+          <tr><td><div class="dc">Make money online / side hustle</div><div class="kw">jualan tanpa modal · AI side hustle</div></td><td><span class="dem hi">HIGH</span><div class="skew">ID · MY</div></td><td class="c cov">B·C</td><td class="c"><span class="badge yes">✓</span></td></tr>
+          <tr><td><div class="dc">Dropship + cross-border selling</div><div class="kw">dropship · global TikTok Shop · export</div></td><td><span class="dem mh">HIGH↑</span><div class="skew">ID · MY</div></td><td class="c cov">B·C</td><td class="c"><span class="badge yes">✓</span></td></tr>
+          <tr><td><div class="dc">AI for business / marketing (SME)</div><div class="kw">AI untuk bisnis · ChatGPT for business</div></td><td><span class="dem hi">HIGH</span><div class="skew">MY · SG</div></td><td class="c cov">A</td><td class="c"><span class="badge yes">✓</span></td></tr>
+          <tr><td><div class="dc">TikTok affiliate / creator monetization</div><div class="kw">tiktok affiliate · komisi</div></td><td><span class="dem hi">HIGH</span><div class="skew">ID</div></td><td class="c cov">B·C</td><td class="c"><span class="badge yes">✓</span></td></tr>
+          <tr class="gap"><td><div class="dc">GenAI / ChatGPT-for-work literacy</div><div class="kw">belajar AI · learn ChatGPT · genAI course</div></td><td><span class="dem hi">V.HIGH</span><div class="skew">global · SG</div></td><td class="c cov">—</td><td class="c"><span class="badge no">✗</span></td></tr>
+          <tr class="gap"><td><div class="dc">AI automation agency · agents · sell AI services</div><div class="kw">AAA · build AI agents · AI freelancing</div></td><td><span class="dem hi">HIGH↑</span><div class="skew">global · best margin</div></td><td class="c cov">—</td><td class="c"><span class="badge no">✗</span></td></tr>
+          <tr class="gap"><td><div class="dc">Gov-funded upskilling framing</div><div class="kw">HRD Corp · SkillsFuture · Prakerja AI</div></td><td><span class="dem mh">MED-HI</span><div class="skew">SG · MY</div></td><td class="c cov">A~</td><td class="c"><span class="badge part">~</span></td></tr>
+          <tr><td><div class="dc">Data analytics / data science + AI</div><div class="kw">data analytics course · kursus data</div></td><td><span class="dem md">MED</span><div class="skew">SG</div></td><td class="c cov">—</td><td class="c"><span class="badge no">✗</span></td></tr>
+          <tr><td><div class="dc">Build AI app / no-code / vibe coding</div><div class="kw">build AI app · micro-SaaS · vibe coding</div></td><td><span class="dem mh">MED-HI↑</span><div class="skew">global</div></td><td class="c cov">—</td><td class="c"><span class="badge no">✗</span></td></tr>
+        </tbody>
+      </table>
+      <div class="legend"><span><i style="background:var(--emerald)"></i>covered</span><span><i style="background:var(--amber)"></i>partial</span><span><i style="background:var(--coral)"></i>missing (high-demand)</span></div>
+    </div>
+
+    <div class="rail">
+      <div class="rc v"><h4>Verdict <span class="s">rides the #1 SEA wave</span></h4><p><b style="color:var(--text)">Strong fit for MY / ID commerce-led growth</b> — TikTok selling + make-money-online + AI-for-SME is the biggest regional demand pole, and the partner owns it (S3 + SME + OPC distribution).</p>
+        <div class="split" style="margin-top:8px">
+          <div class="sp win"><div class="spt">MY · ID ✓</div><div class="spd">Commerce &amp; TikTok wave — bullseye</div></div>
+          <div class="sp weak"><div class="spt">SG ✗</div><div class="spd">Wants pro AI/data skills, not selling</div></div>
+        </div>
+      </div>
+      <div class="rc g"><h4>3 gaps to fill</h4>
+        <div class="li"><span class="d" style="background:var(--coral)"></span><div><b>AAA / AI agents / sell AI services</b> — highest-margin, fastest-rising demand; partner has none.</div></div>
+        <div class="li"><span class="d" style="background:var(--coral)"></span><div><b>GenAI / ChatGPT-for-work intro</b> — the volume tripwire that feeds S1 + funded courses.</div></div>
+        <div class="li"><span class="d" style="background:var(--coral)"></span><div><b>Singapore</b> — professional AI/data skills (SkillsFuture-claimable).</div></div>
+      </div>
+      <div class="rc a"><h4>Recommendation — add 2 tracks</h4>
+        <div class="li"><span class="d" style="background:var(--emerald)"></span><div><b>RM299 GenAI-for-work intro</b> — cheap, high-volume tripwire (partner's floor is ~RM12k).</div></div>
+        <div class="li"><span class="d" style="background:var(--violet)"></span><div><b>AI Automation / Agents track</b> — capture the best-margin monetization demand.</div></div>
+        <div class="li"><span class="d" style="background:var(--cyan)"></span><div>Reframe headline as <b>"AI to grow your business"</b>, not dropshipping — protects brand + funding eligibility.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pull">
+    <span class="pl">Bonus fit · tool pull-through</span>
+    <span class="pt"><b>A · B</b> drive <b>Cora AI Gateway</b> (Video Studio · Chat · Cowork) &nbsp;·&nbsp; <b>C</b> drives <b>OneIP</b> + Gateway &nbsp;→&nbsp; every course pushes our owned tools into <b>recurring subscription revenue</b> — the flywheel, not just one-off course fees.</span>
+  </div>
+
+  <div class="foot">Directional demand from Google Trends, course-marketplace enrollments, YouTube/Reddit/TikTok volume &amp; SEA e-commerce/gov-program data (2025–26) · not paid keyword-tool exports · verify before external use</div>
+</div>
