@@ -1,0 +1,122 @@
+<title>From Course to Token — the OPC Journey</title>
+<style>
+  :root{
+    --bg:#080510; --panel:#150E26; --panel2:#1B1232; --line:rgba(255,255,255,.10); --linev:rgba(168,85,247,.28);
+    --text:#F4EFFC; --muted:#A99FC0; --muted2:#8A80A6;
+    --violet:#8B5CF6; --purple:#A855F7; --magenta:#EC4899; --coral:#FB7185; --cyan:#22D3EE;
+    --emerald:#34D399; --amber:#FCD34D;
+    --grad:linear-gradient(120deg,#22D3EE 0%,#8B5CF6 36%,#EC4899 68%,#FB7185 100%);
+    --disp:"Space Grotesk","Plus Jakarta Sans",system-ui,sans-serif;
+    --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"JetBrains Mono","SF Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#05030c;color:var(--text);font-family:var(--sans);line-height:1.45;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px;
+    background-image:radial-gradient(900px 500px at 82% -8%,rgba(236,72,153,.14),transparent 60%),
+      radial-gradient(760px 520px at 10% 4%,rgba(52,211,153,.12),transparent 60%),
+      radial-gradient(900px 560px at 50% 116%,rgba(34,211,238,.10),transparent 60%);}
+  .slide{width:100%;max-width:1240px;background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--bg);
+    border:1px solid var(--linev);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.55);padding:26px 30px 24px;}
+  h1,h2,h3,h4{font-family:var(--disp);font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted2)}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:18px}
+  .head h1{font-size:26px;margin:6px 0 5px}
+  .head .tag{font-size:12.5px;color:var(--muted);max-width:64ch}
+  .chips{display:grid;grid-template-columns:repeat(2,auto);gap:8px;flex:none}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 12px;text-align:right}
+  .chip .n{font-family:var(--disp);font-weight:700;font-size:15px}
+  .chip .l{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted2);margin-top:1px}
+  .chip.em .n{color:var(--emerald)} .chip.mg .n{color:var(--coral)} .chip.am .n{color:var(--amber)} .chip.cy .n{color:var(--cyan)}
+
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:0;align-items:stretch;margin-bottom:16px}
+  .stepwrap{position:relative;padding:0 7px;display:flex}
+  .stepwrap:not(:last-child)::after{content:"→";position:absolute;right:-8px;top:64px;font-size:18px;color:var(--muted2);z-index:3;font-family:var(--disp)}
+  .step{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 12px 11px;display:flex;flex-direction:column;gap:6px;width:100%}
+  .step.s1{border-top:3px solid var(--emerald)} .step.s2{border-top:3px solid var(--cyan)} .step.s3{border-top:3px solid var(--violet)} .step.s4{border-top:3px solid var(--magenta)} .step.s5{border-top:3px solid var(--amber)}
+  .step .num{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
+  .step h3{font-size:15px}
+  .step .d{font-size:10.5px;color:var(--muted);line-height:1.5;flex:1}
+  .step .tool{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:20px;align-self:flex-start}
+  .t-em{color:var(--emerald);background:rgba(52,211,153,.12)} .t-cy{color:var(--cyan);background:rgba(34,211,238,.12)} .t-vi{color:var(--violet);background:rgba(139,92,246,.14)} .t-mg{color:var(--coral);background:rgba(236,72,153,.12)} .t-am{color:var(--amber);background:rgba(252,211,77,.12)}
+  .offer{font-family:var(--mono);font-size:9px;font-weight:700;padding:3px 8px;border-radius:7px;align-self:flex-start;border:1px dashed}
+  .offer.free{color:var(--emerald);border-color:var(--emerald)} .offer.incl{color:var(--amber);border-color:var(--amber)}
+
+  .bottom{display:grid;grid-template-columns:1.15fr 1fr;gap:14px;border-top:1px solid var(--line);padding-top:14px}
+  .moat h3{font-size:14px;margin-bottom:6px}
+  .moat h3 .g{color:var(--amber)}
+  .mrow{display:flex;gap:8px;align-items:flex-start;font-size:10.5px;color:var(--muted);line-height:1.5;margin-top:5px}
+  .mrow .d1{flex:none;margin-top:4px;width:7px;height:7px;border-radius:50%}
+  .mrow b{color:var(--text)}
+  .firstcard{background:linear-gradient(120deg,rgba(252,211,77,.10),rgba(168,85,247,.06));border:1px solid var(--linev);border-radius:12px;padding:12px 14px}
+  .firstcard .fk{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
+  .firstcard h4{font-size:15px;margin:3px 0 5px}
+  .firstcard p{font-size:10.5px;color:var(--muted);line-height:1.55}
+  .firstcard .pills{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .firstcard .pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--text)}
+  .foot{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:12px;text-align:center;letter-spacing:.03em}
+</style>
+
+<div class="slide">
+  <div class="head">
+    <div>
+      <div class="eyebrow">OPC learner journey · learn → build → own → monetize</div>
+      <h1>From Course to Token — <span class="grad">on our own tools</span></h1>
+      <div class="tag">Students don't just learn <i>about</i> AI — they learn by using <b>Cora AI Gateway as their AI coach</b>, then turn their skills/influence into <b>their own IP &amp; digital assets</b> and tokenize it through <b>OneIP's end-to-end tokenomics</b> — no prior crypto/tokenomics knowledge needed. Every step runs on tools we own.</div>
+    </div>
+    <div class="chips">
+      <div class="chip am"><div class="n">1 day</div><div class="l">Unlimited Gateway (incl.)</div></div>
+      <div class="chip em"><div class="n">Free</div><div class="l">OneIP for learners</div></div>
+      <div class="chip cy"><div class="n">1st</div><div class="l">OPC category in MY</div></div>
+      <div class="chip mg"><div class="n">→ MRR</div><div class="l">Learn → keep using → pay</div></div>
+    </div>
+  </div>
+
+  <div class="flow">
+    <div class="stepwrap"><div class="step s1">
+      <div class="num">01 · Learn</div><h3>Take a course</h3>
+      <div class="d">AI for business &amp; selling (courses A / B / C). Skills people already search for.</div>
+      <span class="tool t-em">Academy course</span>
+    </div></div>
+    <div class="stepwrap"><div class="step s2">
+      <div class="num">02 · Coach</div><h3>Your AI coach</h3>
+      <div class="d">Learn <b>by doing</b> inside Cora AI Gateway — Chat · Cowork · Video Studio — an always-on AI coach.</div>
+      <span class="tool t-cy">Cora AI Gateway</span>
+      <span class="offer incl">◦ 1-day UNLIMITED included</span>
+    </div></div>
+    <div class="stepwrap"><div class="step s3">
+      <div class="num">03 · Build IP</div><h3>Own your IP</h3>
+      <div class="d">Turn influence, content &amp; skills into <b>your own IP / digital assets</b> — a decentralized, ownable asset.</div>
+      <span class="tool t-vi">Your IP &amp; assets</span>
+    </div></div>
+    <div class="stepwrap"><div class="step s4">
+      <div class="num">04 · Tokenize</div><h3>Tokenize it</h3>
+      <div class="d"><b>OneIP does the tokenomics for you</b> — end-to-end, even if you've never heard of tokenomics. Storefront · AI-clone · tokens.</div>
+      <span class="tool t-mg">OneIP</span>
+      <span class="offer free">◦ FREE for learners</span>
+    </div></div>
+    <div class="stepwrap"><div class="step s5">
+      <div class="num">05 · Monetize</div><h3>Earn &amp; scale</h3>
+      <div class="d">Raise a token, sell &amp; earn; join the <b>OPC network</b> as a node/distributor. Films &amp; sales feed the next cohort.</div>
+      <span class="tool t-am">Income + OPC network</span>
+    </div></div>
+  </div>
+
+  <div class="bottom">
+    <div class="moat">
+      <h3>Why this compounds — <span class="g">the moat</span></h3>
+      <div class="mrow"><span class="d1" style="background:var(--cyan)"></span><div><b>They learn on our tool → keep paying.</b> The 1-day unlimited taste converts into ongoing Cora AI Gateway subscriptions (recurring MRR).</div></div>
+      <div class="mrow"><span class="d1" style="background:var(--magenta)"></span><div><b>OneIP is free to hook, then takes a cut.</b> Free onboarding → we monetize their IP via storefront take-rate + token utility, not an upfront fee.</div></div>
+      <div class="mrow"><span class="d1" style="background:var(--amber)"></span><div><b>Network + tools are hard to copy.</b> Owned Gateway + OneIP + a growing OPC node network — a rival can copy a course, not this stack.</div></div>
+    </div>
+    <div class="firstcard">
+      <div class="fk">First-mover · category creation</div>
+      <h4>First to establish the <span class="grad">OPC brand</span> in Malaysia</h4>
+      <p>Own the OPC category with the full stack no one else has here — <b>AI tools + courses + a recognized certificate</b>. Win it with a credential worth having (HRD-Corp / outcomes) and MY-exclusive brand rights — not just being first.</p>
+      <div class="pills"><span class="pill">AI tools</span><span class="pill">Courses</span><span class="pill">Certificate</span><span class="pill">OPC network</span></div>
+    </div>
+  </div>
+
+  <div class="foot">Learner value journey · tools we own (Cora AI Gateway + OneIP) · tokenomics framed as revenue/utility, not investment returns (compliance) · offer terms illustrative</div>
+</div>
