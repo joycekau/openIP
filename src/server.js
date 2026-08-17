@@ -258,6 +258,9 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/terminal" || path === "/index.html")) return servePage(res, "index.html");
     if (req.method === "GET" && (path === "/launch" || path === "/launch.html")) return servePage(res, "launch.html");
     if (req.method === "GET" && (path === "/business" || path === "/business.html" || path === "/coralaunch")) return servePage(res, "business.html");
+    // Admin UI for captured B2B leads — the page itself is public HTML but the data
+    // endpoint (/api/enquiries) is gated by x-admin-token, which the page collects.
+    if (req.method === "GET" && (path === "/admin/enquiries" || path === "/enquiries.html")) return servePage(res, "enquiries.html");
     if (req.method === "GET" && (path === "/admin" || path === "/admin.html")) return servePage(res, "admin.html");
     if (req.method === "GET" && (path === "/coin" || path === "/coin.html")) return servePage(res, "coin.html");
     if (req.method === "GET" && (path === "/shop" || path === "/shop.html")) return servePage(res, "shop.html");
