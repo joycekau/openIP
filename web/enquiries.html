@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex,nofollow" />
+<title>CoraLaunch — Enquiries (admin)</title>
+<style>
+  :root{
+    --bg:#0B0A0C; --panel:#151316; --panel-2:#1B181C; --line:rgba(255,255,255,.09);
+    --line-2:rgba(232,193,90,.30); --gold:#E8C15A; --gold-2:#F7E3A6; --text:#F6F1E6;
+    --muted:#B7AE9A; --muted-2:#7C755F; --green:#6FE0A8; --red:#FB7185;
+    --ff:"Plus Jakarta Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--ff);font-size:14px;line-height:1.5}
+  a{color:var(--gold-2)}
+  .wrap{max-width:1240px;margin:0 auto;padding:22px 20px 60px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.3px}
+  .brand .dot{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#F7E3A6,#B8912E);display:grid;place-items:center;color:#141013;font-size:15px}
+  .brand small{color:var(--muted-2);font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input,button,select{font-family:inherit;font-size:14px}
+  input[type=password],input[type=text]{background:#141016;border:1px solid var(--line-2);color:var(--text);border-radius:10px;padding:9px 12px;outline:none;min-width:200px}
+  input:focus{border-color:var(--gold)}
+  .btn{cursor:pointer;border:1px solid var(--line-2);background:rgba(255,255,255,.03);color:var(--text);border-radius:10px;padding:9px 14px;font-weight:600;transition:.15s}
+  .btn:hover{border-color:var(--gold);background:rgba(232,193,90,.10)}
+  .btn.primary{color:#141013;background:linear-gradient(100deg,#F7E3A6,#E8C15A 55%,#B8912E);border-color:transparent;font-weight:800}
+  .btn.ghost{color:var(--muted)}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:6px 0 14px}
+  .stats{color:var(--muted);font-size:13px}
+  .stats b{color:var(--text)}
+  .msg{font-size:13px;padding:10px 14px;border-radius:10px;margin:10px 0;display:none}
+  .msg.err{display:block;color:var(--red);background:rgba(251,113,133,.10);border:1px solid rgba(251,113,133,.4)}
+  .msg.ok{display:block;color:var(--green);background:rgba(111,224,168,.10);border:1px solid rgba(111,224,168,.4)}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{position:sticky;top:0;background:#100e12;color:var(--muted-2);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;white-space:nowrap}
+  tbody tr:hover{background:rgba(255,255,255,.02)}
+  td.when{color:var(--muted);white-space:nowrap}
+  td .nm{font-weight:700}
+  td .co{color:var(--muted);font-size:12px}
+  a.email{color:var(--gold-2);text-decoration:none}
+  a.email:hover{text-decoration:underline}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 9px;white-space:nowrap}
+  .msgcell{max-width:340px;color:var(--muted);white-space:pre-wrap}
+  .src{font-size:11px;color:var(--muted-2)}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  .gate{max-width:420px;margin:8vh auto;padding:28px;border:1px solid var(--line-2);border-radius:18px;background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+  .gate h1{font-size:20px;margin:0 0 6px}
+  .gate p{color:var(--muted);margin:0 0 16px;font-size:13px}
+  .gate .row{display:flex;gap:8px}
+  .gate input{flex:1}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="dot">✦</span> CoraLaunch <small>Enquiries · admin</small></div>
+    <div class="controls" id="controls">
+      <button class="btn" id="refreshBtn">↻ Refresh</button>
+      <button class="btn" id="csvBtn">⭳ Export CSV</button>
+      <button class="btn ghost" id="logoutBtn">Sign out</button>
+    </div>
+  </header>
+
+  <!-- token gate -->
+  <div class="gate" id="gate">
+    <h1>Admin sign-in</h1>
+    <p>Enter the admin token to view captured B2B enquiries. It's stored only in this browser.</p>
+    <div class="row">
+      <input type="password" id="tokenInput" placeholder="Admin token" autocomplete="off" />
+      <button class="btn primary" id="loginBtn">View</button>
+    </div>
+    <div class="msg" id="gateMsg"></div>
+  </div>
+
+  <!-- data -->
+  <div id="app" class="hide">
+    <div class="bar">
+      <div class="stats" id="stats">—</div>
+      <input type="text" id="filter" placeholder="Filter name / company / email / message…" style="min-width:260px" />
+    </div>
+    <div class="msg" id="appMsg"></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr>
+          <th>Received</th><th>Name / Company</th><th>Contact</th><th>Chain</th><th>Interest</th><th>Message</th><th>Source</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var KEY = 'coralaunch_admin_token';
+  var gate = document.getElementById('gate'), app = document.getElementById('app'), controls = document.getElementById('controls');
+  var tokenInput = document.getElementById('tokenInput'), loginBtn = document.getElementById('loginBtn'), gateMsg = document.getElementById('gateMsg');
+  var rowsEl = document.getElementById('rows'), statsEl = document.getElementById('stats'), appMsg = document.getElementById('appMsg'), filterEl = document.getElementById('filter');
+  var data = [];
+
+  function token(){ try{ return localStorage.getItem(KEY) || ''; }catch(e){ return ''; } }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function fmt(ts){ if(!ts) return ''; var d=new Date(ts); return d.toLocaleString(undefined,{year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'}); }
+  function showGate(show){ gate.classList.toggle('hide',!show); app.classList.toggle('hide',show); controls.style.visibility = show?'hidden':'visible'; }
+
+  async function load(){
+    var t = token();
+    if(!t){ showGate(true); return; }
+    appMsg.className='msg'; statsEl.textContent='Loading…';
+    try{
+      var r = await fetch('/api/enquiries', { headers: { 'x-admin-token': t } });
+      if(r.status===401){ try{ localStorage.removeItem(KEY); }catch(e){} gateMsg.className='msg err'; gateMsg.textContent='Invalid or expired token.'; showGate(true); return; }
+      if(!r.ok){ throw new Error('HTTP '+r.status); }
+      data = await r.json();
+      if(!Array.isArray(data)) data = [];
+      showGate(false);
+      render();
+    }catch(e){
+      showGate(false);
+      appMsg.className='msg err'; appMsg.textContent='Could not load enquiries: '+e.message;
+      statsEl.textContent='—';
+    }
+  }
+
+  function render(){
+    var q = (filterEl.value||'').toLowerCase().trim();
+    var list = data.filter(function(x){
+      if(!q) return true;
+      return [x.name,x.company,x.email,x.telegram,x.message,x.service,x.chain,x.source].join(' ').toLowerCase().indexOf(q)>=0;
+    });
+    statsEl.innerHTML = '<b>'+list.length+'</b> enquir'+(list.length===1?'y':'ies')+(q?' (filtered from '+data.length+')':'');
+    if(!list.length){ rowsEl.innerHTML = '<tr><td colspan="7" class="empty">No enquiries'+(q?' match your filter':' yet')+'.</td></tr>'; return; }
+    rowsEl.innerHTML = list.map(function(x){
+      var contact = '<a class="email" href="mailto:'+esc(x.email)+'">'+esc(x.email)+'</a>' + (x.telegram?'<div class="co">'+esc(x.telegram)+'</div>':'');
+      return '<tr>'+
+        '<td class="when">'+esc(fmt(x.createdAt))+'</td>'+
+        '<td><div class="nm">'+esc(x.name||'—')+'</div>'+(x.company?'<div class="co">'+esc(x.company)+'</div>':'')+'</td>'+
+        '<td>'+contact+'</td>'+
+        '<td>'+(x.chain?'<span class="tag">'+esc(x.chain)+'</span>':'')+'</td>'+
+        '<td>'+(x.service?'<span class="tag">'+esc(x.service)+'</span>':'<span class="src">Full package</span>')+'</td>'+
+        '<td class="msgcell">'+esc(x.message||'')+'</td>'+
+        '<td class="src">'+esc(x.source||'')+'</td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  function toCSV(){
+    var cols = ['createdAt','name','company','email','telegram','chain','service','source','message'];
+    var head = cols.join(',');
+    var body = data.map(function(x){
+      return cols.map(function(c){
+        var v = c==='createdAt' ? (x.createdAt?new Date(x.createdAt).toISOString():'') : (x[c]==null?'':x[c]);
+        v = String(v).replace(/"/g,'""');
+        return '"'+v+'"';
+      }).join(',');
+    }).join('\n');
+    return head+'\n'+body;
+  }
+
+  document.getElementById('loginBtn').onclick = function(){
+    var v = (tokenInput.value||'').trim();
+    if(!v){ gateMsg.className='msg err'; gateMsg.textContent='Enter the admin token.'; return; }
+    try{ localStorage.setItem(KEY, v); }catch(e){}
+    gateMsg.className='msg'; tokenInput.value='';
+    load();
+  };
+  tokenInput.addEventListener('keydown', function(e){ if(e.key==='Enter') loginBtn.click(); });
+  document.getElementById('refreshBtn').onclick = load;
+  document.getElementById('logoutBtn').onclick = function(){ try{ localStorage.removeItem(KEY); }catch(e){} data=[]; showGate(true); };
+  filterEl.addEventListener('input', render);
+  document.getElementById('csvBtn').onclick = function(){
+    var blob = new Blob([toCSV()], { type:'text/csv;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'coralaunch-enquiries.csv'; document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>

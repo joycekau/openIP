@@ -155,6 +155,52 @@ async function servePage(res, file) {
   return res.end(html);
 }
 
+// In-memory cache for B2B enquiries (lead capture), mirroring the launchpad's `mem` pattern so
+// concurrent submits share one array (no lost updates) and a read-after-write is consistent.
+// Persisted durably via saveJsonNow so a captured lead is on disk/kv before we 200 the client.
+let _enquiriesMem = null;
+async function getEnquiries() {
+  if (!_enquiriesMem) _enquiriesMem = await loadJson("enquiries", []);
+  return _enquiriesMem;
+}
+
+// Email a captured B2B lead to the sales inbox. Best-effort + fire-and-forget: the lead is already
+// persisted before this runs, so a missing/failed email never loses data or blocks the response.
+// Uses Resend's HTTPS API when RESEND_API_KEY is set; until then it's a no-op (leads still stored,
+// retrievable via GET /api/enquiries). Override recipient/sender via env if needed.
+async function notifyEnquiry(rec) {
+  const key = process.env.RESEND_API_KEY;
+  const to = process.env.ENQUIRY_EMAIL_TO || "askme@corax.live";
+  const from = process.env.ENQUIRY_EMAIL_FROM || "CoraLaunch <onboarding@resend.dev>";
+  if (!key) return; // email transport not configured yet
+  const text = [
+    "New CoraLaunch / token-launch enquiry",
+    "",
+    `Name:      ${rec.name}`,
+    `Email:     ${rec.email}`,
+    rec.company ? `Company:   ${rec.company}` : null,
+    rec.telegram ? `Telegram:  ${rec.telegram}` : null,
+    rec.chain ? `Chain:     ${rec.chain}` : null,
+    rec.service ? `Interest:  ${rec.service}` : null,
+    rec.source ? `Source:    ${rec.source}` : null,
+    `Received:  ${new Date(rec.createdAt).toISOString()}`,
+    "",
+    "Message:",
+    rec.message || "(none)",
+  ].filter((l) => l !== null).join("\n");
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: `Bearer ${key}`, "content-type": "application/json" },
+      body: JSON.stringify({
+        from, to: [to], reply_to: rec.email,
+        subject: `New enquiry — ${rec.name}${rec.company ? " (" + rec.company + ")" : ""}`,
+        text,
+      }),
+    });
+  } catch (_) { /* best-effort; lead is already stored */ }
+}
+
 // Transak partner access token — exchanged from apiKey + api-secret, valid 7 days. Generating a
 // new token invalidates ALL previously issued ones, so minting must be RARE and the token SHARED:
 // on serverless every instance minting its own token would invalidate every other instance's.
@@ -211,6 +257,10 @@ async function handler(req, res) {
     if (req.method === "GET" && (path === "/" || path === "/home" || path === "/home.html")) return servePage(res, "home.html");
     if (req.method === "GET" && (path === "/terminal" || path === "/index.html")) return servePage(res, "index.html");
     if (req.method === "GET" && (path === "/launch" || path === "/launch.html")) return servePage(res, "launch.html");
+    if (req.method === "GET" && (path === "/business" || path === "/business.html" || path === "/coralaunch")) return servePage(res, "business.html");
+    // Admin UI for captured B2B leads — the page itself is public HTML but the data
+    // endpoint (/api/enquiries) is gated by x-admin-token, which the page collects.
+    if (req.method === "GET" && (path === "/admin/enquiries" || path === "/enquiries.html")) return servePage(res, "enquiries.html");
     if (req.method === "GET" && (path === "/admin" || path === "/admin.html")) return servePage(res, "admin.html");
     if (req.method === "GET" && (path === "/coin" || path === "/coin.html")) return servePage(res, "coin.html");
     if (req.method === "GET" && (path === "/shop" || path === "/shop.html")) return servePage(res, "shop.html");
@@ -544,6 +594,41 @@ async function handler(req, res) {
 
     // ---- launchpad ----
     if (req.method === "GET" && path === "/api/board") return json(res, 200, launchpad.board());
+
+    // ---- B2B enquiries (CoraLaunch / token-launch services lead capture from /business) ----
+    if (req.method === "POST" && path === "/api/enquiry") {
+      let b; try { b = JSON.parse((await readBody(req)) || "{}"); } catch { return json(res, 400, { error: "bad body" }); }
+      // Anti-spam: a filled honeypot ("website") or an implausibly fast submit (< 1.5s) is a bot.
+      // Return a fake success so bots don't learn — but neither store nor email it.
+      const honeypot = String(b.website || "").trim();
+      const elapsed = Number(b.elapsed || 0);
+      if (honeypot || (elapsed > 0 && elapsed < 1500)) return json(res, 200, { ok: true, id: "enq_skipped" });
+      const name = String(b.name || "").trim().slice(0, 120);
+      const email = String(b.email || "").trim().slice(0, 160);
+      const message = String(b.message || "").trim().slice(0, 4000);
+      if (!name || !/.+@.+\..+/.test(email)) return json(res, 400, { error: "name and a valid email are required" });
+      const rec = {
+        id: "enq_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+        name, email, message,
+        company: String(b.company || "").trim().slice(0, 160),
+        telegram: String(b.telegram || "").trim().slice(0, 120),
+        chain: String(b.chain || "").trim().slice(0, 40),
+        service: String(b.service || "").trim().slice(0, 160),
+        source: String(b.source || "").trim().slice(0, 80),
+        ua: String(req.headers["user-agent"] || "").slice(0, 200),
+        createdAt: Date.now(),
+      };
+      const list = await getEnquiries();
+      list.push(rec);
+      await saveJsonNow("enquiries", list);
+      notifyEnquiry(rec).catch(() => {}); // fire-and-forget email to askme@corax.live
+      return json(res, 200, { ok: true, id: rec.id });
+    }
+    // Admin-only: review captured B2B leads (header x-admin-token). Newest first.
+    if (req.method === "GET" && path === "/api/enquiries") {
+      if (!isAdmin(req)) return json(res, 401, { error: "admin only" });
+      return json(res, 200, (await getEnquiries()).slice().reverse());
+    }
 
     // ---- creator social layer (posts / follows / comments / likes / profiles) ----
     if (req.method === "GET" && path === "/api/feed") {

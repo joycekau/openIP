@@ -149,6 +149,7 @@
     ["/", "nav_home", "Home"],
     ["/terminal", "nav_terminal", "Terminal"],
     ["/launch", "nav_launch", "Launch"],
+    ["https://coralaunch.corax.live", "nav_business", "CoraLaunch"],
     ["/creators", "nav_creators", "Creators"],
     ["/shop", "nav_shop", "Shop"],
     ["/studio", "nav_studio", "Studio"],
