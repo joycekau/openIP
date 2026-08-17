@@ -4,7 +4,7 @@
 (function () {
   const DICT = {
     en: {
-      nav_trending: "Trending", nav_launch: "Launch", connect_wallet: "Connect Wallet",
+      nav_trending: "Trending", nav_launch: "Launch", nav_business: "Business", connect_wallet: "Connect Wallet",
       launch_title: "Launch your coin", f_name: "Coin name", f_symbol: "Symbol",
       f_wallet: "Your wallet (auto-filled from Phantom)", ph_wallet: "connect Phantom →",
       floor_tag: "every launch has a 20% floor — holders can't be zeroed", btn_create: "Create coin",
@@ -27,7 +27,7 @@
       floor_word: "floor", socials_word: "socials", back: "Back",
     },
     zh: {
-      nav_trending: "趋势", nav_launch: "发币", connect_wallet: "连接钱包",
+      nav_trending: "趋势", nav_launch: "发币", nav_business: "企业", connect_wallet: "连接钱包",
       launch_title: "发行你的币", f_name: "币名称", f_symbol: "符号",
       f_wallet: "你的钱包（自动从 Phantom 获取）", ph_wallet: "连接 Phantom →",
       floor_tag: "每个币都有 20% 托底——持有者不会归零", btn_create: "创建币",
@@ -50,7 +50,7 @@
       floor_word: "底池", socials_word: "社交", back: "返回",
     },
     id: {
-      nav_trending: "Tren", nav_launch: "Luncurkan", connect_wallet: "Hubungkan Dompet",
+      nav_trending: "Tren", nav_launch: "Luncurkan", nav_business: "Bisnis", connect_wallet: "Hubungkan Dompet",
       launch_title: "Luncurkan koin Anda", f_name: "Nama koin", f_symbol: "Simbol",
       f_wallet: "Dompet Anda (otomatis dari Phantom)", ph_wallet: "hubungkan Phantom →",
       floor_tag: "setiap peluncuran punya floor 20% — holder tidak bisa jadi nol", btn_create: "Buat koin",
@@ -65,7 +65,7 @@
       kol_board: "Papan KOL", live_signals: "Sinyal Langsung",
     },
     vi: {
-      nav_trending: "Xu hướng", nav_launch: "Phát hành", connect_wallet: "Kết nối Ví",
+      nav_trending: "Xu hướng", nav_launch: "Phát hành", nav_business: "Doanh nghiệp", connect_wallet: "Kết nối Ví",
       launch_title: "Phát hành coin của bạn", f_name: "Tên coin", f_symbol: "Ký hiệu",
       f_wallet: "Ví của bạn (tự động từ Phantom)", ph_wallet: "kết nối Phantom →",
       floor_tag: "mỗi đợt phát hành có sàn 20% — người giữ không về 0", btn_create: "Tạo coin",
@@ -80,7 +80,7 @@
       kol_board: "Bảng KOL", live_signals: "Tín hiệu trực tiếp",
     },
     th: {
-      nav_trending: "เทรนด์", nav_launch: "เปิดตัว", connect_wallet: "เชื่อมต่อกระเป๋า",
+      nav_trending: "เทรนด์", nav_launch: "เปิดตัว", nav_business: "ธุรกิจ", connect_wallet: "เชื่อมต่อกระเป๋า",
       launch_title: "เปิดตัวเหรียญของคุณ", f_name: "ชื่อเหรียญ", f_symbol: "สัญลักษณ์",
       f_wallet: "กระเป๋าของคุณ (กรอกอัตโนมัติจาก Phantom)", ph_wallet: "เชื่อมต่อ Phantom →",
       floor_tag: "ทุกการเปิดตัวมีพื้นราคา 20% — ผู้ถือจะไม่เหลือศูนย์", btn_create: "สร้างเหรียญ",
@@ -95,7 +95,7 @@
       kol_board: "อันดับ KOL", live_signals: "สัญญาณสด",
     },
     ja: {
-      nav_trending: "トレンド", nav_launch: "ローンチ", connect_wallet: "ウォレット接続",
+      nav_trending: "トレンド", nav_launch: "ローンチ", nav_business: "ビジネス", connect_wallet: "ウォレット接続",
       launch_title: "あなたのコインをローンチ", f_name: "コイン名", f_symbol: "シンボル",
       f_wallet: "あなたのウォレット（Phantomから自動入力）", ph_wallet: "Phantomを接続 →",
       floor_tag: "すべてのローンチに20%のフロアあり — 保有者はゼロになりません", btn_create: "コインを作成",
@@ -110,7 +110,7 @@
       kol_board: "KOLランキング", live_signals: "ライブシグナル",
     },
     ko: {
-      nav_trending: "트렌드", nav_launch: "런치", connect_wallet: "지갑 연결",
+      nav_trending: "트렌드", nav_launch: "런치", nav_business: "비즈니스", connect_wallet: "지갑 연결",
       launch_title: "코인 발행하기", f_name: "코인 이름", f_symbol: "심볼",
       f_wallet: "내 지갑 (Phantom에서 자동 입력)", ph_wallet: "Phantom 연결 →",
       floor_tag: "모든 발행에 20% 바닥값 — 보유자는 0이 되지 않습니다", btn_create: "코인 생성",
