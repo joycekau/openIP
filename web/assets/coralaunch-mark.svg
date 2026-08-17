@@ -1,13 +1,12 @@
 <svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CoraLaunch">
   <defs>
-    <linearGradient id="clg" x1="24" y1="20" x2="216" y2="220" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#22D3EE"/>
-      <stop offset="0.42" stop-color="#8B5CF6"/>
-      <stop offset="0.72" stop-color="#EC4899"/>
-      <stop offset="1" stop-color="#FB7185"/>
+    <linearGradient id="clg" x1="30" y1="24" x2="210" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7E3A6"/>
+      <stop offset="0.5" stop-color="#E8C15A"/>
+      <stop offset="1" stop-color="#B8912E"/>
     </linearGradient>
     <linearGradient id="clShine" x1="60" y1="30" x2="180" y2="210" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop stop-color="#ffffff" stop-opacity="0.4"/>
       <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
   </defs>
@@ -15,14 +14,13 @@
   <rect x="8" y="8" width="224" height="224" rx="54" fill="url(#clg)"/>
   <rect x="8" y="8" width="224" height="224" rx="54" fill="url(#clShine)"/>
   <!-- rocket body -->
-  <path d="M120 38 C141 57 150 84 150 115 L150 150 C150 159.4 142.4 167 133 167 L107 167 C97.6 167 90 159.4 90 150 L90 115 C90 84 99 57 120 38 Z" fill="#ffffff"/>
+  <path d="M120 38 C141 57 150 84 150 115 L150 150 C150 159.4 142.4 167 133 167 L107 167 C97.6 167 90 159.4 90 150 L90 115 C90 84 99 57 120 38 Z" fill="#141013"/>
   <!-- window -->
-  <circle cx="120" cy="103" r="13.5" fill="#150E26"/>
-  <circle cx="120" cy="103" r="13.5" fill="url(#clg)" fill-opacity="0.55"/>
+  <circle cx="120" cy="103" r="13.5" fill="#F7E3A6"/>
   <!-- fins -->
-  <path d="M90 130 L67 172 L90 159 Z" fill="#ffffff"/>
-  <path d="M150 130 L173 172 L150 159 Z" fill="#ffffff"/>
+  <path d="M90 130 L67 172 L90 159 Z" fill="#141013"/>
+  <path d="M150 130 L173 172 L150 159 Z" fill="#141013"/>
   <!-- exhaust / launch flame -->
-  <path d="M107 168 L120 205 L133 168 Z" fill="#ffffff" fill-opacity="0.9"/>
-  <circle cx="120" cy="196" r="6" fill="#ffffff" fill-opacity="0.55"/>
+  <path d="M107 168 L120 205 L133 168 Z" fill="#141013" fill-opacity="0.92"/>
+  <circle cx="120" cy="196" r="6" fill="#141013" fill-opacity="0.6"/>
 </svg>
