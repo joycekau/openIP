@@ -98,6 +98,21 @@
   .foot .brand{font-family:var(--ff-disp);font-weight:700;color:var(--text);font-size:18px}
   @media (max-width:900px){ .g4{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr} .g2{grid-template-columns:1fr} .row2{grid-template-columns:1fr} }
   @media (max-width:560px){ .g4{grid-template-columns:1fr} }
+  /* pricing unlock gate */
+  .price-gate{position:relative;border-radius:16px;overflow:hidden;margin-top:24px}
+  .price-locked{transition:filter .35s ease}
+  .price-locked.locked{filter:blur(7px);pointer-events:none;user-select:none}
+  .price-overlay{position:absolute;inset:0;display:grid;place-items:center;padding:16px;background:radial-gradient(130% 120% at 50% 24%,rgba(11,10,12,.55),rgba(11,10,12,.9))}
+  .price-overlay.hide{display:none}
+  .unlock-card{width:min(470px,100%);background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--line-2);border-radius:18px;padding:26px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+  .unlock-ic{font-size:24px;margin-bottom:6px}
+  .unlock-card h3{font-family:var(--ff-disp);font-size:21px;margin:0 0 6px}
+  .unlock-card>p{color:var(--muted);font-size:14px;margin:0 0 16px}
+  .unlock-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .unlock-card input{width:100%;font-family:var(--ff);font-size:14.5px;color:var(--text);background:#141016;border:1px solid var(--line-2);border-radius:11px;padding:11px 13px;outline:none;transition:.15s}
+  .unlock-card input:focus{border-color:var(--magenta);box-shadow:0 0 0 3px rgba(232,193,90,.15)}
+  .unlock-note{font-size:12px;color:var(--muted-2);margin:10px 0 0}
+  @media(max-width:520px){ .unlock-row{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -207,22 +222,43 @@
   <!-- PRICING -->
   <section class="sec" id="pricing" style="background:linear-gradient(180deg,transparent,rgba(232,193,90,.05),transparent)">
     <div class="wrap">
-      <div class="kick">What's included</div>
-      <h2 class="sec-h">Full-service, scoped to you.</h2>
-      <p class="sec-sub">Everything to take a token from idea to live and traded — planned, built and grown by one accountable team. Every engagement is scoped and quoted to your project.</p>
-      <div style="margin-top:24px;overflow-x:auto">
-      <table class="price">
-        <thead><tr><th>Service 服务</th><th>Scope &amp; deliverables 交付内容</th></tr></thead>
-        <tbody>
-          <tr><td><b>Tokenomics design</b><br/><span class="muted">代币经济设计</span></td><td class="muted">Single-token: allocation, unlocks, utility &amp; model</td></tr>
-          <tr><td><b>Token listing</b><br/><span class="muted">代币上币</span></td><td class="muted">Listing readiness &amp; application management</td></tr>
-          <tr><td><b>LP management</b><br/><span class="muted">流动性管理</span></td><td class="muted">LP allocation &amp; depth management; risk monitoring</td></tr>
-          <tr><td><b>Launchpad + AI marketing</b><br/><span class="muted">发射台 + AI 营销</span></td><td class="muted">Targeted acquisition to Binance / OKX Wallet users — 200K · 500K · 1M reach</td></tr>
-          <tr class="bonus"><td colspan="2">★ Bundle &amp; save — qualifying bundles include a <span class="free">free 100K-user Launchpad + AI marketing</span> (a US$12.5K value). <a href="#enquire" style="color:var(--pink);text-decoration:underline;white-space:nowrap">Ask for a quote →</a></td></tr>
-        </tbody>
-      </table>
+      <div class="kick">Service pricing</div>
+      <h2 class="sec-h">Priced at every step.</h2>
+      <p class="sec-sub">Leave your details to unlock full service pricing — instant, no obligation. 留下联系方式，即刻解锁完整报价。</p>
+      <div class="price-gate">
+        <div class="price-locked locked" id="priceLocked">
+          <div style="overflow-x:auto">
+          <table class="price">
+            <thead><tr><th>Service 服务</th><th>Scope 交付</th><th>Fees 收费</th></tr></thead>
+            <tbody>
+              <tr><td><b>Tokenomics design</b><br/><span class="muted">代币经济设计</span></td><td class="muted">Single-token: allocation, unlocks, utility &amp; model</td><td class="fee">US$10K–15K</td></tr>
+              <tr><td><b>Token listing</b><br/><span class="muted">代币上币</span></td><td class="muted">Listing readiness &amp; application management</td><td class="fee">US$5K–8K</td></tr>
+              <tr><td><b>LP management</b><br/><span class="muted">流动性管理</span></td><td class="muted">LP allocation &amp; depth management; risk monitoring</td><td class="fee">US$5K–8K / mo</td></tr>
+              <tr><td><b>Launchpad + AI marketing</b><br/><span class="muted">发射台 + AI 营销</span></td><td class="muted">Binance / OKX Wallet users · 200K · 500K · 1M</td><td class="fee">US$25K · $0.125/user<br/>US$50K · $0.10/user<br/>US$80K · $0.08/user</td></tr>
+              <tr class="bonus"><td colspan="3">★ Bundle bonus — take the top 3 services and your first <span class="free">100K-user Launchpad + AI marketing is FREE</span> (a US$12.5K value).</td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+        <div class="price-overlay" id="priceOverlay">
+          <div class="unlock-card">
+            <div class="unlock-ic">🔒</div>
+            <h3>Unlock full pricing</h3>
+            <p>Leave your details and see the complete service pricing instantly. No obligation.</p>
+            <form id="unlockForm" novalidate>
+              <div class="unlock-row">
+                <input name="name" required maxlength="120" autocomplete="name" placeholder="Your name" />
+                <input name="email" type="email" required maxlength="160" autocomplete="email" placeholder="you@company.com" />
+              </div>
+              <input name="company" maxlength="160" autocomplete="organization" placeholder="Company / project (optional)" style="margin-top:10px" />
+              <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label>Website<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+              <button class="btn btn--primary" type="submit" id="unlockBtn" style="width:100%;justify-content:center;margin-top:12px">Unlock pricing →</button>
+              <div class="form-msg" id="unlockMsg"></div>
+              <p class="unlock-note">We'll only use this to follow up about your token. No spam.</p>
+            </form>
+          </div>
+        </div>
       </div>
-      <p class="form-note" style="margin-top:12px">Pricing is tailored to each project and shared in your quote. Enquire below for a scoped proposal. 报价按项目定制，于方案中提供；欢迎在下方咨询。</p>
     </div>
   </section>
 
@@ -308,6 +344,33 @@
   var capEl = document.getElementById('capQ');
   function setCap(){ capA = 2 + Math.floor(Math.random()*7); capB = 1 + Math.floor(Math.random()*8); if(capEl) capEl.textContent = 'what is ' + capA + ' + ' + capB + '?'; }
   setCap();
+
+  // ---- pricing unlock gate: capture a lead to reveal pricing ----
+  (function(){
+    var locked = document.getElementById('priceLocked'), overlay = document.getElementById('priceOverlay');
+    var uform = document.getElementById('unlockForm'), ubtn = document.getElementById('unlockBtn'), umsg = document.getElementById('unlockMsg');
+    if(!locked || !overlay || !uform) return;
+    function reveal(){ locked.classList.remove('locked'); overlay.classList.add('hide'); }
+    try{ if(localStorage.getItem('cl_pricing_unlocked')==='1') reveal(); }catch(e){}
+    var uStart = Date.now();
+    uform.addEventListener('submit', async function(e){
+      e.preventDefault(); umsg.className='form-msg';
+      var fd = new FormData(uform), p = {}; fd.forEach(function(v,k){ p[k]=String(v||'').trim(); });
+      if(p.website){ try{localStorage.setItem('cl_pricing_unlocked','1');}catch(_){}; reveal(); return; }
+      if(!p.name || !/.+@.+\..+/.test(p.email)){ umsg.className='form-msg err'; umsg.textContent='Please enter your name and a valid email.'; return; }
+      ubtn.disabled=true; var old=ubtn.textContent; ubtn.textContent='Unlocking…';
+      try{
+        var r = await fetch('/api/enquiry', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({
+          name:p.name, email:p.email, company:p.company, service:'Pricing unlock', message:'Requested pricing unlock on the website.',
+          website:p.website||'', elapsed: Date.now()-uStart, source:'oneip.io/business/pricing-unlock'
+        })});
+        var d = await r.json().catch(function(){ return {}; });
+        if(r.ok && d.ok){ try{localStorage.setItem('cl_pricing_unlocked','1');}catch(_){}; reveal(); }
+        else { umsg.className='form-msg err'; umsg.textContent=(d&&d.error)?d.error:'Something went wrong. Please try again or email askme@corax.live.'; }
+      }catch(err){ umsg.className='form-msg err'; umsg.textContent='Network error. Please try again, or email askme@corax.live.'; }
+      finally{ ubtn.disabled=false; ubtn.textContent=old; }
+    });
+  })();
 
   form.addEventListener('submit', async function(e){
     e.preventDefault();
